@@ -1,7 +1,12 @@
 import { route } from 'quasar/wrappers';
 <template>
   <!-- <q-btn flat @click="$router.replace('/')" icon="arrow_back" style="margin-top: 5px;"></q-btn> -->
-  <HeaderCreate title="SATU KALAYANG" backAction="/" :hideLogout="true" :hideProfile="true"/>
+  <HeaderCreate
+    title="SATU KALAYANG"
+    backAction="/"
+    :hideLogout="true"
+    :hideProfile="true"
+  />
 
   <div style="display: flex; justify-content: center; height: 100vh">
     <q-page style="display: flex; flex-direction: column; height: 100vh">
@@ -71,7 +76,7 @@ import { route } from 'quasar/wrappers';
             infinite
             v-model="slide1"
             class="carousel"
-            style="width: 40%;"
+            style="width: 40%"
           >
             <q-carousel-slide name="first" class="carousel-slide">
               <q-img
@@ -80,9 +85,7 @@ import { route } from 'quasar/wrappers';
               />
               <div class="text-container">
                 <div class="text-h6">Kios 1</div>
-                <div class="text-subtitle1">
-                  Deskripsi kios
-                </div>
+                <div class="text-subtitle1">Deskripsi kios</div>
               </div>
             </q-carousel-slide>
             <q-carousel-slide name="second" class="carousel-slide">

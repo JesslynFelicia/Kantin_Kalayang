@@ -3,15 +3,15 @@ const routes = [{
         component: () =>
             import ('layouts/MainLayout.vue'),
         children: [{
-            path: 'register',
+            path: '/register',
             component: () =>
                 import ('pages/RegisterPage.vue')
         }, {
-            path: 'login',
+            path: '/login',
             component: () =>
                 import ('pages/LoginPage.vue')
         }, {
-            path: 'admin',
+            path: '/admin',
             component: () =>
                 import ('pages/AdminPage.vue')
         }]
@@ -23,8 +23,6 @@ const routes = [{
     //     { path: '', component: () => import('pages/IndexPage.vue') }
     //   ]
     // },
-
-
 
 
     {
@@ -44,7 +42,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
-                import ("pages/page-pembeli/HomePembeli.vue")
+                import ("pages/page-pembeli/BerandaPembeli.vue")
         }]
     },
 
@@ -56,7 +54,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
-                import ("pages/page-penjual/HomePenjual.vue")
+                import ("pages/page-penjual/BerandaPenjual.vue")
         }]
     },
     {

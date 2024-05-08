@@ -24,37 +24,12 @@ import { route } from 'quasar/wrappers';
         </q-input>
       </div>
 
-      <div class="categories" style="display: flex; margin-top: 15px">
-        <div style="text-align: center; margin: auto">
-          <img
-            src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
-            alt="Deskripsi Foto"
-            class="category"
-          />
-          <p class="text-category">Makanan Berat</p>
-        </div>
-        <div style="text-align: center; margin: auto">
-          <img
-            src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
-            alt="Deskripsi Foto"
-            class="category"
-          />
-          <p class="text-category">Makanan Ringan</p>
-        </div>
-        <div style="text-align: center; margin: auto">
-          <img
-            src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
-            alt="Deskripsi Foto"
-            class="category"
-          />
-          <p class="text-category">Minuman</p>
-        </div>
-      </div>
-
-      <div style="display: flex; flex-direction: column; margin-left: 3%">
-        <h6 style="font-weight: 800; margin: 0%">Menu</h6>
-      </div>
-
+      <div
+        style="flex-direction: column; margin-top:10px"
+      >
+      <h6 style="font-weight: 800; margin: 2% 3.5%">
+        Menu
+      </h6>
       <div style="display: flex">
         <div style="text-align: center">
           <img
@@ -121,6 +96,7 @@ import { route } from 'quasar/wrappers';
             />
           </div>
         </div>
+      </div>
       </div>
     </q-page>
   </div>
