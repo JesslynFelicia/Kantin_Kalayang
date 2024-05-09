@@ -4,6 +4,7 @@
 <!-- get data  -->
 <div id="admin">
   {{ info }}
+  
 </div>
 
 

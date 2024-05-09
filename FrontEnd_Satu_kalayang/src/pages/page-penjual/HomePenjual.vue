@@ -56,6 +56,9 @@ import { route } from 'quasar/wrappers';
       </div>
 
       <div style="display: flex">
+
+
+        <!-- disini ngambil data -->
         <div style="text-align: center">
           <img
             src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
@@ -79,6 +82,9 @@ import { route } from 'quasar/wrappers';
             />
           </div>
         </div>
+
+
+
         <div style="text-align: center">
           <img
             src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
