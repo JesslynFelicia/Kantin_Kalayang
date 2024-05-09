@@ -388,7 +388,13 @@ class ControllerKalayang extends Controller
         }
     }
 
-    //Controller Privaate Function
+    public function viewpenjual()
+    {
+        $allpenjual = ModelKalayangPenjual::where('status_acc', 'WAITING')->get();
+        return response()->json(['message' => 'success', 'data' => $allpenjual], 200);
+    }
+
+    //Controller Private Function
     private function generateUniqueNumber()
     {
         $date = date('dmy');
