@@ -25,6 +25,11 @@ export default {
   data() {
     return {
       info: [],
+      formdata:{
+        id_penjual :'',
+        status :''
+      }
+
     };
   },
   mounted() {
@@ -46,12 +51,28 @@ export default {
         });
     },
     accepted(id_penjual) {
+
       console.log("Accepted ID:", id_penjual);
       // Implement accept logic here
+      this.formdata.id_penjual = id_penjual;
+      this.formdata.status = "APPROVE";
+      console.log(this.formdata);
+      axios.post("http://127.0.0.1:8000/api/accpenjual",this.formdata)
+      .then(() => {
+      this.viewPenjual(); // Fetch updated data
+    })
     },
     rejected(id_penjual) {
       console.log("Rejected ID:", id_penjual);
       // Implement reject logic here
+      this.formdata.id_penjual = id_penjual;
+      this.formdata.status = "REJECT";
+      console.log(this.formdata);
+      axios.post("http://127.0.0.1:8000/api/accpenjual",this.formdata).then(() => {
+      this.viewPenjual(); // Fetch updated data
+    })
+
+
     },
   },
 };
