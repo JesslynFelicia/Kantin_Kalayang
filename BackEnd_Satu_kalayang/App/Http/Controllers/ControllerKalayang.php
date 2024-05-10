@@ -63,15 +63,8 @@ class ControllerKalayang extends Controller
     }
 
     public function viewmenu(Request $request)
-<<<<<<< HEAD
     {
-
-        $id_penjual = $request->post('id_penjual');
-        $allmenu = ModelKalayangMenu::all()->where('id_penjual',  $id_penjual);
-=======
-    {   
         $allmenu = ModelKalayangMenu::all();
->>>>>>> efcc5aa714498de55ab8cdaa0da4b9ad8d0eddc4
         return response()->json(['message' => 'success', 'data' => $allmenu], 200);
     }
 
