@@ -1,4 +1,5 @@
 <template>
+
   <q-header class="bg-white text-black">
     <q-toolbar
       style="display: flex; justify-content: space-between; padding-top: 10px"
@@ -34,6 +35,7 @@
     </q-toolbar>
   </q-header>
 
+    <!-- eslint-disable-next-line -->
   <q-dialog v-model="dialogLogout">
     <q-card
       class="my-card"
