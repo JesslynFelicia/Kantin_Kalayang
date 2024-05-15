@@ -24,7 +24,6 @@ const routes = [{
     //   ]
     // },
 
-
     {
         path: '/',
         component: () =>
@@ -35,6 +34,8 @@ const routes = [{
                 import ("pages/PengaturanPeran.vue")
         }]
     },
+
+    // pembeli
     {
         path: '/beranda-pembeli',
         component: () =>
@@ -43,6 +44,46 @@ const routes = [{
             path: '',
             component: () =>
                 import ("pages/page-pembeli/BerandaPembeli.vue")
+        }]
+    },
+    {
+        path: '/halaman-toko',
+        component: () =>
+            import ('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            component: () =>
+                import ("pages/page-pembeli/HalamanToko.vue")
+        }]
+    },
+    {
+        path: '/detail-pesanan',
+        component: () =>
+            import ('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            component: () =>
+                import ("pages/page-pembeli/DetailPesanan.vue")
+        }]
+    },
+    {
+        path: '/ringkasan-pesanan',
+        component: () =>
+            import ('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            component: () =>
+                import ("pages/page-pembeli/RingkasanPesanan.vue")
+        }]
+    },
+    {
+        path: '/halaman-pembayaran',
+        component: () =>
+            import ('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            component: () =>
+                import ("pages/page-pembeli/HalamanPembayaran.vue")
         }]
     },
 

@@ -80,6 +80,7 @@ import { route } from 'quasar/wrappers';
           >
             <q-carousel-slide name="first" class="carousel-slide">
               <q-img
+                @click="$router.replace('/halaman-toko')"
                 class="pesan-img"
                 src="https://cdn.quasar.dev/img/mountains.jpg"
               />
