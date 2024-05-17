@@ -86,6 +86,16 @@ const routes = [{
                 import ("pages/page-pembeli/HalamanPembayaran.vue")
         }]
     },
+    {
+        path: '/status-pesanan',
+        component: () =>
+            import ('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            component: () =>
+                import ("pages/page-pembeli/StatusPesanan.vue")
+        }]
+    },
 
     //penjual
     {
