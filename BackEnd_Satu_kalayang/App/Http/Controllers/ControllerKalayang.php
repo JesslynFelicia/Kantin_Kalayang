@@ -62,8 +62,8 @@ class ControllerKalayang extends Controller
         return response()->json(['message' => $msg, 'status' => $sts], 200);
     }
 
-    public function viewmenu()
-    {
+    public function viewmenu(Request $request)
+    {   
         $allmenu = ModelKalayangMenu::all();
         return response()->json(['message' => 'success', 'data' => $allmenu], 200);
     }
@@ -388,7 +388,24 @@ class ControllerKalayang extends Controller
         }
     }
 
-    //Controller Privaate Function
+    public function viewpenjual()
+    {
+        $allpenjual = ModelKalayangPenjual::where('status_acc', 'WAITING')->get();
+        return response()->json(['message' => 'success', 'data' => $allpenjual], 200);
+    }
+
+    
+    public function ApproveAdmin(Request $request)
+    {
+        $status = $request->post('status');
+        $id_penjual = $request->post('id_penjual');
+        $accstatus = ModelKalayangPenjual::where('id_penjual', $id_penjual)->first();
+        $accstatus->status = $status;
+        $accstatus->save();
+        return response()->json(['message' => 'success'], 200);
+    }
+
+    //Controller Private Function
     private function generateUniqueNumber()
     {
         $date = date('dmy');
