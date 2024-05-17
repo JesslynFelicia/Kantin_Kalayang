@@ -8,6 +8,7 @@ import { route } from 'quasar/wrappers';
     :hideProfile="true"
   />
 
+  <!-- eslint-disable-next-line -->
   <div style="display: flex; justify-content: center; height: 100vh">
     <q-page style="display: flex; flex-direction: column; height: 100vh">
       <div style="display: flex; flex-direction: column; align-items: center">
