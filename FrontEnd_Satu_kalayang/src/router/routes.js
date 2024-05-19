@@ -43,7 +43,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
-                //progress -- api not ready
+                //viewtoko - done
                 import ("pages/page-pembeli/BerandaPembeli.vue")
         }]
     },
@@ -76,7 +76,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
-                //api not ready (view keranjang)
+                //ini pake js
                 import ("pages/page-pembeli/RingkasanPesanan.vue")
         }]
     },
@@ -87,7 +87,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
-                //api not ready viewpenjual (bayar)
+                //showqris - done
                 import ("pages/page-pembeli/HalamanPembayaran.vue")
         }]
     },
@@ -98,7 +98,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
-                //api not ready (status pesanan)
+                //ini pake js sama kaya view keranjang
                 import ("pages/page-pembeli/StatusPesanan.vue")
         }]
     },
@@ -166,7 +166,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
-                //VIEWDATAPENJUAL - in progress
+                //viewprofile - done
                 import ("pages/page-penjual/ProfilePenjual.vue")
         }]
     },
