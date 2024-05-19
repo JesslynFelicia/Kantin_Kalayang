@@ -349,7 +349,7 @@ class ControllerKalayang extends Controller
         if ($penjual) {
 
             if (!empty($kata_sandi)) {
-                $penjual->kata_sandi = $kata_sandi; 
+                $penjual->kata_sandi = $kata_sandi;
             }
 
             if ($gambar_profile) {
@@ -499,6 +499,8 @@ class ControllerKalayang extends Controller
         $accstatus = ModelKalayangPenjual::where('id_penjual', $id_penjual)->first();
         $accstatus->status_acc = $status;
         $accstatus->save();
+        // Kirim emailnya setelah approve
+        $sendmail = $this->sendemail_new($id_penjual);
         return response()->json(['message' => 'success'], 200);
     }
 
@@ -584,10 +586,11 @@ class ControllerKalayang extends Controller
         }
     }
 
-    public function sendemail_new($email)
+    public function sendemail_new($id_penjual)
     {
-        $penjual = ModelKalayangPenjual::where('email', 'like', $email . '%')->first();
-        if ($email) {
+        // $penjual = ModelKalayangPenjual::where('email', 'like', $email . '%')->first();
+        $penjual = ModelKalayangPenjual::where('id_penjual', $id_penjual)->first();
+        if ($id_penjual) {
             if ($penjual) {
                 $content = '<!DOCTYPE html>
                 <html>
