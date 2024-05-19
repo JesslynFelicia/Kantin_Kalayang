@@ -43,6 +43,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
+                //progress - api not ready
                 import ("pages/page-pembeli/BerandaPembeli.vue")
         }]
     },
@@ -53,6 +54,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
+                //progress - FE (revisi)
                 import ("pages/page-pembeli/HalamanToko.vue")
         }]
     },
@@ -63,6 +65,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
+                //viewonemenu -> cek deh la lu harus passing data id trus ntr diabakal lempar data balik
                 import ("pages/page-pembeli/DetailPesanan.vue")
         }]
     },
@@ -73,6 +76,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
+                //api not ready (view keranjang)
                 import ("pages/page-pembeli/RingkasanPesanan.vue")
         }]
     },
@@ -83,6 +87,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
+                //api not ready viewpenjual (bayar)
                 import ("pages/page-pembeli/HalamanPembayaran.vue")
         }]
     },
@@ -93,6 +98,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
+                //api not ready (status pesanan)
                 import ("pages/page-pembeli/StatusPesanan.vue")
         }]
     },
@@ -105,6 +111,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
+                //viewmenuperpenjual - api not ready
                 import ("pages/page-penjual/BerandaPenjual.vue")
         }]
     },
@@ -115,6 +122,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
+                //viewtransaksi - done, cek ya
                 import ("pages/page-penjual/RiwayatPenjual.vue")
         }]
     },
@@ -125,6 +133,7 @@ const routes = [{
         children: [{
             path: '',
             component: () =>
+                //viewrekap -
                 import ("pages/page-penjual/RekapPenjual.vue")
         }]
     },
