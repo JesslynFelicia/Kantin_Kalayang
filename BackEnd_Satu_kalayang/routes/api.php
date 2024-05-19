@@ -39,5 +39,5 @@ Route::post('/savedatanew',[ControllerKalayang::class,'savedatapenjual_new']);
 
 //yang belom
 
-//viewpenjual (bayar)
+
 

@@ -34,14 +34,36 @@ export default {
     HeaderCreate,
   },
 
-  data() {
+  data () {
     return {
       formData: {
-        nama_tokonama_toko: "",
-        email: "",
-        nomor_toko: "",
+        id:''
+
       },
-    };
+      result:{
+
+        jenis :''
+      }
+    }
+  },
+  mounted(){
+ this.getdata();
+  },
+  methods: {
+    getdata () {
+
+      axios.post('http://127.0.0.1:8000/api/viewprofile')
+        .then(response => {
+          // Handle the response
+          //ambil datanya masukin ke local variabel (result)
+          //contoh
+          this.result.jenis = response.jenis;
+          return response;
+        })
+        .catch(error => {
+          // Handle the error
+        })
+    }
   },
 };
 </script>

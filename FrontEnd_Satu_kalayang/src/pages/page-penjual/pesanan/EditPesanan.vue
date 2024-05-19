@@ -45,7 +45,7 @@ export default {
   data () {
     return {
       formData: {
-        //lempar id menu & updatenya
+        //lempar id menu & updatenya/
       id_menu : '',
       jenis:'',
         nama_menu:'',
