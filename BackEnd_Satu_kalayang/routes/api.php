@@ -32,7 +32,8 @@ Route::post('/user/mail/send', [ControllerKalayang::class, 'sendemail']);
 Route::post('/savedatanew',[ControllerKalayang::class,'savedatapenjual_new']);
 
 //yang belom
-//viewtoko
+//viewtoko - pembeli
 //viewkeranjang
 //viewpenjual (bayar)
 //viewmenuperpenjual
+//viewdatapenjual
