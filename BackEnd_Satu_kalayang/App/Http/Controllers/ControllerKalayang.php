@@ -13,6 +13,8 @@ use App\Mail\SendEmail;
 use App\Mail\SendEmailNew;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Termwind\Components\Raw;
+use Illuminate\Support\Facades\Validator;
 
 class ControllerKalayang extends Controller
 {
@@ -66,6 +68,14 @@ class ControllerKalayang extends Controller
     {
         $allmenu = ModelKalayangMenu::all();
         return response()->json(['message' => 'success', 'data' => $allmenu], 200);
+    }
+
+
+    public function viewmenuonepenjual(Request $request)
+    {
+        $id_penjual = $request->post('id_penjual');
+        $menu = ModelKalayangMenu::where('id_penjual', $id_penjual)->get();
+        return response()->json(['message' => 'success', 'data' => $menu], 200);
     }
 
     public function updatemenu(Request $request)
@@ -317,6 +327,52 @@ class ControllerKalayang extends Controller
         }
     }
 
+    public function updatedatapenjual(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'kata_sandi' => 'required|min:6', // Minimal 6 karakter
+            'gambar_qris' => 'image|mimes:jpeg,png,jpg',
+            'gambar_profille' => 'required|image|mimes:jpeg,png,jpg,gif', // Validasi ekstensi dan ukuran file
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 400);
+        }
+
+
+        $email = $request->post('email');
+        $kata_sandi = $request->post('kata_sandi');
+        $gambar_profile =  $request->file('gambar_profille');
+        $gambar_qris =  $request->file('gambar_qris');
+        $penjual = ModelKalayangPenjual::where('email', $email)->get();
+        if ($penjual) {
+
+            if (!empty($kata_sandi)) {
+                $penjual->kata_sandi = $kata_sandi; 
+            }
+
+            if ($gambar_profile) {
+                $imageNameProfile = time() . '.' . $gambar_profile->getClientOriginalExtension();
+                $gambar_profile->storeAs('public/profiles', $imageNameProfile);
+                $penjual->gambar_profile = 'profiles/' . $imageNameProfile;
+            }
+
+            // Simpan gambar QRIS jika ada
+            if ($gambar_qris) {
+                $imageNameQris = time() . '.' . $gambar_qris->getClientOriginalExtension();
+                $gambar_qris->storeAs('public/qris', $imageNameQris);
+                $penjual->gambar_qris = 'qris/' . $imageNameQris;
+            }
+
+            $penjual->save();
+
+            return response()->json(['message' => 'Data penjual berhasil diperbarui'], 200);
+        } else {
+            return response()->json(['error' => 'Data penjual tidak ditemukan.'], 404);
+        }
+    }
+
     public function generatepassword(Request $request)
     {
         $email = $request->post('email');
@@ -394,6 +450,37 @@ class ControllerKalayang extends Controller
         return response()->json(['message' => 'success', 'data' => $allpenjual], 200);
     }
 
+    public function Viewpenjualall()
+    {
+        $allpenjual = ModelKalayangPenjual::where('status_acc', 'APPROVE')->get();
+        return response()->json(['message' => 'success', 'data' => $allpenjual], 200);
+    }
+
+    public function viewprofilepenjual(Request $request)
+    {
+        $email = $request->post('email');
+        $allpenjual = ModelKalayangPenjual::where('email', $email)->get();
+        return response()->json(['message' => 'success', 'data' => $allpenjual], 200);
+    }
+
+    public function showqris(Request $request)
+    {
+        $id_penjual = $request->post('id_penjual');
+        // Ambil data pengguna dari database
+        $penjual = ModelKalayangPenjual::where('email', $id_penjual)->get();
+
+        // Jika pengguna ditemukan
+        if ($penjual) {
+            // Ambil path gambar profil dari data pengguna
+            $gambarProfilePath = $penjual->gambar_profile;
+
+            // Tampilkan gambar di halaman web menggunakan path
+            return view('profile', ['gambarProfilePath' => $gambarProfilePath]);
+        } else {
+            // Jika pengguna tidak ditemukan, tampilkan pesan kesalahan
+            return 'User not found';
+        }
+    }
 
     public function ApproveAdmin(Request $request)
     {
@@ -404,6 +491,17 @@ class ControllerKalayang extends Controller
         $accstatus->save();
         return response()->json(['message' => 'success'], 200);
     }
+
+    public function viewpembayaran(Request $request)
+    {
+        $status = $request->post('status');
+        $id_penjual = $request->post('id_penjual');
+        $accstatus = ModelKalayangPenjual::where('id_penjual', $id_penjual)->first();
+        $accstatus->status_acc = $status;
+        $accstatus->save();
+        return response()->json(['message' => 'success'], 200);
+    }
+
 
     //Controller Private Function
     private function generateUniqueNumber()
@@ -419,7 +517,7 @@ class ControllerKalayang extends Controller
         return '#M' . $date . sprintf('%04d', $nextSequentialNumber);
     }
 
-    // Han Vir
+    // Han Vir (salah)
 
     public function savedatapenjual_new(Request $request)
     {
@@ -585,12 +683,12 @@ class ControllerKalayang extends Controller
                         <div class="spacing"></div>
                         <div id="rightbar">
                             <h1 class="heading"></h1>
-                            <p>Hi, '.$penjual['nama_pemilik'].'</p>
+                            <p>Hi, ' . $penjual['nama_pemilik'] . '</p>
                             <p>Terimakasih telah mendaftar di kantin kalayang</p>
                             <p>dengan email ini kami telah menyetujui seluruh berkas yang anda berikan</p>
                             <p>berikut kami berikan username dan password :</p>
-                            <p>Email : '.$penjual['email'].'</p>
-                            <p>Password : '.$penjual['kata_sandi'].'</p>
+                            <p>Email : ' . $penjual['email'] . '</p>
+                            <p>Password : ' . $penjual['kata_sandi'] . '</p>
                             <p>Mohon setelah anda berhasil login dapat langsung mengganti password anda</p>
                             <div class="text-div">Terima kasih,</div>
                             <div class="text-div">Admin Kantin Kalayang</div>
@@ -615,5 +713,4 @@ class ControllerKalayang extends Controller
             return false;
         }
     }
-
 }
