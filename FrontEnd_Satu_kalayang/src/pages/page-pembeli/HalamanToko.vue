@@ -1,8 +1,7 @@
 import { route } from 'quasar/wrappers';
 <template>
-  <!-- <q-btn flat @click="$router.replace('/')" icon="arrow_back" style="margin-top: 5px;"></q-btn> -->
   <HeaderCreate
-    title=""
+    :title="result.nama_toko"
     backAction="/beranda-pembeli"
     :hideLogout="true"
     :hideProfile="true"
@@ -33,14 +32,14 @@ import { route } from 'quasar/wrappers';
           />
         </q-input>
       </div>
-      <div style="flex-direction: column; margin-top: 10px">
-        <h6 style="font-weight: 800; margin: 2% 3.5%; margin-bottom: 0px">
-          Toko 1
-        </h6>
-        <p style="margin: 2% 3.5%; margin-top: 0px; font-size: 15px">
-          Deskripsi dari Toko 1
-        </p>
-        <div style="display: flex">
+
+      <!-- <div style="flex-direction: column; margin-top: 10px">
+        <div
+          style="display: flex"
+          v-for="(menu, index) in menus"
+          :key="index"
+          @click="$router.replace('/detail-pesanan')"
+        >
           <div style="text-align: center">
             <img
               src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
@@ -50,9 +49,9 @@ import { route } from 'quasar/wrappers';
             <div style="display: flex; margin-left: 10%">
               <div style="text-align: left">
                 <p style="margin: 0; font-weight: 700; font-size: 15px">
-                  Menu 1
+                  {{ menu.nama_menu }}
                 </p>
-                <p style="margin: 0">18.000</p>
+                <p style="margin: 0">Rp{{ menu.harga_menu }}</p>
               </div>
               <q-btn
                 unelevated
@@ -66,55 +65,98 @@ import { route } from 'quasar/wrappers';
               />
             </div>
           </div>
-          <div style="text-align: center">
-            <img
-              src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
-              alt="Deskripsi Foto"
-              class="category"
-            />
-            <div style="display: flex; margin-left: 10%">
-              <div style="text-align: left">
-                <p style="margin: 0; font-weight: 700; font-size: 15px">
-                  Menu 1
-                </p>
-                <p style="margin: 0">18.000</p>
-              </div>
-              <q-btn
-                unelevated
-                size="14px"
-                no-caps
-                rounded
-                class="text-weight-medium"
-                icon="add_circle_outline"
-                style="margin-left: auto; margin-bottom: auto; margin-right: 5%"
-              />
+        </div>
+      </div> -->
+      <!--
+      <div class="menu-container">
+        <div
+          style="width: 40%; margin: 10px 5px"
+          v-for="(menu, index) in menus"
+          :key="index"
+          @click="$router.replace('/detail-pesanan')"
+        >
+          <img
+            style="margin: 10px"
+            src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+            alt="Deskripsi Foto"
+            class="category"
+          />
+          <div style="display: flex; margin-left: 10%">
+            <div style="text-align: left">
+              <p style="margin: 0; font-weight: 700; font-size: 15px">
+                {{ menu.nama_menu }}
+              </p>
+              <p style="margin: 0">Rp{{ menu.harga_menu }}</p>
             </div>
-          </div>
-          <div style="text-align: center">
-            <img
-              src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
-              alt="Deskripsi Foto"
-              class="category"
+            <q-btn
+              unelevated
+              size="14px"
+              no-caps
+              rounded
+              style="margin-left: auto; margin-bottom: auto; margin-right: 5%"
+              icon="add_circle_outline"
+              @click="$router.replace('/detail-pesanan')"
             />
-            <div style="display: flex; margin-left: 10%">
-              <div style="text-align: left">
-                <p style="margin: 0; font-weight: 700; font-size: 15px">
-                  Menu 1
-                </p>
-                <p style="margin: 0">18.000</p>
-              </div>
-              <q-btn
-                unelevated
-                size="14px"
-                no-caps
-                class="text-weight-medium"
-                icon="add_circle_outline"
-                style="margin-left: auto; margin-bottom: auto; margin-right: 5%"
-              />
-            </div>
           </div>
         </div>
+      </div> -->
+
+      <div class="menu-container">
+        <div
+          v-for="(menu, index) in menus"
+          :key="index"
+          class="menu-item"
+          @click="openDialogTambah('bottom')"
+        >
+          <img
+            src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+            alt="Deskripsi Foto"
+            class="category"
+            style="margin: 10px"
+          />
+          <q-card-section
+            class="row items-start no-wrap"
+            style="display: flex; flex-direction: column; padding-top: 0px"
+          >
+            <div>
+              <div class="text-weight-bold" style="font-size: 15px">
+                {{ menu.nama_menu }}
+              </div>
+              <div class="text-grey-7">Rp{{ menu.harga_menu }}</div>
+            </div>
+
+            <q-btn
+              outline
+              rounded
+              style="width: 100%; margin-top: 10px"
+              @click="$router.replace('/detail-pesanan')"
+              >Tambah</q-btn
+            >
+          </q-card-section>
+
+          <!-- <div style="text-align: left; margin: 0px 15px">
+            <p style="margin: 0; font-weight: 700; font-size: 15px">
+              {{ menu.nama_menu }}
+            </p>
+            <p style="margin: 0">Rp{{ menu.harga_menu }}</p>
+            <q-btn
+              outline
+              rounded
+              style="width: 100%; margin-top: 7px"
+              @click="$router.replace('/detail-pesanan')"
+              >Tambah</q-btn
+            >
+            <q-btn
+              label="Bottom"
+              icon="keyboard_arrow_down"
+              color="primary"
+              @click="openDialogTambah('bottom')"
+            />
+          </div> -->
+
+        </div>
       </div>
+
       <!--
       <div class="floating-bar">
         <div
@@ -148,22 +190,76 @@ import { route } from 'quasar/wrappers';
       </div> -->
     </q-page>
   </div>
+
+  <q-dialog v-model="dialogTambah" :position="position">
+    <q-card
+      style="
+        width: 350px;
+        height: 67vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      "
+    >
+      <img
+        src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+        alt="Deskripsi Foto"
+        style="max-width: 90%; height: auto; margin: auto; margin-top: 20px"
+      />
+      <q-card-section
+        class="row items-start no-wrap"
+        style="
+          display: flex;
+          flex-direction: column;
+          padding-top: 10px;
+          flex-grow: 1;
+        "
+      >
+        <div>
+          <div class="text-weight-bold">Mie Goreng</div>
+          <div class="text-grey">Deskripsi</div>
+          <div class="text-weight-bold" style="padding-top: 10px">Rp18000</div>
+        </div>
+        <q-btn
+          outline
+          rounded
+          style="width: 100%; margin-top: auto"
+          @click="$router.replace('/detail-pesanan')"
+          >Tambah</q-btn
+        >
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
+import axios from "axios";
 import { ref } from "vue";
 
 export default {
   components: {
     HeaderCreate,
   },
+  data() {
+    return {
+      result: {
+        nama_menu: "",
+        harga_menu: "",
+        desc_menu: "",
+        nama_toko: "",
+      },
+
+      menus: [],
+    };
+  },
   setup() {
     const text = ref("");
 
     const autoplay1 = ref(true);
     const autoplay2 = ref(true);
-
+    const dialogTambah = ref(false);
+    const position = ref("top");
     return {
       text,
 
@@ -171,7 +267,50 @@ export default {
       slide2: ref("first"),
       autoplay1,
       autoplay2,
+      dialogTambah,
+      position,
+
+      openDialogTambah(bottom) {
+        position.value = bottom;
+        dialogTambah.value = true;
+      },
     };
+  },
+
+  mounted() {
+    this.getMenu();
+    this.getToko();
+  },
+
+  methods: {
+    getMenu() {
+      axios
+        .post("http://127.0.0.1:8000/api/viewmenu")
+        .then((response) => {
+          // const data = response.data.data[0];
+          this.menus = response.data.data;
+
+          // this.result.nama_menu = data.nama_menu;
+          // this.result.harga_menu = data.harga_menu;
+          // this.result.desc_menu = data.desc_menu;
+          // return response;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    getToko() {
+      axios
+        .post("http://127.0.0.1:8000/api/viewtoko")
+        .then((response) => {
+          const data = response.data.data[0];
+          this.result.nama_toko = data.nama_toko;
+          return response;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
   },
 };
 </script>
@@ -184,8 +323,26 @@ export default {
   }
 }
 
+/* .menu-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+} */
+
+.menu-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.menu-item {
+  width: 50%;
+  padding: 5px;
+  align-items: center;
+}
+
 .category {
-  max-width: 80%;
+  max-width: 85%;
   height: auto;
   margin: auto;
   margin-top: 20px;

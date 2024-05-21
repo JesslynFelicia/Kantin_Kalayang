@@ -18,48 +18,48 @@ import { route } from 'quasar/wrappers';
 
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
+import axios from "axios";
 import { ref } from "vue";
 
 export default {
   components: {
     HeaderCreate,
   },
-  data () {
+  data() {
     return {
       formData: {
-      id_transaksi : ''
+        id_transaksi: "",
       },
-      result:{
+      result: {
         //tar ceknya di postman aja pake url dibawah, butuh data apa aja
-        id_menu:'',
-        id_order:'',
-        id_penjual:'',
-        tanggal_pemesanan:''
-
-      }
-    }
+        id_menu: "",
+        id_order: "",
+        id_penjual: "",
+        tanggal_pemesanan: "",
+      },
+    };
   },
   //ini gunanya biar pas ngeload langsung ngerun
-  mounted(){
-    this.getdata()
+  mounted() {
+    this.getdata();
   },
   methods: {
-    getdata () {
-
-      axios.post('http://127.0.0.1:8000/api/viewtransaksi', this.formData)
-        .then(response => {
+    getdata() {
+      axios
+        .post("http://127.0.0.1:8000/api/viewtransaksi", this.formData)
+        .then((response) => {
           // Handle the response
           //masukin data ke local variabel
-            this.result.jenis = response.jenis;
-            this.result.nama_menu= response.nama_menu;
-           this.result.harga_menu= response.harga_menu;
-            this.result = response.desc_menu;
-            return response
+          this.result.jenis = response.jenis;
+          this.result.nama_menu = response.nama_menu;
+          this.result.harga_menu = response.harga_menu;
+          this.result = response.desc_menu;
+          return response;
         })
-        .catch(error => {
+        .catch((error) => {
           // Handle the error
-        })
-    }
+        });
+    },
   },
 };
 </script>

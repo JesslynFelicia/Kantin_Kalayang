@@ -12,6 +12,7 @@ import { route } from 'quasar/wrappers';
 
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
+import axios from 'axios';
 import { ref } from "vue";
 
 export default {
