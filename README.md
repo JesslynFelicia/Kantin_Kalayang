@@ -10,3 +10,4 @@
   <li>jika API laravel pada routes sudah tersedia maka dapat langsung memanggil controller yang terlah di buat
   namun jika belum ada dapat menulis cmd php artisan install:api</li>
 </ol>
+# Satu-Kalayang
