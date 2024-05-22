@@ -84,3 +84,31 @@ onMounted(() => {
 
 
 </script>
+
+<script>
+export default {
+  data () {
+    return {
+      formData: {
+      email :'',
+      password:''
+      }
+    }
+  },
+  methods: {
+    register () {
+
+      axios.post('http://127.0.0.1:8000/api/detailrekap', this.formData)
+        .then(response => {
+          // Handle the response
+          localStorage.setItem('token', response.data.token)
+            this.$router.push('/dashboard')
+            return response
+        })
+        .catch(error => {
+          // Handle the error
+        })
+    }
+  }
+}
+</script>

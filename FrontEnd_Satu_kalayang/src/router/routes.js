@@ -14,6 +14,10 @@ const routes = [{
             path: '/admin',
             component: () =>
                 import ('pages/AdminPage.vue')
+        },{
+            path: '/forgotpassword',
+            component: () =>
+                import ('pages/ForgotPasswordPage.vue')
         }]
     },
     // {
