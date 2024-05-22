@@ -106,7 +106,7 @@ import { route } from 'quasar/wrappers';
           v-for="(menu, index) in menus"
           :key="index"
           class="menu-item"
-          @click="openDialogTambah('bottom')"
+          @click="openDialogTambah(index, 'bottom')"
         >
           <img
             src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
@@ -129,7 +129,7 @@ import { route } from 'quasar/wrappers';
               outline
               rounded
               style="width: 100%; margin-top: 10px"
-              @click="$router.replace('/detail-pesanan')"
+              @click="$router.replace(`/detail-pesanan/${menu.id_menu}`)"
               >Tambah</q-btn
             >
           </q-card-section>
@@ -153,7 +153,6 @@ import { route } from 'quasar/wrappers';
               @click="openDialogTambah('bottom')"
             />
           </div> -->
-
         </div>
       </div>
 
@@ -216,9 +215,9 @@ import { route } from 'quasar/wrappers';
         "
       >
         <div>
-          <div class="text-weight-bold">Mie Goreng</div>
-          <div class="text-grey">Deskripsi</div>
-          <div class="text-weight-bold" style="padding-top: 10px">Rp18000</div>
+          <div class="text-weight-bold">{{ nama_menu }}</div>
+          <div class="text-grey">{{ desc_menu }}</div>
+      <div class="text-weight-bold" style="padding-top: 15px">Rp{{ harga_menu }}</div>
         </div>
         <q-btn
           outline
@@ -270,10 +269,10 @@ export default {
       dialogTambah,
       position,
 
-      openDialogTambah(bottom) {
-        position.value = bottom;
-        dialogTambah.value = true;
-      },
+      // openDialogTambah(bottom) {
+      //   position.value = bottom;
+      //   dialogTambah.value = true;
+      // },
     };
   },
 
@@ -290,15 +289,31 @@ export default {
           // const data = response.data.data[0];
           this.menus = response.data.data;
 
+          this.result.nama_menu = this.menus.id_menu;
+
           // this.result.nama_menu = data.nama_menu;
           // this.result.harga_menu = data.harga_menu;
           // this.result.desc_menu = data.desc_menu;
           // return response;
+
+          // console.log("id_menu: ", this.menus.id_menu);
+          // console.log("asu: ", this.menus[0].id_menu);
         })
         .catch((error) => {
           console.error(error);
         });
     },
+
+    openDialogTambah(index, bottom) {
+      // Logika untuk membuka dialog dengan posisi dan id_menu
+      this.position = bottom;
+      this.dialogTambah = true;
+
+      this.nama_menu = this.menus[index].nama_menu;
+      this.harga_menu = this.menus[index].harga_menu;
+      this.desc_menu = this.menus[index].desc_menu;
+    },
+
     getToko() {
       axios
         .post("http://127.0.0.1:8000/api/viewtoko")

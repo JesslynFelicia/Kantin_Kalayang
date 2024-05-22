@@ -47,28 +47,35 @@ const routes = [{
                 import ("pages/page-pembeli/BerandaPembeli.vue")
         }]
     },
+
     {
-        path: '/halaman-toko',
-        component: () =>
-            import ('layouts/MainLayout.vue'),
-        children: [{
-            path: '',
-            component: () =>
-                //progress - FE (revisi)
-                import ("pages/page-pembeli/HalamanToko.vue")
-        }]
+      path: '/halaman-toko',
+      component: () =>
+        import ('layouts/MainLayout.vue'),
+      children: [{
+          path: '',
+          component: () =>
+            import ("pages/page-pembeli/HalamanToko.vue")
+        }
+      ]
     },
     {
-        path: '/detail-pesanan',
-        component: () =>
-            import ('layouts/MainLayout.vue'),
-        children: [{
-            path: '',
-            component: () =>
-                //viewonemenu -> cek deh la lu harus passing data id trus ntr diabakal lempar data balik
-                import ("pages/page-pembeli/DetailPesanan.vue")
-        }]
+      path: '/detail-pesanan/:id',
+      component: () =>
+        import ("pages/page-pembeli/DetailPesanan.vue")
     },
+
+    // {
+    //     path: '/detail-pesanan',
+    //     component: () =>
+    //         import ('layouts/MainLayout.vue'),
+    //     children: [{
+    //         path: '',
+    //         component: () =>
+    //             //viewonemenu -> cek deh la lu harus passing data id trus ntr diabakal lempar data balik
+    //             import ("pages/page-pembeli/DetailPesanan.vue")
+    //     }]
+    // },
     {
         path: '/ringkasan-pesanan',
         component: () =>
