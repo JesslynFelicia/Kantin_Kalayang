@@ -65,7 +65,7 @@ const rows = ref([
   { pesanan: 'Pesanan 1', quantity: 1, total: 10000, price: 10000 },
   { pesanan: 'Pesanan 2', quantity: 2, total: 20000, price: 10000 },
   { pesanan: 'Pesanan 3', quantity: 4, total: 40000, price: 15000 },
-])
+]
 
 const getData = async () => {
   try {

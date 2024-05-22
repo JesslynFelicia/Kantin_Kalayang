@@ -3,14 +3,17 @@ const routes = [{
         component: () =>
             import ('layouts/MainLayout.vue'),
         children: [{
+            //done
             path: '/register',
             component: () =>
                 import ('pages/RegisterPage.vue')
         }, {
             path: '/login',
+            //done
             component: () =>
                 import ('pages/LoginPage.vue')
         }, {
+            //done
             path: '/admin',
             component: () =>
                 import ('pages/AdminPage.vue')
@@ -18,6 +21,15 @@ const routes = [{
             path: '/forgotpassword',
             component: () =>
                 import ('pages/ForgotPasswordPage.vue')
+        },{
+            path: '/Verification',
+            component: () =>
+                import ('pages/VerificationPage.vue')
+        },
+        {
+            path: '/detailrekap',
+            component: () =>
+                import ('pages/DetailRekap.vue')
         }]
     },
     // {
