@@ -129,7 +129,7 @@ import { route } from 'quasar/wrappers';
               outline
               rounded
               style="width: 100%; margin-top: 10px"
-              @click="$router.replace(`/detail-pesanan/${menu.id_menu}`)"
+              @click="addMenu(menu)"
               >Tambah</q-btn
             >
           </q-card-section>
@@ -217,13 +217,15 @@ import { route } from 'quasar/wrappers';
         <div>
           <div class="text-weight-bold">{{ nama_menu }}</div>
           <div class="text-grey">{{ desc_menu }}</div>
-      <div class="text-weight-bold" style="padding-top: 15px">Rp{{ harga_menu }}</div>
+          <div class="text-weight-bold" style="padding-top: 15px">
+            Rp{{ harga_menu }}
+          </div>
         </div>
         <q-btn
           outline
           rounded
           style="width: 100%; margin-top: auto"
-          @click="$router.replace('/detail-pesanan')"
+          @click="saveMenu()"
           >Tambah</q-btn
         >
       </q-card-section>
@@ -237,6 +239,7 @@ import axios from "axios";
 import { ref } from "vue";
 
 export default {
+  name: "DetailPesanan",
   components: {
     HeaderCreate,
   },
@@ -282,6 +285,10 @@ export default {
   },
 
   methods: {
+    saveMenu() {
+      localStorage.setItem("selectedMenu", JSON.stringify(this.menu));
+      this.$router.replace(`/detail-pesanan/${this.menu.id_menu}`);
+    },
     getMenu() {
       axios
         .post("http://127.0.0.1:8000/api/viewmenu")
@@ -312,6 +319,19 @@ export default {
       this.nama_menu = this.menus[index].nama_menu;
       this.harga_menu = this.menus[index].harga_menu;
       this.desc_menu = this.menus[index].desc_menu;
+    },
+
+    addMenu(menu) {
+      // Store the menu details in local storage
+      localStorage.setItem(
+        "selectedMenu",
+        JSON.stringify({
+          id: menu.id_menu,
+          name: menu.nama_menu,
+          price: menu.harga_menu,
+        })
+      );
+      this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
     },
 
     getToko() {

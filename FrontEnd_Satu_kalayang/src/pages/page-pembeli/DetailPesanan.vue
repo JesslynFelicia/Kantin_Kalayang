@@ -1,11 +1,11 @@
 <template>
   <q-layout>
-      <HeaderCreate
-        title="Custom pesanan"
-        backAction="/halaman-toko"
-        :hideLogout="true"
-        :hideProfile="true"
-      />
+    <HeaderCreate
+      title="Custom pesanan"
+      backAction="/halaman-toko"
+      :hideLogout="true"
+      :hideProfile="true"
+    />
 
     <q-page-container>
       <q-page>
@@ -18,9 +18,13 @@
               margin: 2% 3.5%;
               margin-bottom: 0px;
             "
+            v-if="menu"
           >
-            <h6 style="font-weight: 800; margin: 0">Menu 1</h6>
-            <h6 style="font-weight: 800; margin: 0">18.000</h6>
+            <h6 style="font-weight: 800; margin: 0">{{ menu.name }}</h6>
+            <h6 style="font-weight: 800; margin: 0">Rp{{ menu.price }}</h6>
+          </div>
+          <div v-else>
+            <p>No menu details found.</p>
           </div>
           <p style="margin: 2% 3.5%; margin-top: 0px; font-size: 15px">
             Deskripsi dari Menu 1
@@ -70,6 +74,7 @@
               icon="remove"
               size="sm"
               style="width: 30px; height: 30px"
+              :disable="nilai === 1"
             />
 
             <!-- <q-chip outline color="primary" style="width: 40px; height: 40px">{{
@@ -91,13 +96,21 @@
             />
           </div>
           <q-btn
-            @click="$router.replace('/ringkasan-pesanan')"
+            @click="$router.replace('/halaman-toko')"
             outline
             style="margin-top: 3%; font-weight: 800"
           >
-            Tambah pesanan -
+            Tambah pesanan edit - {{ totalPrice }}
           </q-btn>
         </div>
+      </q-page>
+    </q-page-container>
+
+    <q-page-container>
+      <q-page>
+        <p>
+          {{ totalPrice }}
+        </p>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -124,26 +137,42 @@ export default {
         harga_menu: "",
         desc_menu: "",
       },
+      menu: null,
     };
   },
   mounted() {
-    this.getdata();
+    // this.getdata();
+  },
+  created() {
+    this.getMenuFromStorage();
   },
   methods: {
-    getdata() {
-      axios
-        .post("http://127.0.0.1:8000/api/viewonemenu", this.formData)
-        .then((response) => {
-          // Handle the response
-          this.result.jenis = response.jenis;
-          this.result.nama_menu = response.nama_menu;
-          this.result.harga_menu = response.harga_menu;
-          this.result = response.desc_menu;
-          return response;
-        })
-        .catch((error) => {
-          // Handle the error
-        });
+    getMenuFromStorage() {
+      const storedMenu = localStorage.getItem("selectedMenu");
+      if (storedMenu) {
+        this.menu = JSON.parse(storedMenu);
+      }
+    },
+    // getdata() {
+    //   axios
+    //     .post("http://127.0.0.1:8000/api/viewonemenu", this.formData)
+    //     .then((response) => {
+    //       // Handle the response
+    //       this.result.jenis = response.jenis;
+    //       this.result.nama_menu = response.nama_menu;
+    //       this.result.harga_menu = response.harga_menu;
+    //       this.result = response.desc_menu;
+    //       return response;
+    //     })
+    //     .catch((error) => {
+    //       // Handle the error
+    //     });
+    // },
+  },
+
+  computed: {
+    totalPrice() {
+      return this.menu.price * this.nilai;
     },
   },
 
@@ -155,7 +184,7 @@ export default {
     };
 
     const kurangi = () => {
-      if (nilai.value > 0) {
+      if (nilai.value > 1) {
         nilai.value--;
       }
     };
