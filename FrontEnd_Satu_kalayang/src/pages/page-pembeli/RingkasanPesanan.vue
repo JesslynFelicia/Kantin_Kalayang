@@ -3,7 +3,7 @@ import { route } from 'quasar/wrappers';
   <!-- <q-btn flat @click="$router.replace('/')" icon="arrow_back" style="margin-top: 5px;"></q-btn> -->
   <HeaderCreate
     :title="toko.toString()"
-    backAction="/detail-pesanan"
+    backAction="/halaman-toko"
     :hideLogout="true"
     :hideProfile="true"
   />

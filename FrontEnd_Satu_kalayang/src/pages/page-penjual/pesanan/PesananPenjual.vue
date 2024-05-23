@@ -11,6 +11,7 @@ import { route } from 'quasar/wrappers';
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
 import { ref } from "vue";
+import axios from "axios";
 
 export default {
   components: {
@@ -39,7 +40,7 @@ export default {
       axios.post('http://127.0.0.1:8000/api/viewtransaksi', this.formData)
         .then(response => {
           // Handle the response
-          //cek dulu data yg dilempar postman apa trus ambil data yg lu perlu 
+          //cek dulu data yg dilempar postman apa trus ambil data yg lu perlu
             this.result.jenis = response.jenis;
             this.result.nama_menu= response.nama_menu;
            this.result.harga_menu= response.harga_menu;

@@ -39,7 +39,7 @@
             </p>
             <q-input
               outlined
-              v-model="text"
+              v-model="note"
               placeholder="Catatan untuk penjual"
               clearable
             >
@@ -96,11 +96,11 @@
             />
           </div>
           <q-btn
-            @click="$router.replace('/halaman-toko')"
+            @click="addToCart(menu)"
             outline
             style="margin-top: 3%; font-weight: 800"
           >
-            Tambah pesanan edit - {{ totalPrice }}
+            Tambah pesanan - {{ totalPrice }}
           </q-btn>
         </div>
       </q-page>
@@ -147,6 +147,22 @@ export default {
     this.getMenuFromStorage();
   },
   methods: {
+    addToCart(menu) {
+      // Store the menu details in local storage
+      localStorage.setItem(
+        "masukKeranjang",
+        JSON.stringify({
+          id: menu.id_menu,
+          name: menu.name,
+          price: menu.price,
+          qty: this.nilai,
+          note: this.note,
+          total: this.totalPrice,
+        })
+      );
+      this.$router.replace(`/halaman-toko`);
+    },
+
     getMenuFromStorage() {
       const storedMenu = localStorage.getItem("selectedMenu");
       if (storedMenu) {
@@ -190,7 +206,7 @@ export default {
     };
 
     return {
-      text: ref(""),
+      note: ref(""),
       nilai,
       tambah,
       kurangi,

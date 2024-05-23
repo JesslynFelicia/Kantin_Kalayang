@@ -156,37 +156,29 @@ import { route } from 'quasar/wrappers';
         </div>
       </div>
 
-      <!--
-      <div class="floating-bar">
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0px;
-          "
-        ></div>
+      <div v-if="keranjang" class="floating-bar">
+        <div style=""></div>
         <q-btn
           @click="$router.replace('/ringkasan-pesanan')"
           outline
           style="margin-top: 3%; font-weight: 800"
         >
-          <div style="display: flex; flex-direction: column; margin-top: 10px">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin: 2% 3.5%;
-                margin-bottom: 0px;
-              "
-            >
-              <h6 style="font-weight: 800; margin: 0">Menu 1</h6>
-              <h6 style="font-weight: 800; margin: 0">18.000</h6>
+          <div style="">
+            <div style="">
+              <h6 style="font-weight: 800; margin: 0">
+                {{ keranjang.qty }} item
+              </h6>
+              <h6 style="font-weight: 800; margin: 0">
+                {{ keranjang.price }}
+              </h6>
             </div>
           </div>
         </q-btn>
-      </div> -->
+      </div>
+
+      <div v-else>
+        <p>No menu details found.</p>
+      </div>
     </q-page>
   </div>
 
@@ -225,7 +217,7 @@ import { route } from 'quasar/wrappers';
           outline
           rounded
           style="width: 100%; margin-top: auto"
-          @click="saveMenu()"
+          @click="addToCart()"
           >Tambah</q-btn
         >
       </q-card-section>
@@ -253,6 +245,7 @@ export default {
       },
 
       menus: [],
+      keranjang: null,
     };
   },
   setup() {
@@ -284,11 +277,36 @@ export default {
     this.getToko();
   },
 
+  created() {
+    this.getKeranjang();
+  },
+
   methods: {
-    saveMenu() {
-      localStorage.setItem("selectedMenu", JSON.stringify(this.menu));
+    addToCart() {
+      localStorage.setItem("masukKeranjang", JSON.stringify(this.menu));
       this.$router.replace(`/detail-pesanan/${this.menu.id_menu}`);
     },
+
+    addMenu(menu) {
+      // Store the menu details in local storage
+      localStorage.setItem(
+        "selectedMenu",
+        JSON.stringify({
+          id: menu.id_menu,
+          name: menu.nama_menu,
+          price: menu.harga_menu,
+        })
+      );
+      this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
+    },
+
+    getKeranjang() {
+      const storedMenu = localStorage.getItem("masukKeranjang");
+      if (storedMenu) {
+        this.keranjang = JSON.parse(storedMenu);
+      }
+    },
+
     getMenu() {
       axios
         .post("http://127.0.0.1:8000/api/viewmenu")
@@ -319,19 +337,6 @@ export default {
       this.nama_menu = this.menus[index].nama_menu;
       this.harga_menu = this.menus[index].harga_menu;
       this.desc_menu = this.menus[index].desc_menu;
-    },
-
-    addMenu(menu) {
-      // Store the menu details in local storage
-      localStorage.setItem(
-        "selectedMenu",
-        JSON.stringify({
-          id: menu.id_menu,
-          name: menu.nama_menu,
-          price: menu.harga_menu,
-        })
-      );
-      this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
     },
 
     getToko() {
