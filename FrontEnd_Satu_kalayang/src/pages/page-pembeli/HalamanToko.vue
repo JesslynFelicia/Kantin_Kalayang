@@ -104,7 +104,7 @@ import { route } from 'quasar/wrappers';
       <div class="menu-container">
         <div
           v-for="(menu, index) in menus"
-          :key="index"
+          :key="menu.id"
           class="menu-item"
           @click="openDialogTambah(index, 'bottom')"
         >
@@ -177,7 +177,7 @@ import { route } from 'quasar/wrappers';
       </div>
 
       <div v-else>
-        <p>No menu details found.</p>
+        <p></p>
       </div>
     </q-page>
   </div>
@@ -185,7 +185,7 @@ import { route } from 'quasar/wrappers';
   <q-dialog v-model="dialogTambah" :position="position">
     <q-card
       style="
-        width: 350px;
+        width: 100%;
         height: 67vh;
         display: flex;
         flex-direction: column;
@@ -246,6 +246,8 @@ export default {
 
       menus: [],
       keranjang: null,
+      id_penjual: this.id,
+      id_menu: "",
     };
   },
   setup() {
@@ -274,55 +276,40 @@ export default {
 
   mounted() {
     this.getMenu();
-    this.getToko();
   },
 
-  created() {
-    this.getKeranjang();
-  },
+  created() {},
 
   methods: {
-    addToCart() {
-      localStorage.setItem("masukKeranjang", JSON.stringify(this.menu));
-      this.$router.replace(`/detail-pesanan/${this.menu.id_menu}`);
-    },
 
     addMenu(menu) {
-      // Store the menu details in local storage
-      localStorage.setItem(
-        "selectedMenu",
-        JSON.stringify({
-          id: menu.id_menu,
-          name: menu.nama_menu,
-          price: menu.harga_menu,
-        })
-      );
-      this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
-    },
-
-    getKeranjang() {
-      const storedMenu = localStorage.getItem("masukKeranjang");
-      if (storedMenu) {
-        this.keranjang = JSON.parse(storedMenu);
-      }
-    },
-
-    getMenu() {
       axios
-        .post("http://127.0.0.1:8000/api/viewmenu")
+        .post("http://127.0.0.1:8000/api/viewonemenu", {
+          id_menu: menu.id_menu,
+        })
         .then((response) => {
-          // const data = response.data.data[0];
+          console.log("Data Menu:", response.data.data);
+          this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    // coba
+    getMenu() {
+      this.id = this.$route.params.id;
+      axios
+        .post("http://127.0.0.1:8000/api/viewmenupenjual", {
+          id_penjual: this.id,
+          id_menu: this.id_menu,
+        })
+        .then((response) => {
           this.menus = response.data.data;
-
-          this.result.nama_menu = this.menus.id_menu;
-
-          // this.result.nama_menu = data.nama_menu;
-          // this.result.harga_menu = data.harga_menu;
-          // this.result.desc_menu = data.desc_menu;
-          // return response;
-
-          // console.log("id_menu: ", this.menus.id_menu);
-          // console.log("asu: ", this.menus[0].id_menu);
+          this.id_menu = response.data.data.id_menu;
+          console.log("ID:", this.id);
+          console.log("ID:", this.id_menu);
+          console.log("Data Menu:", this.menus);
         })
         .catch((error) => {
           console.error(error);
@@ -330,7 +317,6 @@ export default {
     },
 
     openDialogTambah(index, bottom) {
-      // Logika untuk membuka dialog dengan posisi dan id_menu
       this.position = bottom;
       this.dialogTambah = true;
 
@@ -339,18 +325,6 @@ export default {
       this.desc_menu = this.menus[index].desc_menu;
     },
 
-    getToko() {
-      axios
-        .post("http://127.0.0.1:8000/api/viewtoko")
-        .then((response) => {
-          const data = response.data.data[0];
-          this.result.nama_toko = data.nama_toko;
-          return response;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
   },
 };
 </script>
@@ -362,12 +336,6 @@ export default {
     flex-direction: column;
   }
 }
-
-/* .menu-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-} */
 
 .menu-container {
   display: flex;
@@ -434,5 +402,9 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 5% 7%;
+}
+
+.q-btn {
+  text-transform: none;
 }
 </style>

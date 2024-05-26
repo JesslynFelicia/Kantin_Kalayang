@@ -1,7 +1,7 @@
 <template>
   <HeaderCreate
     title="Daftar Akun"
-    backAction="/beranda-penjual"
+    backAction="/beranda-admin"
     :hideLogout="true"
     :hideProfile="true"
   />
@@ -17,7 +17,7 @@
         <q-input v-model="formData.nomor_telepon" label="Nomor Telepon" />
         <q-input v-model="formData.nomor_toko" label="Nomor Toko" />
       </q-form>
-      <q-btn outline type="submit" label="Daftar Akun" style="margin-top: 10%" />
+      <q-btn outline type="submit" label="Daftar" style="margin-top: 10%" />
     </div>
   </q-page>
 </template>

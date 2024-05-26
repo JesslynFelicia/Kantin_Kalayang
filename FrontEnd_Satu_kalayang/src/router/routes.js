@@ -1,4 +1,3 @@
-import axios from "axios";
 
 const routes = [{
         path: '/settings',
@@ -37,6 +36,27 @@ const routes = [{
         }]
     },
 
+    {
+        path: '/beranda-admin',
+        component: () =>
+            import ('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            component: () =>
+                import ("pages/BerandaAdmin.vue")
+        }]
+    },
+    {
+        path: '/daftar-akun',
+        component: () =>
+            import ('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            component: () =>
+                import ("pages/DaftarAkun.vue")
+        }]
+    },
+
     // pembeli
     {
         path: '/beranda-pembeli',
@@ -51,7 +71,7 @@ const routes = [{
     },
 
     {
-      path: '/halaman-toko',
+      path: '/halaman-toko/:id',
       component: () =>
         import ('layouts/MainLayout.vue'),
       children: [{
@@ -61,11 +81,17 @@ const routes = [{
         }
       ]
     },
+
     {
-      path: '/detail-pesanan/:id',
+      path: '/detail-pesanan/:menud',
       component: () =>
         import ("pages/page-pembeli/DetailPesanan.vue")
     },
+    // {
+    //   path: '/halaman-toko/:id',
+    //   component: () =>
+    //     import ("pages/page-pembeli/HalamanToko.vue")
+    // },
 
     // {
     //     path: '/detail-pesanan',

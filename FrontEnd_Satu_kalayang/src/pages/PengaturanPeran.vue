@@ -74,33 +74,114 @@ import { route } from 'quasar/wrappers';
         </div>
       </q-card>
 
-      <div style="margin-top: 20px">
+      <div class="peran-container" style="margin-top: 20px">
         <h6 style="font-weight: 550; margin-bottom: 10px; margin-top: 0px">
           Lanjutkan sebagai:
         </h6>
-        <q-btn
-          outline
-          style="
-            color: black;
-            margin-right: 10px;
-            padding: 50px;
-            font-size: 16px;
-          "
-          label="Penjual"
-          @click="$router.replace('/beranda-penjual')"
-        />
-        <q-btn
-          outline
-          style="color: black; padding: 50px; font-size: 16px"
-          label="Pembeli"
-          @click="$router.replace('/beranda-pembeli')"
-        />
+        <div class="peran-button-button">
+          <q-btn
+            class="peran-button"
+            outline
+            style="
+              color: black;
+              margin-right: 10px;
+              padding: 50px;
+              font-size: 16px;
+            "
+            label="Admin"
+            @click="$router.replace('/login')"
+          />
+          <q-btn
+            class="peran-button"
+            outline
+            style="
+              color: black;
+              margin-right: 10px;
+              padding: 50px;
+              font-size: 16px;
+            "
+            label="Penjual"
+            @click="$router.replace('/beranda-penjual')"
+          />
+          <q-btn
+            class="peran-button"
+            outline
+            style="color: black; padding: 50px; font-size: 16px"
+            label="Pembeli"
+            @click="generateGuestId"
+          />
+        </div>
       </div>
     </div>
   </q-page>
 </template>
 
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      guestId: "guest",
+    };
+  },
+  methods: {
+    generateGuecstId() {
+      if (!sessionStorage.getItem("guestId")) {
+        let counter = sessionStorage.getItem("counter") || 0;
+        counter++;
+        sessionStorage.setItem("counter", counter);
+        sessionStorage.setItem("guestId", `guest-${counter}`);
+      }
+      this.guestId = sessionStorage.getItem("guestId");
+      this.$router.replace("/beranda-pembeli");
+    },
+
+    async generateGuestId() {
+      if (!sessionStorage.getItem("guestId")) {
+        let counter = sessionStorage.getItem("counter") || 0;
+        counter++;
+        sessionStorage.setItem("counter", counter);
+        sessionStorage.setItem("guestId", `guest-${counter}`);
+      }
+      this.guestId = sessionStorage.getItem("guestId");
+
+      // try {
+      //   const response = await axios.post("http://127.0.0.1:8000/api/guests", {
+      //     guestId: this.guestId,
+      //   });
+
+      this.$router.replace("/beranda-pembeli");
+
+      //   console.log("Guest ID sent to API successfully:", response.data);
+      // } catch (error) {
+      //   console.error("Error sending Guest ID to API", error);
+      // }
+    },
+  },
+  mounted() {
+    if (sessionStorage.getItem("guestId")) {
+      this.guestId = sessionStorage.getItem("guestId");
+    }
+  },
+};
+</script>
+
 <style>
+@media screen and (max-width: 600px) {
+  .peran-button {
+    height: 50px;
+    padding: 20px;
+    margin: 10px;
+    justify-content: center;
+  }
+  .peran-button-button {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+  }
+}
+
 .q-btn {
   text-transform: none;
 }

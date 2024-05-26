@@ -62,13 +62,15 @@ import { route } from 'quasar/wrappers';
 
       <q-page>
         <div
+          v-for="(toko, index) in daftarToko"
+          :key="index"
           style="
             display: flex;
             align-items: flex-start;
             padding: 16px;
             padding-bottom: 0px;
           "
-          @click="$router.replace('/halaman-toko')"
+          @click="$router.replace(`/halaman-toko/${toko.id_penjual}`)"
         >
           <div style="flex: 0 0 110px; margin-right: 16px">
             <img
@@ -79,7 +81,7 @@ import { route } from 'quasar/wrappers';
           </div>
           <div style="flex: 1">
             <p style="font-weight: bold; margin: 0; font-size: 18px">
-              {{ result.nama_toko }}
+              {{ toko.nama_toko }}
             </p>
 
             <div style="display: flex; align-items: center">
@@ -205,6 +207,8 @@ export default {
         jenis: "",
         nama_toko: "",
       },
+
+      daftarToko: [],
     };
   },
   mounted() {
@@ -215,14 +219,35 @@ export default {
       axios
         .post("http://127.0.0.1:8000/api/viewtoko")
         .then((response) => {
-          const data = response.data.data[0];
-          this.result.nama_toko = data.nama_toko;
+          const data = response.data.data;
+          for (let i = 0; i < data.length; i++) {
+            this.daftarToko.push({
+              nama_toko: data[i].nama_toko,
+              id_penjual: data[i].id_penjual,
+            });
+          }
+          console.log("Data Toko:", this.daftarToko);
           return response;
         })
         .catch((error) => {
           console.error(error);
         });
     },
+
+    // getdata() {
+    //   axios
+    //     .post("http://127.0.0.1:8000/api/viewtoko")
+    //     .then((response) => {
+    //       const data = response.data.data;
+    //       this.daftarToko.nama_toko = data.nama_toko;
+    //       this.daftarToko.id = data.id_penjual;
+    //       console.log("a", data.id_penjual);
+    //       return response;
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //     });
+    // },
   },
   setup() {
     const text = ref("");
