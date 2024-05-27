@@ -1,102 +1,124 @@
-import { route } from 'quasar/wrappers';
 <template>
-  <!-- <q-btn flat @click="$router.replace('/')" icon="arrow_back" style="margin-top: 5px;"></q-btn> -->
-  <HeaderCreate
-    title="Custom pesanan"
-    backAction="/halaman-toko"
-    :hideLogout="true"
-    :hideProfile="true"
-  />
+  <q-layout>
+    <HeaderCreate
+      title="Custom pesanan"
+      backAction="/halaman-toko"
+      :hideLogout="true"
+      :hideProfile="true"
+    />
 
-  <div style="display: flex; flex-direction: column; margin-top: 10px">
-    <div
-      style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 2% 3.5%;
-        margin-bottom: 0px;
-      "
-    >
-      <h6 style="font-weight: 800; margin: 0">Menu 1</h6>
-      <h6 style="font-weight: 800; margin: 0">18.000</h6>
-    </div>
-    <p style="margin: 2% 3.5%; margin-top: 0px; font-size: 15px">
-      Deskripsi dari Menu 1
-    </p>
-  </div>
+    <q-page-container>
+      <q-page>
+        <div style="display: flex; flex-direction: column; margin-top: 10px">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin: 2% 3.5%;
+              margin-bottom: 0px;
+            "
+            v-if="menu"
+          >
+            <h6 style="font-weight: 800; margin: 0">{{ menu.name }}</h6>
+            <h6 style="font-weight: 800; margin: 0">Rp{{ menu.price }}</h6>
+          </div>
+          <div v-else>
+            <p>No menu details found.</p>
+          </div>
+          <p style="margin: 2% 3.5%; margin-top: 0px; font-size: 15px">
+            Deskripsi dari Menu 1
+          </p>
+        </div>
 
-  <div style="display: flex; flex-direction: column; margin-top: 10px">
-    <div style="margin: 2% 3.5%; margin-bottom: 0px">
-      <h6 style="font-weight: 800; margin: 0">Catatan untuk penjual</h6>
-      <p style="margin: 2% 0%; margin-top: 0px; font-size: 15px">*Opsional</p>
-      <q-input
-        outlined
-        v-model="text"
-        placeholder="Catatan untuk penjual"
-        clearable
-      >
-        <template v-slot:prepend>
-          <q-icon name="description" />
-        </template>
-      </q-input>
-    </div>
-  </div>
+        <div style="display: flex; flex-direction: column; margin-top: 10px">
+          <div style="margin: 2% 3.5%; margin-bottom: 0px">
+            <h6 style="font-weight: 800; margin: 0">Catatan untuk penjual</h6>
+            <p style="margin: 2% 0%; margin-top: 0px; font-size: 15px">
+              *Opsional
+            </p>
+            <q-input
+              outlined
+              v-model="note"
+              placeholder="Catatan untuk penjual"
+              clearable
+            >
+              <template v-slot:prepend>
+                <q-icon name="description" />
+              </template>
+            </q-input>
+          </div>
+        </div>
 
-  <div class="floating-bar">
-    <div
-      style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0px;
-      "
-    >
-      <h6 style="font-weight: 800; margin: 2% 0%; margin-bottom: 0px">
-        Jumlah pesanan
-      </h6>
-      <!-- <q-badge outline rounded color="primary" style="font-size: 20px">{{
+        <div class="floating-bar">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 0px;
+            "
+          >
+            <h6 style="font-weight: 800; margin: 2% 0%; margin-bottom: 0px">
+              Jumlah pesanan
+            </h6>
+            <!-- <q-badge outline rounded color="primary" style="font-size: 20px">{{
         nilai
       }}</q-badge> -->
 
-      <q-btn
-        rounded
-        outline
-        @click="kurangi"
-        color="black"
-        icon="remove"
-        size="sm"
-        style="width: 30px; height: 30px"
-      />
+            <q-btn
+              rounded
+              outline
+              @click="kurangi"
+              color="black"
+              icon="remove"
+              size="sm"
+              style="width: 30px; height: 30px"
+              :disable="nilai === 1"
+            />
 
-      <!-- <q-chip outline color="primary" style="width: 40px; height: 40px">{{
+            <!-- <q-chip outline color="primary" style="width: 40px; height: 40px">{{
         nilai
       }}</q-chip> -->
 
-      <p style="margin: 0%; font-size: 20px; font-weight: 800">{{ nilai }}</p>
+            <p style="margin: 0%; font-size: 20px; font-weight: 800">
+              {{ nilai }}
+            </p>
 
-      <q-btn
-        rounded
-        outline
-        @click="tambah"
-        color="black"
-        icon="add"
-        size="sm"
-        style="width: 30px; height: 30px"
-      />
-    </div>
-    <q-btn
-      @click="$router.replace('/ringkasan-pesanan')"
-      outline
-      style="margin-top: 3%; font-weight: 800"
-    >
-      Tambah pesanan -
-    </q-btn>
-  </div>
+            <q-btn
+              rounded
+              outline
+              @click="tambah"
+              color="black"
+              icon="add"
+              size="sm"
+              style="width: 30px; height: 30px"
+            />
+          </div>
+          <q-btn
+            @click="addToCart(menu)"
+            outline
+            style="margin-top: 3%; font-weight: 800"
+          >
+            Tambah pesanan - {{ totalPrice }}
+          </q-btn>
+        </div>
+      </q-page>
+    </q-page-container>
+
+    <q-page-container>
+      <q-page>
+        <p>
+          {{ totalPrice }}
+        </p>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
+import axios from "axios";
 import { ref } from "vue";
 
 export default {
@@ -104,39 +126,70 @@ export default {
     HeaderCreate,
   },
 
-  data () {
+  data() {
     return {
       formData: {
-      id : ''
+        id: "",
       },
-      result:{
-        jenis:'',
-        nama_menu:'',
-        harga_menu:'',
-        desc_menu:''
-
-      }
-    }
+      result: {
+        jenis: "",
+        nama_menu: "",
+        harga_menu: "",
+        desc_menu: "",
+      },
+      menu: null,
+    };
   },
-  mounted(){
-    this.getdata()
+  mounted() {
+    // this.getdata();
+  },
+  created() {
+    this.getMenuFromStorage();
   },
   methods: {
-    getdata () {
+    addToCart(menu) {
+      // Store the menu details in local storage
+      localStorage.setItem(
+        "masukKeranjang",
+        JSON.stringify({
+          id: menu.id_menu,
+          name: menu.name,
+          price: menu.price,
+          qty: this.nilai,
+          note: this.note,
+          total: this.totalPrice,
+        })
+      );
+      this.$router.replace(`/halaman-toko`);
+    },
 
-      axios.post('http://127.0.0.1:8000/api/viewonemenu', this.formData)
-        .then(response => {
-          // Handle the response
-            this.result.jenis = response.jenis;
-            this.result.nama_menu= response.nama_menu;
-           this.result.harga_menu= response.harga_menu;
-            this.result = response.desc_menu;
-            return response
-        })
-        .catch(error => {
-          // Handle the error
-        })
-    }
+    getMenuFromStorage() {
+      const storedMenu = localStorage.getItem("selectedMenu");
+      if (storedMenu) {
+        this.menu = JSON.parse(storedMenu);
+      }
+    },
+    // getdata() {
+    //   axios
+    //     .post("http://127.0.0.1:8000/api/viewonemenu", this.formData)
+    //     .then((response) => {
+    //       // Handle the response
+    //       this.result.jenis = response.jenis;
+    //       this.result.nama_menu = response.nama_menu;
+    //       this.result.harga_menu = response.harga_menu;
+    //       this.result = response.desc_menu;
+    //       return response;
+    //     })
+    //     .catch((error) => {
+    //       // Handle the error
+    //     });
+    // },
+  },
+
+  computed: {
+    totalPrice() {
+      return this.menu.price * this.nilai;
+    },
   },
 
   setup() {
@@ -147,13 +200,13 @@ export default {
     };
 
     const kurangi = () => {
-      if (nilai.value > 0) {
+      if (nilai.value > 1) {
         nilai.value--;
       }
     };
 
     return {
-      text: ref(""),
+      note: ref(""),
       nilai,
       tambah,
       kurangi,

@@ -60,18 +60,56 @@ import { route } from 'quasar/wrappers';
         </div>
       </div>
 
-      <!-- display: flex; -->
-      <div
+      <q-page>
+        <div
+          style="
+            display: flex;
+            align-items: flex-start;
+            padding: 16px;
+            padding-bottom: 0px;
+          "
+          @click="$router.replace('/halaman-toko')"
+        >
+          <div style="flex: 0 0 110px; margin-right: 16px">
+            <img
+              src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+              alt="Deskripsi Foto"
+              style="width: 100%; height: auto; border-radius: 8px"
+            />
+          </div>
+          <div style="flex: 1">
+            <p style="font-weight: bold; margin: 0; font-size: 18px">
+              {{ result.nama_toko }}
+            </p>
+
+            <div style="display: flex; align-items: center">
+              <q-icon name="paid" size="30px" />
+              <p
+                style="
+                  margin: 0%;
+                  padding-left: 5px;
+                  font-size: 16px;
+                  color: #555;
+                "
+              >
+                18.000 - 25.000
+              </p>
+            </div>
+          </div>
+        </div>
+      </q-page>
+
+      <!-- <div
         style="flex-direction: column; margin-left: 12px; margin-right: 12px"
       >
         <div>
           <h6 style="font-weight: 800; margin-top: 5px; margin-bottom: 5px">
             Diskon Hari Ini
           </h6>
-          <!-- autoplay
-            @mouseenter="autoplay1 = false"
-            @mouseleave="autoplay1 = true" -->
           <q-carousel
+            autoplay
+            @mouseenter="autoplay1 = false"
+            @mouseleave="autoplay1 = true"
             arrows
             animated
             infinite
@@ -108,10 +146,10 @@ import { route } from 'quasar/wrappers';
           <h6 style="font-weight: 800; margin-top: 20px; margin-bottom: 5px">
             Pesan Sekarang
           </h6>
-          <!-- autoplay
-            @mouseenter="autoplay2 = false"
-            @mouseleave="autoplay2 = true" -->
           <q-carousel
+            autoplay
+            @mouseenter="autoplay2 = false"
+            @mouseleave="autoplay2 = true"
             arrows
             animated
             infinite
@@ -144,49 +182,47 @@ import { route } from 'quasar/wrappers';
             </q-carousel-slide>
           </q-carousel>
         </div>
-      </div>
+      </div> -->
     </q-page>
   </div>
 </template>
 
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
+import axios from "axios";
 import { ref } from "vue";
 
 export default {
   components: {
     HeaderCreate,
   },
-  data () {
+  data() {
     return {
       formData: {
-        id:''
-
+        id: "",
       },
-      result:{
-
-        jenis :''
-      }
-    }
+      result: {
+        jenis: "",
+        nama_toko: "",
+      },
+    };
   },
-  mounted(){
- this.getdata();
+  mounted() {
+    this.getdata();
   },
   methods: {
-    getdata () {
-
-      axios.post('http://127.0.0.1:8000/api/viewtoko')
-        .then(response => {
-          // Handle the response
-          //ambil datanya masukin ke local variabel (result)
-          //contoh
-          this.result.jenis = response.jenis;
+    getdata() {
+      axios
+        .post("http://127.0.0.1:8000/api/viewtoko")
+        .then((response) => {
+          const data = response.data.data[0];
+          this.result.nama_toko = data.nama_toko;
           return response;
         })
-        .catch(error => {
-          // Handle the error
-        })
-    }
+        .catch((error) => {
+          console.error(error);
+        });
+    },
   },
   setup() {
     const text = ref("");
@@ -196,7 +232,6 @@ export default {
 
     return {
       text,
-
       slide1: ref("first"),
       slide2: ref("first"),
       autoplay1,

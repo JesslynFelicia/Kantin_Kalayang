@@ -41,39 +41,30 @@ export default {
     HeaderCreate,
   },
 
-
-  data () {
+  data() {
     return {
       formData: {
-        //lempar id menu & updatenya/
-      id_menu : '',
-      jenis:'',
-        nama_menu:'',
-        harga_menu:'',
-        desc_menu:''
+        nama_menu: "",
+        des_menu: "",
+        harga: "",
+        harga_diskon: "",
+        ket_diskon: "",
       },
-      result:{
-
-
-      }
-    }
+      value: ref(true),
+    };
   },
-  mounted(){
 
-  },
   methods: {
-    getdata () {
-
-      axios.post('http://127.0.0.1:8000/api/updatemenu', this.formData)
-        .then(response => {
-          // Handle the response
-
-          return response;
-        })
-        .catch(error => {
-          // Handle the error
-        })
-    }
+    // register() {
+    //   axios
+    //     .post("http://127.0.0.1:8000/api/savedatanew", this.formData)
+    //     .then((response) => {
+    //       // Handle the response
+    //     })
+    //     .catch((error) => {
+    //       // Handle the error
+    //     });
+    // },
   },
 };
 </script>

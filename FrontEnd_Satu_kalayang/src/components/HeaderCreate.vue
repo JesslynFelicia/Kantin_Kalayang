@@ -1,5 +1,4 @@
 <template>
-
   <q-header class="bg-white text-black">
     <q-toolbar
       style="display: flex; justify-content: space-between; padding-top: 10px"
@@ -35,7 +34,6 @@
     </q-toolbar>
   </q-header>
 
-    <!-- eslint-disable-next-line -->
   <q-dialog v-model="dialogLogout">
     <q-card
       class="my-card"
@@ -74,6 +72,7 @@
           style="text-transform: none"
           color="red"
           v-close-popup
+          @click="logout()"
         />
       </q-card-actions>
     </q-card>
@@ -81,7 +80,9 @@
 </template>
 
 <script>
+import router from "src/router";
 import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "HeaderCreate",
@@ -103,9 +104,11 @@ export default defineComponent({
 
   setup() {
     const dialogLogout = ref(false);
+    const router = useRouter();
 
     return {
       dialogLogout,
+      router
     };
   },
 
@@ -113,6 +116,11 @@ export default defineComponent({
     openDialogLogout() {
       this.dialogLogout = true;
     },
+
+    logout() {
+      this.dialogLogout = false;
+      this.router.push("/login");
+    }
   },
 });
 </script>

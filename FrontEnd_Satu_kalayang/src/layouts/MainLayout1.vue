@@ -40,7 +40,7 @@
         <q-item
           clickable
           v-ripple
-          :active="menu === 'riwayat'"
+          :active="$route.path === '/riwayat-penjual'"
           @click="menu = 'riwayat'"
           active-class="my-menu-link"
           to="/riwayat-penjual"
@@ -53,7 +53,7 @@
         <q-item
           clickable
           v-ripple
-          :active="menu === 'rekap'"
+          :active="$route.path === '/rekap-penjual'"
           @click="menu = 'rekap'"
           active-class="my-menu-link"
           to="/rekap-penjual"
@@ -66,7 +66,7 @@
         <q-item
           clickable
           v-ripple
-          :active="menu === 'home'"
+          :active="$route.path === '/beranda-penjual'"
           @click="menu = 'home'"
           active-class="my-menu-link"
           to="/beranda-penjual"
@@ -79,7 +79,7 @@
         <q-item
           clickable
           v-ripple
-          :active="menu === 'pesanan'"
+          :active="$route.path === '/pesanan-penjual'"
           @click="menu = 'pesanan'"
           active-class="my-menu-link"
           to="/pesanan-penjual"
@@ -128,12 +128,12 @@ import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "MainLayout1",
-  props: {
-    title: {
-      type: String,
-      required: true,
-    },
-  },
+  // props: {
+  //   title: {
+  //     type: String,
+  //     required: true,
+  //   },
+  // },
 
   components: {},
 
