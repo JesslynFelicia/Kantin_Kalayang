@@ -12,7 +12,7 @@ import { route } from 'quasar/wrappers';
     <div style="display: flex; flex-direction: column; padding: 5% 7%">
       <q-form>
         <q-input v-model="formData.nama_menu" label="Nama menu" />
-        <q-input v-model="formData.des_menu" label="Deskripsi menu" />
+        <q-input v-model="formData.desc_menu" label="Deskripsi menu" />
         <q-input v-model="formData.harga" label="Harga" />
         <q-input v-model="formData.harga_diskon" label="Harga diskon" />
         <q-input v-model="formData.ket_diskon" label="Keterangan diskon" />

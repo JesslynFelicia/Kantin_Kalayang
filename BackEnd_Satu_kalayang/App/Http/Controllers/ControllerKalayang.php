@@ -130,6 +130,22 @@ class ControllerKalayang extends Controller
         }
     }
 
+    public function tambahsatu(Request $request)
+    {
+        $id_menu = $request->post('id_menu');
+        $id_penjual = $request->post('id_penjual');
+        $menu = ModelKalayangMenu::where('id_menu', $id_menu)
+        ->where('id_penjual', $id_penjual         )
+        ->get();
+
+
+        if (!$menu) {
+            return response()->json(['message' => 'Data Not Found'], 404);
+        } else {
+            return response()->json(['message' => 'success', 'data' => $menu], 200);
+        }
+    }
+
     //Controller Transaksi
     public function viewtransaksi(Request $request)
     {
@@ -349,7 +365,7 @@ class ControllerKalayang extends Controller
         if ($penjual) {
 
             if (!empty($kata_sandi)) {
-                $penjual->kata_sandi = $kata_sandi; 
+                $penjual->kata_sandi = $kata_sandi;
             }
 
             if ($gambar_profile) {

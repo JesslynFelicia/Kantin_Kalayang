@@ -1,7 +1,7 @@
 import { route } from 'quasar/wrappers';
 <template>
   <HeaderCreate
-    :title="result.nama_toko"
+    ::title="result.nama_toko"
     backAction="/beranda-pembeli"
     :hideLogout="true"
     :hideProfile="true"
@@ -104,7 +104,7 @@ import { route } from 'quasar/wrappers';
       <div class="menu-container">
         <div
           v-for="(menu, index) in menus"
-          :key="index"
+          :key="menu.id"
           class="menu-item"
           @click="openDialogTambah(index, 'bottom')"
         >
@@ -177,7 +177,7 @@ import { route } from 'quasar/wrappers';
       </div>
 
       <div v-else>
-        <p>No menu details found.</p>
+        <p></p>
       </div>
     </q-page>
   </div>
@@ -186,6 +186,48 @@ import { route } from 'quasar/wrappers';
     <q-card
       style="
         width: 350px;
+        height: 67vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      "
+    >
+      <img
+        src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+        alt="Deskripsi Foto"
+        style="max-width: 90%; height: auto; margin: auto; margin-top: 20px"
+      />
+      <q-card-section
+        class="row items-start no-wrap"
+        style="
+          display: flex;
+          flex-direction: column;
+          padding-top: 10px;
+          flex-grow: 1;
+        "
+      >
+        <div>
+          <div class="text-weight-bold">{{ nama_menu }}</div>
+          <div class="text-grey">{{ desc_menu }}</div>
+          <div class="text-weight-bold" style="padding-top: 15px">
+            Rp{{ harga_menu }}
+          </div>
+        </div>
+        <q-btn
+          outline
+          rounded
+          style="width: 100%; margin-top: auto"
+          @click="addToCart()"
+          >Tambah</q-btn
+        >
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="dialogTambah" :position="position">
+    <q-card
+      style="
+        width: 100%;
         height: 67vh;
         display: flex;
         flex-direction: column;
@@ -232,6 +274,7 @@ import { ref } from "vue";
 
 export default {
   name: "DetailPesanan",
+  name: "DetailPesanan",
   components: {
     HeaderCreate,
   },
@@ -246,6 +289,8 @@ export default {
 
       menus: [],
       keranjang: null,
+      id_penjual: this.id,
+      id_menu: "",
     };
   },
   setup() {
@@ -274,55 +319,40 @@ export default {
 
   mounted() {
     this.getMenu();
-    this.getToko();
   },
 
-  created() {
-    this.getKeranjang();
-  },
+  created() {},
 
   methods: {
-    addToCart() {
-      localStorage.setItem("masukKeranjang", JSON.stringify(this.menu));
-      this.$router.replace(`/detail-pesanan/${this.menu.id_menu}`);
-    },
 
     addMenu(menu) {
-      // Store the menu details in local storage
-      localStorage.setItem(
-        "selectedMenu",
-        JSON.stringify({
-          id: menu.id_menu,
-          name: menu.nama_menu,
-          price: menu.harga_menu,
-        })
-      );
-      this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
-    },
-
-    getKeranjang() {
-      const storedMenu = localStorage.getItem("masukKeranjang");
-      if (storedMenu) {
-        this.keranjang = JSON.parse(storedMenu);
-      }
-    },
-
-    getMenu() {
       axios
-        .post("http://127.0.0.1:8000/api/viewmenu")
+        .post("http://127.0.0.1:8000/api/viewonemenu", {
+          id_menu: menu.id_menu,
+        })
         .then((response) => {
-          // const data = response.data.data[0];
+          console.log("Data Menu:", response.data.data);
+          this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    // coba
+    getMenu() {
+      this.id = this.$route.params.id;
+      axios
+        .post("http://127.0.0.1:8000/api/viewmenupenjual", {
+          id_penjual: this.id,
+          id_menu: this.id_menu,
+        })
+        .then((response) => {
           this.menus = response.data.data;
-
-          this.result.nama_menu = this.menus.id_menu;
-
-          // this.result.nama_menu = data.nama_menu;
-          // this.result.harga_menu = data.harga_menu;
-          // this.result.desc_menu = data.desc_menu;
-          // return response;
-
-          // console.log("id_menu: ", this.menus.id_menu);
-          // console.log("asu: ", this.menus[0].id_menu);
+          this.id_menu = response.data.data.id_menu;
+          console.log("ID:", this.id);
+          console.log("ID:", this.id_menu);
+          console.log("Data Menu:", this.menus);
         })
         .catch((error) => {
           console.error(error);
@@ -330,7 +360,6 @@ export default {
     },
 
     openDialogTambah(index, bottom) {
-      // Logika untuk membuka dialog dengan posisi dan id_menu
       this.position = bottom;
       this.dialogTambah = true;
 
@@ -339,18 +368,6 @@ export default {
       this.desc_menu = this.menus[index].desc_menu;
     },
 
-    getToko() {
-      axios
-        .post("http://127.0.0.1:8000/api/viewtoko")
-        .then((response) => {
-          const data = response.data.data[0];
-          this.result.nama_toko = data.nama_toko;
-          return response;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
   },
 };
 </script>
@@ -368,6 +385,18 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
 } */
+
+.menu-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.menu-item {
+  width: 50%;
+  padding: 5px;
+  align-items: center;
+}
 
 .menu-container {
   display: flex;
@@ -434,5 +463,9 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 5% 7%;
+}
+
+.q-btn {
+  text-transform: none;
 }
 </style>

@@ -2,14 +2,17 @@
   <q-layout>
     <HeaderCreate
       title="Custom pesanan"
-      backAction="/halaman-toko"
+      backAction="/halaman-toko/1"
       :hideLogout="true"
       :hideProfile="true"
     />
 
     <q-page-container>
       <q-page>
-        <div style="display: flex; flex-direction: column; margin-top: 10px">
+        <div
+          v-if="menus"
+          style="display: flex; flex-direction: column; margin-top: 10px"
+        >
           <div
             style="
               display: flex;
@@ -18,17 +21,28 @@
               margin: 2% 3.5%;
               margin-bottom: 0px;
             "
-            v-if="menu"
           >
-            <h6 style="font-weight: 800; margin: 0">{{ menu.name }}</h6>
-            <h6 style="font-weight: 800; margin: 0">Rp{{ menu.price }}</h6>
+            <h6 style="font-weight: 800; margin: 0">{{ menus.nama_menu }}</h6>
+            <h6 style="font-weight: 800; margin: 0">
+              Rp{{ menus.harga_menu }}
+            </h6>
           </div>
-          <div v-else>
-            <p>No menu details found.</p>
-          </div>
+
           <p style="margin: 2% 3.5%; margin-top: 0px; font-size: 15px">
-            Deskripsi dari Menu 1
+            {{ menus.desc_menu }}
           </p>
+        </div>
+        <div
+          v-else
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2% 3.5%;
+            margin-bottom: 0px;
+          "
+        >
+          <q-linear-progress indeterminate />
         </div>
 
         <div style="display: flex; flex-direction: column; margin-top: 10px">
@@ -96,7 +110,7 @@
             />
           </div>
           <q-btn
-            @click="addToCart(menu)"
+            @click="addToCart(menus)"
             outline
             style="margin-top: 3%; font-weight: 800"
           >
@@ -136,68 +150,87 @@ export default {
         nama_menu: "",
         harga_menu: "",
         desc_menu: "",
+        id_menu: "",
+        id_penjual: "",
+        id_: "",
       },
-      menu: null,
+      menus: null,
+      // nama_menu: "",
     };
   },
   mounted() {
-    // this.getdata();
+    this.getMenu();
   },
-  created() {
-    this.getMenuFromStorage();
-  },
+  created() {},
+
   methods: {
-    addToCart(menu) {
-      // Store the menu details in local storage
-      localStorage.setItem(
-        "masukKeranjang",
-        JSON.stringify({
+    async addToCart(menu) {
+      this.guestId = sessionStorage.getItem("guestId");
+      try {
+        const response = await axios.post("http://127.0.0.1:8000/api/guests", {
+          guestId: this.guestId,
           id: menu.id_menu,
-          name: menu.name,
+          // name: menu.name,
           price: menu.price,
           qty: this.nilai,
           note: this.note,
-          total: this.totalPrice,
-        })
-      );
-      this.$router.replace(`/halaman-toko`);
-    },
+          // total: this.totalPrice,
+        });
 
-    getMenuFromStorage() {
-      const storedMenu = localStorage.getItem("selectedMenu");
-      if (storedMenu) {
-        this.menu = JSON.parse(storedMenu);
+        this.$router.replace(`/halaman-toko`);
+
+        console.log("ada data apa aja sieeee:", response.data);
+        console.log("ada data apa aja sieeee:", menu.id_menu);
+      } catch (error) {
+        console.error("error nih", error);
       }
     },
-    // getdata() {
-    //   axios
-    //     .post("http://127.0.0.1:8000/api/viewonemenu", this.formData)
-    //     .then((response) => {
-    //       // Handle the response
-    //       this.result.jenis = response.jenis;
-    //       this.result.nama_menu = response.nama_menu;
-    //       this.result.harga_menu = response.harga_menu;
-    //       this.result = response.desc_menu;
-    //       return response;
-    //     })
-    //     .catch((error) => {
-    //       // Handle the error
-    //     });
-    // },
+
+    getMenu() {
+      const url = window.location.href;
+      const regex = /\/(\d+)(\/|$)/;
+      const match = url.match(regex);
+      const id = match ? match[1] : null;
+
+      axios
+        .post("http://127.0.0.1:8000/api/viewonemenu", {
+          id_menu: id,
+        })
+        .then((response) => {
+          this.menus = response.data.data;
+          this.tambah();
+          this.nilai--;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    async tambah() {
+      this.nilai++;
+      try {
+        const response = await axios.post("http://127.0.0.1:8000/api/tambah", {
+          id_menu: this.menus.id_menu,
+        });
+
+        // this.$router.replace(`/halaman-toko`);
+
+        console.log("response tambah: ", response.data);
+        console.log("tambah: ", this.menus.id_menu);
+      } catch (error) {
+        console.error("error nih", error);
+      }
+    },
   },
 
   computed: {
     totalPrice() {
-      return this.menu.price * this.nilai;
+      return this.menus ? this.menus.harga_menu * this.nilai : 0;
     },
   },
 
   setup() {
     const nilai = ref(1);
-
-    const tambah = () => {
-      nilai.value++;
-    };
 
     const kurangi = () => {
       if (nilai.value > 1) {
@@ -208,7 +241,7 @@ export default {
     return {
       note: ref(""),
       nilai,
-      tambah,
+      // tambah,
       kurangi,
     };
   },

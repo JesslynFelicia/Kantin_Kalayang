@@ -11,6 +11,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import HeaderCreate from "components/HeaderCreate.vue";
+<<<<<<< HEAD
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { getHistory } from 'src/composables/useHistoryComposables'
 import { toRupiah } from 'src/libs/currency'
@@ -32,6 +33,50 @@ const columns = [
     align: 'left',
     field: 'date',
     format: val => `${formatToDatetime(val)}`
+=======
+import axios from "axios";
+import { ref } from "vue";
+
+export default {
+  components: {
+    HeaderCreate,
+  },
+  data() {
+    return {
+      formData: {
+        id_transaksi: "",
+      },
+      result: {
+        //tar ceknya di postman aja pake url dibawah, butuh data apa aja
+        id_menu: "",
+        id_order: "",
+        id_penjual: "",
+        tanggal_pemesanan: "",
+      },
+    };
+  },
+  //ini gunanya biar pas ngeload langsung ngerun
+  mounted() {
+    this.getdata();
+  },
+  methods: {
+    getdata() {
+      axios
+        .post("http://127.0.0.1:8000/api/viewtransaksi", this.formData)
+        .then((response) => {
+          // Handle the response
+          //masukin data ke local variabel
+          this.result.jenis = response.jenis;
+          this.result.nama_menu = response.nama_menu;
+          this.result.harga_menu = response.harga_menu;
+          this.result = response.desc_menu;
+          return response;
+        })
+        .catch((error) => {
+          // Handle the error
+        });
+    },
+>>>>>>> laras
   },
   {
     name: 'totalOrder',
