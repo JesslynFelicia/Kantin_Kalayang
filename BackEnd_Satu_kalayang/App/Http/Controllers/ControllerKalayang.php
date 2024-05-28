@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ModelKalayangMenu;
 use App\Models\ModelKalayangTransaksi;
 use App\Models\ModelKalayangPenjual;
-use App\Models\ModelKalayangSession;
+use App\Models\ModelKalayangTransaksiTemp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendEmail;
@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Validator;
 
 class ControllerKalayang extends Controller
 {
+
+
+
     //Controller Menu CRUD
     public function makemenu(Request $request)
     {
@@ -135,8 +138,8 @@ class ControllerKalayang extends Controller
         $id_menu = $request->post('id_menu');
         $id_penjual = $request->post('id_penjual');
         $menu = ModelKalayangMenu::where('id_menu', $id_menu)
-        ->where('id_penjual', $id_penjual         )
-        ->get();
+            ->where('id_penjual', $id_penjual)
+            ->get();
 
 
         if (!$menu) {
@@ -147,6 +150,56 @@ class ControllerKalayang extends Controller
     }
 
     //Controller Transaksi
+    public function savetempkeranjang(Request $request)
+    {
+        $guestId = $request->post('guestId');
+        $id_penjual = $request->post('id_penjual');
+        $id_menu =  $request->post('id_menu');
+        $number = $id_menu[0];
+        $note =  $request->post('note');
+
+        $delete_penjual = ModelKalayangTransaksiTemp::where('guest_id', $guestId)
+            ->get();
+
+        $id_penjual_array = $delete_penjual->pluck('id_penjual')->toArray();
+        if (!empty($id_penjual_array)) {
+            $id_penjual_implode = $id_penjual_array[0];
+            if ($id_penjual !=  $id_penjual_implode) {
+
+                $delete_penjual = ModelKalayangTransaksiTemp::where('guest_id', $guestId)
+                    ->delete();
+            }
+        }
+
+        $data = ModelKalayangTransaksiTemp::where('id_menu', $number)
+            ->where('guest_id', $guestId)
+            ->where('id_penjual', $id_penjual)
+            ->delete();
+
+        foreach ($id_menu as $menu_id) {
+            ModelKalayangTransaksiTemp::create([
+                'guest_id' => $guestId,
+                'id_penjual' => $id_penjual,
+                'id_menu' => $menu_id,
+                'note' => $note,
+            ]);
+        }
+    }
+
+    public function keranjang(Request $request)
+    {
+        $guestId = $request->post('guestId');
+        $data = ModelKalayangTransaksiTemp::select('id_menu', 'note')
+            ->where('guest_id', $guestId)
+            ->groupBy('id_menu', 'note')
+            ->havingRaw('COUNT(id_menu) > 1')
+            ->pluck('id_menu');
+
+            $data_from_other_table = ModelKalayangMenu::whereIn('id_menu', $data)->get();
+            return $data_from_other_table;
+
+    }
+
     public function viewtransaksi(Request $request)
     {
         $id_penjual = $request->post('id_penjual');

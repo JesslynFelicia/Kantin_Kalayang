@@ -12,8 +12,6 @@ import { route } from 'quasar/wrappers';
   <div style="display: flex; justify-content: center; height: 100vh">
     <q-page style="display: flex; flex-direction: column; height: 100vh">
       <div style="display: flex; flex-direction: column; align-items: center">
-        <!-- <h6 style="font-weight: 800; margin: 0%">SATU KALAYANG</h6> -->
-
         <q-input
           outlined
           class="search-bar"
@@ -33,7 +31,7 @@ import { route } from 'quasar/wrappers';
           />
         </q-input>
       </div>
-      <div class="categories" style="display: flex">
+      <!-- <div class="categories" style="display: flex">
         <div style="text-align: center; margin: auto">
           <img
             src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
@@ -58,47 +56,86 @@ import { route } from 'quasar/wrappers';
           />
           <p class="text-category">Minuman</p>
         </div>
-      </div>
+      </div> -->
 
       <q-page>
-        <div
-          v-for="(toko, index) in daftarToko"
-          :key="index"
+        <p
           style="
-            display: flex;
-            align-items: flex-start;
-            padding: 16px;
-            padding-bottom: 0px;
+            font-weight: bold;
+            margin: 0;
+            font-size: 24px;
+            padding: 22px 10px 0px 17px;
           "
-          @click="$router.replace(`/halaman-toko/${toko.id_penjual}`)"
         >
-          <div style="flex: 0 0 110px; margin-right: 16px">
-            <img
-              src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
-              alt="Deskripsi Foto"
-              style="width: 100%; height: auto; border-radius: 8px"
-            />
-          </div>
-          <div style="flex: 1">
-            <p style="font-weight: bold; margin: 0; font-size: 18px">
-              {{ toko.nama_toko }}
-            </p>
+          Kios yang tersedia
+        </p>
 
-            <div style="display: flex; align-items: center">
-              <q-icon name="paid" size="30px" />
-              <p
-                style="
-                  margin: 0%;
-                  padding-left: 5px;
-                  font-size: 16px;
-                  color: #555;
-                "
-              >
-                18.000 - 25.000
+        <div v-if="loading">
+          <q-skeleton
+            v-for="(_, index) in 5"
+            :key="index"
+            type="rect"
+            style="margin-bottom: 16px"
+          />
+        </div>
+
+        <div v-else>
+          <div
+            v-for="(toko, index) in daftarToko"
+            :key="index"
+            style="
+              display: flex;
+              align-items: flex-start;
+              padding: 16px;
+              padding-bottom: 0px;
+            "
+            @click="$router.replace(`/halaman-toko/${toko.id_penjual}`)"
+          >
+            <div style="flex: 0 0 110px; margin-right: 16px">
+              <img
+                v-if="toko.nama_toko"
+                src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+                alt="Deskripsi Foto"
+                style="width: 100%; height: auto; border-radius: 8px"
+              />
+              <q-skeleton
+                v-else
+                type="rect"
+                style="width: 100%; height: auto; border-radius: 8px"
+              />
+            </div>
+
+            <div style="flex: 1">
+              <p style="font-weight: bold; margin: 0; font-size: 18px">
+                {{ toko.nama_toko || "Loading..." }}
               </p>
+
+              <div style="display: flex; align-items: center">
+                <q-icon name="paid" size="30px" />
+                <p
+                  style="
+                    margin: 0%;
+                    padding-left: 5px;
+                    font-size: 16px;
+                    color: #555;
+                  "
+                >
+                  {{ "harusnya range harga" || "Loading..." }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
+        <!-- <p
+          style="
+            font-weight: bold;
+            margin: 0;
+            font-size: 24px;
+            padding: 22px 10px 0px 17px;
+          "
+        >
+          Menu yang tersedia
+        </p> -->
       </q-page>
 
       <!-- <div
@@ -191,15 +228,20 @@ import { route } from 'quasar/wrappers';
 
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
+// import { EventBus } from 'src/utils/EventBus.js';
 import axios from "axios";
 import { ref } from "vue";
 
 export default {
+  name: "BerandaPembeli",
+
   components: {
     HeaderCreate,
   },
+
   data() {
     return {
+      loading: true,
       formData: {
         id: "",
       },
@@ -215,6 +257,11 @@ export default {
     this.getdata();
   },
   methods: {
+    // navigateToHalamanToko(namaToko, idToko) {
+    //   EventBus.$emit('namaTokoSelected', namaToko);
+    //   // Anda juga bisa meneruskan idToko jika diperlukan
+    // },
+
     getdata() {
       axios
         .post("http://127.0.0.1:8000/api/viewtoko")
@@ -227,28 +274,15 @@ export default {
             });
           }
           console.log("Data Toko:", this.daftarToko);
+          this.loading = false;
           return response;
         })
         .catch((error) => {
           console.error(error);
         });
     },
-
-    // getdata() {
-    //   axios
-    //     .post("http://127.0.0.1:8000/api/viewtoko")
-    //     .then((response) => {
-    //       const data = response.data.data;
-    //       this.daftarToko.nama_toko = data.nama_toko;
-    //       this.daftarToko.id = data.id_penjual;
-    //       console.log("a", data.id_penjual);
-    //       return response;
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //     });
-    // },
   },
+
   setup() {
     const text = ref("");
 

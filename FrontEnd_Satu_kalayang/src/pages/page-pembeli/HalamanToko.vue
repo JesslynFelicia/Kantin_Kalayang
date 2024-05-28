@@ -1,11 +1,12 @@
 import { route } from 'quasar/wrappers';
 <template>
   <HeaderCreate
-    :title="result.nama_toko"
+    :title="menus.nama_toko"
     backAction="/beranda-pembeli"
     :hideLogout="true"
     :hideProfile="true"
-  />
+  >
+  </HeaderCreate>
 
   <!-- eslint-disable-next-line -->
   <div style="display: flex; justify-content: center; height: 100vh">
@@ -156,29 +157,37 @@ import { route } from 'quasar/wrappers';
         </div>
       </div>
 
-      <div v-if="keranjang" class="floating-bar">
-        <div style=""></div>
+      <div class="floating-bar" style="padding: 15px">
         <q-btn
-          @click="$router.replace('/ringkasan-pesanan')"
-          outline
-          style="margin-top: 3%; font-weight: 800"
+          color="primary"
+          class="full-width"
+          @click="handleClick"
+          style="
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+          "
         >
-          <div style="">
-            <div style="">
-              <h6 style="font-weight: 800; margin: 0">
-                {{ keranjang.qty }} item
-              </h6>
-              <h6 style="font-weight: 800; margin: 0">
-                {{ keranjang.price }}
-              </h6>
-            </div>
+          <div
+            style="
+              text-align: left;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              flex-grow: 1;
+            "
+          >
+            <p style="margin: 0; font-size: 19px; font-weight: 600; padding-bottom: 5px;">9 pesanan</p>
+            <p style="margin: 0; font-size: 17px; font-weight: 400">Warung Jes</p>
           </div>
+            <p style="margin: 0; font-size: 23px; font-weight: 600; padding-right: 15px;">90000</p>
+          <q-icon name="shopping_cart" />
         </q-btn>
       </div>
 
-      <div v-else>
+      <!-- <div v-else>
         <p></p>
-      </div>
+      </div> -->
     </q-page>
   </div>
 
@@ -223,61 +232,20 @@ import { route } from 'quasar/wrappers';
       </q-card-section>
     </q-card>
   </q-dialog>
-
-  <q-dialog v-model="dialogTambah" :position="position">
-    <q-card
-      style="
-        width: 100%;
-        height: 67vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      "
-    >
-      <img
-        src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
-        alt="Deskripsi Foto"
-        style="max-width: 90%; height: auto; margin: auto; margin-top: 20px"
-      />
-      <q-card-section
-        class="row items-start no-wrap"
-        style="
-          display: flex;
-          flex-direction: column;
-          padding-top: 10px;
-          flex-grow: 1;
-        "
-      >
-        <div>
-          <div class="text-weight-bold">{{ nama_menu }}</div>
-          <div class="text-grey">{{ desc_menu }}</div>
-          <div class="text-weight-bold" style="padding-top: 15px">
-            Rp{{ harga_menu }}
-          </div>
-        </div>
-        <q-btn
-          outline
-          rounded
-          style="width: 100%; margin-top: auto"
-          @click="addToCart()"
-          >Tambah</q-btn
-        >
-      </q-card-section>
-    </q-card>
-  </q-dialog>
 </template>
 
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
+// import { EventBus } from "src/utils/EventBus.js";
 import axios from "axios";
 import { ref } from "vue";
 
 export default {
   name: "DetailPesanan",
-  name: "DetailPesanan",
   components: {
     HeaderCreate,
   },
+
   data() {
     return {
       result: {
@@ -291,8 +259,17 @@ export default {
       keranjang: null,
       id_penjual: this.id,
       id_menu: "",
+      namaToko: "",
+      orderData: null,
     };
   },
+
+  // created() {
+  //   EventBus.$on("namaTokoSelected", (namaToko) => {
+  //     this.namaToko = namaToko;
+  //   });
+  // },
+
   setup() {
     const text = ref("");
 
@@ -319,12 +296,15 @@ export default {
 
   mounted() {
     this.getMenu();
+    // this.getKeranjang();
   },
 
-  created() {},
+  created() {
+    this.namaToko = this.$route.query.nama_toko;
+    this.idToko = this.$route.query.id_toko;
+  },
 
   methods: {
-
     addMenu(menu) {
       axios
         .post("http://127.0.0.1:8000/api/viewonemenu", {
@@ -345,13 +325,11 @@ export default {
       axios
         .post("http://127.0.0.1:8000/api/viewmenupenjual", {
           id_penjual: this.id,
-          id_menu: this.id_menu,
+          // id_menu: this.id_menu,
         })
         .then((response) => {
           this.menus = response.data.data;
-          this.id_menu = response.data.data.id_menu;
           console.log("ID:", this.id);
-          console.log("ID:", this.id_menu);
           console.log("Data Menu:", this.menus);
         })
         .catch((error) => {
@@ -367,7 +345,6 @@ export default {
       this.harga_menu = this.menus[index].harga_menu;
       this.desc_menu = this.menus[index].desc_menu;
     },
-
   },
 };
 </script>
