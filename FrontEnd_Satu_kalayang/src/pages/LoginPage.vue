@@ -63,7 +63,14 @@ const formRules = ref({
 
 const onSubmit = () => {
   console.log(form.value)
-  router.push({ path: '/beranda-penjual' })
+
+  if(form.value.email.includes('admin')) {
+    sessionStorage.setItem('role', 'admin')
+    router.push({ path: '/beranda-admin' })
+  } else {
+    sessionStorage.setItem('role', 'penjual')
+    router.push({ path: '/beranda-penjual' })
+  }
 
 }
 
