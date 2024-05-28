@@ -75,18 +75,11 @@
   </q-page>
 </template>
 
-<<<<<<< HEAD
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import HeaderCreate from "components/HeaderCreate.vue"
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { toRupiah } from 'src/libs/currency'
-=======
-<script>
-import HeaderCreate from "components/HeaderCreate.vue";
-import { ref } from "vue";
-import axios from "axios";
->>>>>>> laras
 
 defineOptions({
   name: 'DetailRekap'
@@ -135,23 +128,4 @@ onMounted(() => {
 })
 
 
-<<<<<<< HEAD
-=======
-      axios.post('http://127.0.0.1:8000/api/viewtransaksi', this.formData)
-        .then(response => {
-          // Handle the response
-          //cek dulu data yg dilempar postman apa trus ambil data yg lu perlu
-            this.result.jenis = response.jenis;
-            this.result.nama_menu= response.nama_menu;
-           this.result.harga_menu= response.harga_menu;
-            this.result = response.desc_menu;
-            return response
-        })
-        .catch(error => {
-          // Handle the error
-        })
-    }
-  },
-};
->>>>>>> laras
 </script>

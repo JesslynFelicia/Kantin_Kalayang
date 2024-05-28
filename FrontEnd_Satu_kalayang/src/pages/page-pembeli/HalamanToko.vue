@@ -1,7 +1,7 @@
 import { route } from 'quasar/wrappers';
 <template>
   <HeaderCreate
-    ::title="result.nama_toko"
+    :title="result.nama_toko"
     backAction="/beranda-pembeli"
     :hideLogout="true"
     :hideProfile="true"

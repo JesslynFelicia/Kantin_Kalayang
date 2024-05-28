@@ -111,7 +111,7 @@ import { route } from 'quasar/wrappers';
             @click="generateGuestId"
           />
         </div>
-        <q-btn
+        <!-- <q-btn
           outline
           style="
             color: black;
@@ -127,7 +127,7 @@ import { route } from 'quasar/wrappers';
           style="color: black; padding: 50px; font-size: 16px"
           label="Pembeli"
           @click="$router.push('/beranda-pembeli')"
-        />
+        /> -->
         <!-- <q-btn
           outline
           style="color: black; padding: 50px; font-size: 16px"
