@@ -68,6 +68,7 @@ import { route } from 'quasar/wrappers';
           </div>
         </div>
       </div> -->
+
       <!--
       <div class="menu-container">
         <div
@@ -129,31 +130,12 @@ import { route } from 'quasar/wrappers';
             <q-btn
               outline
               rounded
-              style="width: 100%; margin-top: 10px"
+              color="primary"
+              style="width: 100%; margin-top: 10px; border-width: 29px;"
               @click="addMenu(menu)"
               >Tambah</q-btn
             >
           </q-card-section>
-
-          <!-- <div style="text-align: left; margin: 0px 15px">
-            <p style="margin: 0; font-weight: 700; font-size: 15px">
-              {{ menu.nama_menu }}
-            </p>
-            <p style="margin: 0">Rp{{ menu.harga_menu }}</p>
-            <q-btn
-              outline
-              rounded
-              style="width: 100%; margin-top: 7px"
-              @click="$router.replace('/detail-pesanan')"
-              >Tambah</q-btn
-            >
-            <q-btn
-              label="Bottom"
-              icon="keyboard_arrow_down"
-              color="primary"
-              @click="openDialogTambah('bottom')"
-            />
-          </div> -->
         </div>
       </div>
 
@@ -191,10 +173,11 @@ import { route } from 'quasar/wrappers';
     </q-page>
   </div>
 
-  <q-dialog v-model="dialogTambah" :position="position">
+  <!-- <q-dialog v-model="dialogTambah" :position="position">
     <q-card
+    v-if="menus"
       style="
-        width: 350px;
+        width: 100%;
         height: 67vh;
         display: flex;
         flex-direction: column;
@@ -226,12 +209,12 @@ import { route } from 'quasar/wrappers';
           outline
           rounded
           style="width: 100%; margin-top: auto"
-          @click="addToCart()"
+          @click="addMenu(menus)"
           >Tambah</q-btn
         >
       </q-card-section>
     </q-card>
-  </q-dialog>
+  </q-dialog> -->
 </template>
 
 <script>
@@ -241,7 +224,8 @@ import axios from "axios";
 import { ref } from "vue";
 
 export default {
-  name: "DetailPesanan",
+  name: "HalamanToko",
+
   components: {
     HeaderCreate,
   },

@@ -111,7 +111,7 @@ import { route } from 'quasar/wrappers';
               </p>
 
               <div style="display: flex; align-items: center">
-                <q-icon name="paid" size="30px" />
+                <q-icon name="paid" size="30px" color="secondary" />
                 <p
                   style="
                     margin: 0%;

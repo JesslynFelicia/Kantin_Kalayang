@@ -16,7 +16,7 @@ import { route } from 'quasar/wrappers';
         <q-input v-model="formData.nomor_toko" label="Nomor toko" />
       </q-form>
       <q-btn
-        outline
+      color="primary"
         type="submit"
         label="Edit Profil"
         style="margin-top: 10%"

@@ -27,7 +27,7 @@ import { route } from 'quasar/wrappers';
           Menu tersedia
         </q-toggle>
       </q-form>
-      <q-btn outline type="submit" label="Edit Menu" style="margin-top: 10%" />
+      <q-btn type="submit" color="primary" label="Edit Menu" style="margin-top: 10%" />
     </div>
   </q-page>
 </template>

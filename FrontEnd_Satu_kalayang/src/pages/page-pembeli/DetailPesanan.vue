@@ -77,9 +77,6 @@
             <h6 style="font-weight: 800; margin: 2% 0%; margin-bottom: 0px">
               Jumlah pesanan
             </h6>
-            <!-- <q-badge outline rounded color="primary" style="font-size: 20px">{{
-        nilai
-      }}</q-badge> -->
 
             <q-btn
               rounded
@@ -91,10 +88,6 @@
               style="width: 30px; height: 30px"
               :disable="nilai === 1"
             />
-
-            <!-- <q-chip outline color="primary" style="width: 40px; height: 40px">{{
-        nilai
-      }}</q-chip> -->
 
             <p style="margin: 0%; font-size: 20px; font-weight: 800">
               {{ nilai }}
@@ -111,11 +104,12 @@
             />
           </div>
           <q-btn
+            color="primary"
+            class="full-width"
             @click="addToCart(menus)"
-            outline
-            style="margin-top: 3%; font-weight: 800"
+            style="margin-top: 3%; font-weight: 700; font-size: 17px;"
           >
-            Tambah pesanan - {{ totalPrice }}
+            Tambah pesanan - Rp{{ totalPrice }}
           </q-btn>
         </div>
       </q-page>
@@ -255,5 +249,9 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 5% 7%;
+}
+
+.q-btn{
+  text-transform: none;
 }
 </style>
