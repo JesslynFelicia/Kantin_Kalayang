@@ -1,11 +1,12 @@
 <template>
-  <q-layout>
+  <q-layout v-if="menus && menus.id_penjual">
     <HeaderCreate
       title="Custom pesanan"
-      backAction="/halaman-toko/1"
+      :backAction="`/halaman-toko/${menus.id_penjual}`"
       :hideLogout="true"
       :hideProfile="true"
     />
+    <!-- :backAction="`/halaman-toko/${menus.id_penjual}`" -->
 
     <q-page-container>
       <q-page>
@@ -42,7 +43,7 @@
             margin-bottom: 0px;
           "
         >
-          <q-linear-progress indeterminate />
+          <q-skeleton height="70px" width="100%" wave />
         </div>
 
         <div style="display: flex; flex-direction: column; margin-top: 10px">
@@ -166,21 +167,19 @@ export default {
   methods: {
     async addToCart(menu) {
       this.guestId = sessionStorage.getItem("guestId");
+      const id_menu_array = Array(this.nilai).fill(menu.id_menu);
       try {
         const response = await axios.post("http://127.0.0.1:8000/api/guests", {
           guestId: this.guestId,
-          id: menu.id_menu,
-          // name: menu.name,
-          price: menu.price,
-          qty: this.nilai,
+          id_menu: id_menu_array,
+          id_penjual: menu.id_penjual,
+          harga_menu: menu.harga_menu,
           note: this.note,
-          // total: this.totalPrice,
         });
 
-        this.$router.replace(`/halaman-toko`);
+        this.$router.replace(`/halaman-toko/${this.menus.id_penjual}`);
 
-        console.log("ada data apa aja sieeee:", response.data);
-        console.log("ada data apa aja sieeee:", menu.id_menu);
+        console.log("response.data nya:", response.data);
       } catch (error) {
         console.error("error nih", error);
       }
@@ -208,18 +207,16 @@ export default {
 
     async tambah() {
       this.nilai++;
-      try {
-        const response = await axios.post("http://127.0.0.1:8000/api/tambah", {
-          id_menu: this.menus.id_menu,
-        });
+      // try {
+      //   const response = await axios.post("http://127.0.0.1:8000/api/tambah", {
+      //     id_menu: this.menus.id_menu,
+      //   });
 
-        // this.$router.replace(`/halaman-toko`);
-
-        console.log("response tambah: ", response.data);
-        console.log("tambah: ", this.menus.id_menu);
-      } catch (error) {
-        console.error("error nih", error);
-      }
+      //   console.log("response tambah: ", response.data);
+      //   console.log("tambah: ", this.menus.id_menu);
+      // } catch (error) {
+      //   console.error("error nih", error);
+      // }
     },
   },
 

@@ -139,26 +139,16 @@ export default {
 
     async generateGuestId() {
       if (!sessionStorage.getItem("guestId")) {
-        let counter = sessionStorage.getItem("counter") || 0;
+        let counter = localStorage.getItem("counter") || 0;
         counter++;
-        sessionStorage.setItem("counter", counter);
+        localStorage.setItem("counter", counter);
         sessionStorage.setItem("guestId", `guest-${counter}`);
       }
       this.guestId = sessionStorage.getItem("guestId");
-
-      // try {
-      //   const response = await axios.post("http://127.0.0.1:8000/api/guests", {
-      //     guestId: this.guestId,
-      //   });
-
       this.$router.replace("/beranda-pembeli");
-
-      //   console.log("Guest ID sent to API successfully:", response.data);
-      // } catch (error) {
-      //   console.error("Error sending Guest ID to API", error);
-      // }
     },
   },
+
   mounted() {
     if (sessionStorage.getItem("guestId")) {
       this.guestId = sessionStorage.getItem("guestId");
