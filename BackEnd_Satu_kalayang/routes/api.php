@@ -32,8 +32,9 @@ Route::post('/viewprofile', [ControllerKalayang::class, 'viewprofilepenjual']);
 Route::post('/updatedatapenjual', [ControllerKalayang::class, 'updatedatapenjual']);
 Route::post('/showqris', [ControllerKalayang::class, 'showqris']);
 
-Route::post('/guests',[ControllerKalayang::class,'savetempkeranjang']);
-Route::post('/keranjang',[ControllerKalayang::class,'keranjang']);
+Route::post('/guests', [ControllerKalayang::class, 'savetempkeranjang']);
+Route::post('/ringkasanpesanan', [ControllerKalayang::class, 'ringkasanpesanan']);
+Route::post('/keranjang', [ControllerKalayang::class, 'keranjang']);
 
 
 //Mail
@@ -41,7 +42,3 @@ Route::post('/user/mail/send', [ControllerKalayang::class, 'sendemail']);
 
 // Han Vir
 Route::post('/savedatanew', [ControllerKalayang::class, 'savedatapenjual_new']);
-
-
-
-
