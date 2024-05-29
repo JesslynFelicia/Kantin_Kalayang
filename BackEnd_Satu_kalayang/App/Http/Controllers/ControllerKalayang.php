@@ -657,13 +657,15 @@ class ControllerKalayang extends Controller
                                     $savedata->nomor_telepon = $nomor_telepon;
                                     $savedata->nomor_toko = $nomor_toko;
                                     $savedata->email = $email;
-                                    $savedata->status_acc = 'WAITING';
+                                    // $savedata->status_acc = 'WAITING';
                                     $savedata->kata_sandi = Str::password(16, true, true, false, false);
                                     $savedata->save();
 
                                     if ($savedata) {
                                         $msg = "Data berhasil di simpan";
                                         $sts = true;
+                                        $this->sendemail_new($email);
+
                                     } else {
                                         $msg = "Data gagal di simpan";
                                         $sts = false;
@@ -812,8 +814,7 @@ class ControllerKalayang extends Controller
                     'subject' => 'Your Registration is Accepted!!!',
                 ];
                 $send = Mail::to($mailData['to'])->send(new SendEmailNew($mailData));
-                echo var_dump($send);
-                exit;
+             
             } else {
                 return "error";
             }

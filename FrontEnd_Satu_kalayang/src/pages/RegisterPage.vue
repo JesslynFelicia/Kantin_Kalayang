@@ -12,38 +12,45 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import axios from 'axios';
+import useNotify from 'src/composables/UseNotify';
+import useDialog from 'src/composables/UseDialog';
+
+const { notifyError, notifySuccess } = useNotify();
+// const { dialogShow } = useDialog();
+
+const formData = ref({
+  email: '',
+  nama_toko: '',
+  nama_pemilik_toko: '',
+  nomor_telepon: '',
+  nomor_toko: '',
+});
+
+const register = async () => {
+  try {
+    // dialogShow({
+    //   title: 'Logout Confirmation',
+    //   message: 'Do you really want to exit the application?',
+    // });
+    await axios.post('http://127.0.0.1:8000/api/savedatanew', formData.value);
+    // Reset form after successful submission
+    formData.value = {
+      email: '',
+      nama_toko: '',
+      nama_pemilik_toko: '',
+      nomor_telepon: '',
+      nomor_toko: '',
+    };
+    notifySuccess('Akun berhasil dibuat!');
+
+  } catch (error) {
+    notifyError('Mohon isi semua form!');
+  }
+};
+
 defineOptions({
   name: "RegisterPage",
 });
-</script>
-
-<script>
-import axios from "axios";
-// import { $api } from 'boot/axios';
-
-export default {
-  data() {
-    return {
-      formData: {
-        email: "",
-        nama_toko: "",
-        nama_pemilik_toko: "",
-        nomor_telepon: "",
-        nomor_toko: "",
-      },
-    };
-  },
-  methods: {
-    register() {
-      axios
-        .post("http://127.0.0.1:8000/api/savedatanew", this.formData)
-        .then((response) => {
-          // Handle the response
-        })
-        .catch((error) => {
-          // Handle the error
-        });
-    },
-  },
-};
 </script>

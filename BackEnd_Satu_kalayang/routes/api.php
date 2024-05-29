@@ -26,7 +26,7 @@ Route::post('/savedata', [ControllerKalayang::class, 'savedatapenjual']);
 Route::post('/generatepassword', [ControllerKalayang::class, 'generatepassword']);
 Route::post('/newlogin', [ControllerKalayang::class, 'loginnewuser']);
 Route::post('/viewpenjual', [ControllerKalayang::class, 'viewpenjual']);
-Route::post('/accpenjual', [ControllerKalayang::class, 'ApproveAdmin']);
+// Route::post('/accpenjual', [ControllerKalayang::class, 'ApproveAdmin']);
 Route::post('/viewtoko', [ControllerKalayang::class, 'Viewpenjualall']);
 Route::post('/viewprofile', [ControllerKalayang::class, 'viewprofilepenjual']);
 Route::post('/updatedatapenjual', [ControllerKalayang::class, 'updatedatapenjual']);
