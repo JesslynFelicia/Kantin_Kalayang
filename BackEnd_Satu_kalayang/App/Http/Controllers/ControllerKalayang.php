@@ -186,18 +186,58 @@ class ControllerKalayang extends Controller
         }
     }
 
-    public function keranjang(Request $request)
+    public function ringkasanpesanan(Request $request)
     {
         $guestId = $request->post('guestId');
-        $data = ModelKalayangTransaksiTemp::select('id_menu', 'note')
+
+        $dataWithCounts = ModelKalayangTransaksiTemp::select('id_menu', 'id_penjual', DB::raw('COUNT(id_menu) as count'))
             ->where('guest_id', $guestId)
-            ->groupBy('id_menu', 'note')
-            ->havingRaw('COUNT(id_menu) > 1')
-            ->pluck('id_menu');
+            ->groupBy('id_menu', 'id_penjual')
+            ->get();
 
-            $data_from_other_table = ModelKalayangMenu::whereIn('id_menu', $data)->get();
-            return $data_from_other_table;
 
+        $idMenus = $dataWithCounts->pluck('id_menu');
+        $idPenjuals = $dataWithCounts->pluck('id_penjual');
+        $totalIds = [];
+
+        foreach ($dataWithCounts as $item) {
+            $totalIds[$item->id_menu] = $item->count;
+        }
+        $totalIdSum = array_sum($totalIds);
+
+        $totalIds = [];
+        foreach ($dataWithCounts as $item) {
+            $totalIds[$item->id_menu] = $item->count;
+        }
+
+        $dataFromOtherTable = ModelKalayangMenu::whereIn('id_menu', $idMenus->toArray())->get();
+
+
+        $dataFromOtherTable1 = ModelKalayangPenjual::whereIn('id_penjual', $idPenjuals->toArray())->get();
+
+        $namaTokos = [];
+        foreach ($dataFromOtherTable1  as $penjual) {
+            $namaTokos[$penjual->id_penjual] = $penjual->nama_toko;
+        }
+
+
+        $namaToko = reset($namaTokos);
+
+
+        $totalPriceSum = 0;
+        foreach ($dataFromOtherTable as $item) {
+            $count = $totalIds[$item->id_menu] ?? 0;
+            $item->count = $count;
+            $item->total_price = $item->harga_menu * $count;
+            $totalPriceSum += $item->total_price;
+        }
+
+        return response()->json([
+            'data' => $dataFromOtherTable,
+            'total_price_sum' => $totalPriceSum,
+            'total_id_menu' => $totalIdSum,
+            'nama_tokos' => $namaToko,
+        ], 200);
     }
 
     public function viewtransaksi(Request $request)
@@ -586,7 +626,7 @@ class ControllerKalayang extends Controller
         return '#M' . $date . sprintf('%04d', $nextSequentialNumber);
     }
 
-    // Han Vir (salah)
+    // Han Vir
 
     public function savedatapenjual_new(Request $request)
     {

@@ -131,7 +131,7 @@ import { route } from 'quasar/wrappers';
               outline
               rounded
               color="primary"
-              style="width: 100%; margin-top: 10px; border-width: 29px;"
+              style="width: 100%; margin-top: 10px; border-width: 29px"
               @click="addMenu(menu)"
               >Tambah</q-btn
             >
@@ -139,11 +139,11 @@ import { route } from 'quasar/wrappers';
         </div>
       </div>
 
-      <div class="floating-bar" style="padding: 15px">
+      <div v-if="totalPrice !== 0" class="floating-bar" style="padding: 15px">
         <q-btn
           color="primary"
           class="full-width"
-          @click="handleClick"
+          @click="addRingkasan() && $router.replace(`/ringkasan-pesanan`)"
           style="
             display: flex;
             justify-content: space-between;
@@ -159,11 +159,31 @@ import { route } from 'quasar/wrappers';
               flex-grow: 1;
             "
           >
-            <p style="margin: 0; font-size: 19px; font-weight: 600; padding-bottom: 5px;">9 pesanan</p>
-            <p style="margin: 0; font-size: 17px; font-weight: 400">Warung Jes</p>
+            <p
+              style="
+                margin: 0;
+                font-size: 19px;
+                font-weight: 600;
+                padding-bottom: 5px;
+              "
+            >
+              {{ totalItem }} pesanan
+            </p>
+            <p style="margin: 0; font-size: 17px; font-weight: 400">
+              {{ namaTokos }}
+            </p>
           </div>
-            <p style="margin: 0; font-size: 23px; font-weight: 600; padding-right: 15px;">90000</p>
-          <q-icon name="shopping_cart" />
+          <p
+            style="
+              margin: 0;
+              font-size: 23px;
+              font-weight: 600;
+              padding-right: 15px;
+            "
+          >
+            {{ totalPrice }}
+          </p>
+          <q-icon name="las la-shopping-bag" size="35px" />
         </q-btn>
       </div>
 
@@ -240,7 +260,10 @@ export default {
       },
 
       menus: [],
-      keranjang: null,
+      keranjang: "",
+      totalPrice: "",
+      totalItem: "",
+      namaTokos: "",
       id_penjual: this.id,
       id_menu: "",
       namaToko: "",
@@ -280,7 +303,7 @@ export default {
 
   mounted() {
     this.getMenu();
-    // this.getKeranjang();
+    this.addRingkasan();
   },
 
   created() {
@@ -301,6 +324,28 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+
+    async addRingkasan() {
+      this.guestId = sessionStorage.getItem("guestId");
+      try {
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/ringkasanpesanan",
+          {
+            guestId: this.guestId,
+          }
+        );
+
+        // const keranjang = response.data;
+        this.totalPrice = response.data.total_price_sum;
+        this.totalItem = response.data.total_id_menu;
+        this.namaTokos = response.data.nama_tokos;
+
+        console.log("response.data nya:", response.data);
+        console.log("response.data nya:", this.totalPrice);
+      } catch (error) {
+        console.error("error nih", error);
+      }
     },
 
     // coba
