@@ -115,7 +115,7 @@ import { route } from 'quasar/wrappers';
             src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
             alt="Deskripsi Foto"
             class="category"
-            style="margin: 10px"
+            style="margin: 10px; border-radius: 20px;"
           />
           <q-card-section
             class="row items-start no-wrap"
@@ -147,8 +147,9 @@ import { route } from 'quasar/wrappers';
           @click="addRingkasan() && $router.replace(`/ringkasan-pesanan`)"
           style="
             display: flex;
+            border-radius: 35px;
             justify-content: space-between;
-            padding: 10px 20px;
+            padding: 10px 30px;
           "
         >
           <div
@@ -161,6 +162,7 @@ import { route } from 'quasar/wrappers';
             "
           >
             <p
+            class="text-subtitle1"
               style="
                 margin: 0;
                 font-size: 19px;
@@ -170,7 +172,9 @@ import { route } from 'quasar/wrappers';
             >
               {{ totalItem }} pesanan
             </p>
-            <p style="margin: 0; font-size: 17px; font-weight: 400">
+            <p
+            class="text-subtitle2"
+            style="margin: 0; font-size: 17px; font-weight: 400">
               {{ namaTokos }}
             </p>
           </div>

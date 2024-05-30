@@ -1,7 +1,7 @@
 <template>
     <HeaderCreate
     title=""
-    backAction="/"
+    backAction="/beranda-admin"
     :hideLogout="true"
     :hideProfile="true"
   >

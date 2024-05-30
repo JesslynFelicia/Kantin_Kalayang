@@ -1,45 +1,24 @@
-import { route } from 'quasar/wrappers';
 <template>
-  <q-page
-    style="
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    "
-  >
+  <q-page>
     <HeaderCreate
       title="Admin"
       backAction="/"
       :hideProfile="true"
     />
 
-    <div style="display: flex; flex-direction: column; align-items: center">
-      <div style="margin-top: 20px">
-        <h6 style="font-weight: 550; margin-bottom: 10px; margin-top: 0px">
-          mau ngapain??
-        </h6>
+    <div class="content-container">
+      <h6>Mau ngapain?</h6>
+      <div class="btn-container">
         <q-btn
-          outline
-          style="
-            color: black;
-            margin-right: 10px;
-            padding: 50px;
-            font-size: 16px;
-          "
-          label="Daftarkan akun"
+          color="secondary"
+          text-color="black"
+          label="Daftarkan Akun"
           @click="$router.replace('/register')"
         />
         <q-btn
-          outline
-          style="
-            color: black;
-            margin-right: 10px;
-            padding: 50px;
-            font-size: 16px;
-          "
-          label="Daftar akun penjual"
+          color="secondary"
+          text-color="black"
+          label="Daftar Akun Penjual"
           @click="$router.replace('/daftar-akun')"
         />
       </div>
@@ -49,20 +28,32 @@ import { route } from 'quasar/wrappers';
 
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
-import { ref } from "vue";
 
 export default {
   components: {
     HeaderCreate,
   },
-  setup() {
-    return {};
-  },
 };
 </script>
 
-<style>
+<style scoped>
+.content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 64px); /* Adjusted for the header height */
+}
+
+.btn-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .q-btn {
-  text-transform: none;
+  margin: 5px;
+  min-width: 200px; /* Adjust button width as needed */
 }
 </style>

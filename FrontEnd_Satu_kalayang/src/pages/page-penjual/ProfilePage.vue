@@ -48,6 +48,8 @@
           class="full-width"
           label="Edit Profil"
           type="submit"
+          rounded
+          style="padding: 12px;"
         />
       </div>
     </q-form>

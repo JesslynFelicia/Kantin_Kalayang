@@ -30,7 +30,7 @@
       </div>
 
       <div class="q-mb-lg">
-        <q-btn color="primary" class="full-width" label="Masuk" type="submit" />
+        <q-btn rounded color="primary" class="full-width" style="padding: 10px;" label="Masuk" type="submit" />
       </div>
     </q-form>
   </q-page>

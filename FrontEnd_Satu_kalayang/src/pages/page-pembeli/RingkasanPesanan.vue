@@ -122,6 +122,7 @@
           class="full-width"
           label="Bayar"
           @click="onSubmit"
+        rounded
         />
       </div>
     </q-footer>
