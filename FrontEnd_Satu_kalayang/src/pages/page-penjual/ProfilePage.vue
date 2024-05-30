@@ -1,47 +1,101 @@
-import { route } from 'quasar/wrappers';
-
 <template>
   <HeaderCreate
-    title="Profile"
+    title=""
     backAction="/beranda-penjual"
     :hideLogout="true"
     :hideProfile="true"
   />
-  <q-page style="display: flex; flex-direction: column; height: 100vh">
-    <!-- <q-form @submit="register" action="/tes"> -->
-    <div style="display: flex; flex-direction: column; padding: 5% 7%">
-      <q-form>
-        <q-input v-model="formData.nama_toko" label="Nama toko" />
-        <q-input v-model="formData.email" label="Email" />
-        <q-input v-model="formData.nomor_toko" label="Nomor toko" />
-      </q-form>
-      <q-btn
-      color="primary"
-        type="submit"
-        label="Edit Profil"
-        style="margin-top: 10%"
-      />
+  <q-page class="q-pa-xl">
+    <div class="text-center q-mb-xl">
+      <span class="text-h4 text-weight-bold">Edit Profil</span>
     </div>
+    <q-form @submit="onSubmit">
+      <div class="q-mb-lg">
+        <label class="text-subtitle1">Nama Toko</label>
+        <q-input
+          outlined
+          disable
+        >
+          <template v-slot:prepend>
+            <q-icon name="las la-store" />
+          </template>
+        </q-input>
+      </div>
+
+      <div class="q-mb-lg">
+        <label class="text-subtitle1">Email</label>
+        <q-input
+          outlined
+          type="email"
+          lazy-rules
+          disable
+        >
+          <template v-slot:prepend>
+            <q-icon name="las la-envelope" />
+          </template>
+        </q-input>
+      </div>
+
+      <div class="q-mb-lg">
+        <label class="text-subtitle1">Nomor Toko</label>
+        <q-input
+          outlined
+          v-model="form.nomor_toko"
+          lazy-rules
+          :rules="formRules.nomor_toko"
+        >
+          <template v-slot:prepend>
+            <q-icon name="las la-phone" />
+          </template>
+        </q-input>
+      </div>
+
+      <div class="q-mb-lg">
+        <q-btn
+          color="primary"
+          class="full-width"
+          label="Edit Profil"
+          type="submit"
+        />
+      </div>
+    </q-form>
   </q-page>
 </template>
 
-<script>
+<script setup>
+import HeaderLogin from "components/HeaderLogin.vue";
 import HeaderCreate from "components/HeaderCreate.vue";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import useNotify from "src/composables/UseNotify";
 
-export default {
-  components: {
-    HeaderCreate,
-  },
+defineOptions({
+  name: "EditProfilePage",
+});
 
-  data() {
-    return {
-      formData: {
-        nama_tokonama_toko: "",
-        email: "",
-        nomor_toko: "",
-      },
-    };
-  },
+const router = useRouter();
+const { notifyError, notifySuccess } = useNotify();
+
+const form = ref({
+  nama_toko: "",
+  email: "",
+  nomor_toko: "",
+});
+
+const formRules = ref({
+  nomor_toko: [(val) => (val && val.length > 0) || "Nomor toko harus diisi"],
+});
+
+const onSubmit = () => {
+  console.log(form.value);
+
+  notifySuccess("Akun berhasil diedit!");
+  router.push({ path: "/beranda-penjual" });
 };
 </script>
+
+<style>
+.q-btn{
+  text-transform: none;
+}
+</style>

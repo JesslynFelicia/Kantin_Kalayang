@@ -42,12 +42,14 @@ import HeaderLogin from 'components/HeaderLogin.vue'
 import FooterApp from 'components/FooterApp.vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import useNotify from "src/composables/UseNotify";
 
 defineOptions({
   name: 'LoginPage'
 });
 
 const router = useRouter()
+const { notifyError, notifySuccess } = useNotify();
 
 const seePassword = ref(true)
 const form = ref({
@@ -70,6 +72,7 @@ const onSubmit = () => {
   } else {
     sessionStorage.setItem('role', 'penjual')
     router.push({ path: '/beranda-penjual' })
+    notifySuccess("Login berhasil!");
   }
 
 }

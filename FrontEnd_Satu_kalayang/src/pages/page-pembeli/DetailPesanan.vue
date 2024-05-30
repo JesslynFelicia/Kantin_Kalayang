@@ -129,13 +129,17 @@
 import HeaderCreate from "components/HeaderCreate.vue";
 import axios from "axios";
 import { ref } from "vue";
+import useNotify from "src/composables/UseNotify";
+
 
 export default {
+
   components: {
     HeaderCreate,
   },
 
   data() {
+    const { notifyError, notifySuccess } = useNotify();
     return {
       formData: {
         id: "",
