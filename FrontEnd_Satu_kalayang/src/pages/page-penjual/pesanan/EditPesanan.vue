@@ -84,6 +84,8 @@
           class="full-width"
           label="Edit Menu"
           type="submit"
+          style="padding: 10px;"
+          rounded
         />
       </div>
     </q-form>
