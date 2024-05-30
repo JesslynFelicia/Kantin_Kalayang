@@ -224,7 +224,7 @@ import { route } from 'quasar/wrappers';
           outline
           label="Batal"
           style="text-transform: none; padding-left: 17px; padding-right: 17px"
-          color="primary"
+          color="negative"
           v-close-popup
         />
         <q-btn
@@ -232,7 +232,7 @@ import { route } from 'quasar/wrappers';
           unelevated
           label="Ya"
           style="text-transform: none"
-          color="primary"
+          color="negative"
           @click="confirmAddMenu"
           v-close-popup
         />
@@ -426,7 +426,7 @@ export default {
           console.error(error);
         });
     },
-    
+
     confirmAddMenu() {
       if (this.selectedMenu) {
         this.addMenu1(this.selectedMenu);
@@ -461,7 +461,7 @@ export default {
         // const keranjang = response.data;
         this.totalPrice = response.data.total_price_sum;
         this.totalItem = response.data.total_id_menu;
-        this.id_penjual = response.data.id_penjual;
+        // this.id_penjual = response.data.id_penjual;
         this.namaTokos = response.data.nama_tokos;
 
         this.idPenjual = response.data.data[0].id_penjual;

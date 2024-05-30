@@ -12,10 +12,7 @@
     <q-form @submit="onSubmit">
       <div class="q-mb-lg">
         <label class="text-subtitle1">Nama Toko</label>
-        <q-input
-          outlined
-          disable
-        >
+        <q-input outlined disable>
           <template v-slot:prepend>
             <q-icon name="las la-store" />
           </template>
@@ -24,12 +21,7 @@
 
       <div class="q-mb-lg">
         <label class="text-subtitle1">Email</label>
-        <q-input
-          outlined
-          type="email"
-          lazy-rules
-          disable
-        >
+        <q-input outlined type="email" lazy-rules disable>
           <template v-slot:prepend>
             <q-icon name="las la-envelope" />
           </template>
@@ -94,8 +86,48 @@ const onSubmit = () => {
 };
 </script>
 
+<script>
+import axios from "axios";
+
+export default {
+  components: {
+    HeaderCreate,
+  },
+
+  data() {
+    return {
+      // formData: {
+      //   id: "",
+      // },
+      result: {
+        jenis: "",
+      },
+    };
+  },
+
+  mounted() {
+    this.getdata();
+  },
+  methods: {
+    getdata() {
+      axios
+        .post("http://127.0.0.1:8000/api/viewprofile")
+        .then((response) => {
+
+          this.result.jenis = response.jenis;
+          console.log("jenis?", this.result.jenis);
+          return response;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+  },
+};
+</script>
+
 <style>
-.q-btn{
+.q-btn {
   text-transform: none;
 }
 </style>

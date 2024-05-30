@@ -107,7 +107,7 @@
             color="primary"
             class="full-width"
             @click="addToCart(menus)"
-            style="margin-top: 3%; font-weight: 700; font-size: 17px;"
+            style="margin-top: 3%; font-weight: 700; font-size: 17px"
           >
             Tambah pesanan - Rp{{ totalPrice }}
           </q-btn>
@@ -131,15 +131,16 @@ import axios from "axios";
 import { ref } from "vue";
 import useNotify from "src/composables/UseNotify";
 
-
 export default {
-
   components: {
     HeaderCreate,
   },
 
+  // setup() {
+  //   const { notifyError, notifySuccess } = useNotify();
+  // },
+
   data() {
-    const { notifyError, notifySuccess } = useNotify();
     return {
       formData: {
         id: "",
@@ -166,6 +167,9 @@ export default {
     async addToCart(menu) {
       this.guestId = sessionStorage.getItem("guestId");
       const id_menu_array = Array(this.nilai).fill(menu.id_menu);
+
+      // const { notifyError, notifySuccess } = useNotify();
+
       try {
         const response = await axios.post("http://127.0.0.1:8000/api/guests", {
           guestId: this.guestId,
@@ -175,10 +179,12 @@ export default {
           note: this.note,
         });
 
+        // notifySuccess("Pesanan ditambahkan!");
         this.$router.replace(`/halaman-toko/${this.menus.id_penjual}`);
 
         console.log("response.data nya:", response.data);
       } catch (error) {
+        // notifyError("Terjadi kesalahan saat menambahkan pesanan.");
         console.error("error nih", error);
       }
     },
@@ -255,7 +261,7 @@ export default {
   padding: 5% 7%;
 }
 
-.q-btn{
+.q-btn {
   text-transform: none;
 }
 </style>
