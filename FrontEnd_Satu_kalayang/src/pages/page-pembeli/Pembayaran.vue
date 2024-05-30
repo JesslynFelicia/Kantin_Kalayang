@@ -26,7 +26,7 @@
     </q-card>
 
     <div class="q-mb-xl">
-      <q-btn color="primary" class="full-width" label="Cek Status Pesanan" @click="onSubmit" />
+      <q-btn color="primary" class="full-width" label="Cek Status Pesanan" @click="onSubmit" :disable="disableButton" />
     </div>
 
     <div class="text-left q-mb-md">
@@ -64,11 +64,19 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 import HeaderCreate from "components/HeaderCreate.vue";
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { toRupiah } from 'src/libs/currency'
+import { usePesananStore } from 'src/stores/pesanan-store';
 
 const router = useRouter()
+const pesananStore = usePesananStore()
+
+const disableButton = ref(true)
+const statusPesanan = computed(() => {
+  return pesananStore.statusPesanan
+})
 
 const dataPesanan = ref([
   {
@@ -92,6 +100,26 @@ const total = computed(() => dataPesanan.value.reduce((a, b) => a + b.price, 0))
 const onSubmit = () => {
   router.push({ path: '/status-pesanan' })
 }
+
+const getData = async () => {
+  try {
+    /*
+     * cek status pesanan dari be.
+     * ini hanya contoh.
+     */
+    if(statusPesanan.value == 'CHECK') {
+      disableButton.value = true
+    } else {
+      disableButton.value = false
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+onMounted(() => {
+  getData()
+})
 
 </script>
 

@@ -9,10 +9,10 @@
               Status
             </div>
             <div class="col text-right">
-              <q-chip v-if="statusPesanan == 'menunggu'" color="warning" text-color="white" icon="las la-hourglass-half" style="font-size: small;">
+              <q-chip v-if="statusPesanan == 'CHECK'" color="warning" text-color="white" icon="las la-hourglass-half" style="font-size: small;">
                 Menunggu Konfirmasi
               </q-chip>
-              <q-chip v-else-if="statusPesanan == 'diterima'" color="info" text-color="white" icon="las la-hourglass-half" style="font-size: small;">
+              <q-chip v-else-if="statusPesanan == 'PROSESS'" color="info" text-color="white" icon="las la-hourglass-half" style="font-size: small;">
                 Pesanan di proses
               </q-chip>
               <q-chip v-else-if="statusPesanan == 'ditolak'" color="negative" text-color="white" icon="las la-times" style="font-size: small;">
@@ -64,7 +64,7 @@
             <div class="col text-right text-bold">
               <q-btn
                 color="primary"
-                :label="statusPesanan == 'menunggu' ? 'Terima Pesanan' : 'Pesanan diantar'"
+                :label="statusPesanan == 'CHECK' ? 'Terima Pesanan' : 'Pesanan diantar'"
                 @click="onProses"
               />
             </div>
@@ -80,11 +80,13 @@ import { onMounted, ref, computed } from 'vue'
 import HeaderCreate from "components/HeaderCreate.vue"
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { toRupiah } from 'src/libs/currency'
+import { usePesananStore } from 'src/stores/pesanan-store';
 
 defineOptions({
   name: 'DetailRekap'
 });
 
+const pesananStore = usePesananStore()
 const resultData = ref({})
 const rows = ref([
   { pesanan: 'Pesanan 1', quantity: 1, total: 10000, price: 10000 },
@@ -94,7 +96,9 @@ const rows = ref([
 
 const total = computed(() => rows.value.reduce((a, b) => a + b.price, 0))
 
-const statusPesanan = ref('menunggu')
+const statusPesanan = computed(() => {
+  return pesananStore.statusPesanan
+})
 
 const getData = async () => {
   try {
@@ -108,7 +112,12 @@ const getData = async () => {
 
 const onProses = async () => {
   try {
-    statusPesanan.value = 'diterima'
+    /*
+    * set status pesanan.
+    * update status transaksi ke be.
+    * ini hanya contoh.
+    */
+    pesananStore.setStatusPesanan('PROSESS')
   } catch (error) {
     console.log(error)
   }
