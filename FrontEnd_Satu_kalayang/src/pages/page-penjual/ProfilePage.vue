@@ -83,10 +83,8 @@
         </q-input>
       </div>
 
-      <div class="q-mb-lg">
-        <label class="text-subtitle1">Foto Profil</label>
-        <q-uploader
-          v-model="form.foto_profil"
+      <!-- <q-uploader
+          v-model="form.gambar_profile"
           url=""
           label="Unggah Foto Profil"
           color="primary"
@@ -96,6 +94,20 @@
           accept=".png, .jpg, .jpeg"
           style="max-width: 300px"
           @change="handleProfile"
+        /> -->
+
+      <div class="q-mb-lg">
+        <label class="text-subtitle1">Foto Profil</label>
+        <q-uploader
+          v-model="form.gambar_profile"
+          label="Unggah Foto Profil"
+          color="primary"
+          square
+          flat
+          bordered
+          accept=".png, .jpg, .jpeg"
+          style="max-width: 300px"
+          @input="handleProfile"
         />
       </div>
 
@@ -111,7 +123,7 @@
           bordered
           accept=".png, .jpg, .jpeg"
           style="max-width: 300px"
-          @change="handleQris"
+          @input="handleQris"
         />
       </div>
 
@@ -152,7 +164,7 @@ const form = ref({
   nomor_toko: "",
   password: "",
   new_password: "",
-  foto_profil: null,
+  gambar_profile: null,
   qris: null,
 });
 
@@ -185,21 +197,12 @@ const formRules = ref({
 //   router.push({ path: "/beranda-penjual" });
 // };
 
-// const onUploadSuccess = (field) => (response) => {
-//   form.value[field] = response;
-//   notifySuccess("Upload berhasil!");
-
-//   if (field === "qris") {
-//     form.value.qris = response;
-//   }
-// };
-
 const updateProfile = async () => {
   try {
     const payload = {
       email: userEmail.value,
       kata_sandi: form.value.new_password,
-      gambar_profile: form.value.foto_profil,
+      gambar_profile: form.value.gambar_profile,
       qris: form.value.qris,
     };
 
@@ -220,21 +223,22 @@ const updateProfile = async () => {
 
     if (response.status === 200) {
       console.log(response.data.message);
-      console.log("hohoho", form.value.qris);
+      notifySuccess("Akun berhasil diedit!");
+      router.push({ path: "/beranda-penjual" });
     } else {
-      // Handle error
       console.error("Update failed:", response.data.error);
     }
   } catch (error) {
     console.error("Error updating profile:", error);
+    notifyError("Gagal mengedit akun");
   }
 };
 
 const handleProfile = (event) => {
   const file = event.target.files[0];
-  form.value.foto_profil = file;
-  if (form.value.foto_profil !== null) {
-    console.log("gambar foto profil masuk", form.value.foto_profil);
+  form.value.gambar_profile = file;
+  if (form.value.gambar_profile !== null) {
+    console.log("gambar profile masuk", form.value.gambar_profile);
   }
 };
 
@@ -242,13 +246,9 @@ const handleQris = (event) => {
   const file = event.target.files[0];
   form.value.qris = file;
   if (form.value.qris !== null) {
-    console.log("gambar qris masuk");
+    console.log("gambar qris masuk", form.value.qris);
   }
 };
-
-// const onUploadFail = (error) => {
-//   notifyError("Upload gagal!");
-// };
 </script>
 
 <script>
@@ -269,6 +269,7 @@ export default {
       result: {
         jenis: "",
       },
+      model: ref(null),
     };
   },
 
@@ -301,7 +302,7 @@ export default {
           this.namaToko = response.data.data.nama_toko;
           this.nomorToko = response.data.data.nomor_toko;
 
-          console.log("a", this.namaToko);
+          // console.log("a", this.namaToko);
         } catch (error) {
           console.error("Error fetching penjual data:", error);
         }

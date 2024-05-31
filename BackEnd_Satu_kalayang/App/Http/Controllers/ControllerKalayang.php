@@ -454,7 +454,7 @@ class ControllerKalayang extends Controller
         $kata_sandi = $request->post('kata_sandi');
         $gambar_profile =  $request->file('gambar_profile');
         $gambar_qris =  $request->file('gambar_qris');
-        $penjual = ModelKalayangPenjual::where('email', $email)->get();
+        $penjual = ModelKalayangPenjual::where('email', $email)->first();
         if ($penjual) {
 
             if (!empty($kata_sandi)) {
