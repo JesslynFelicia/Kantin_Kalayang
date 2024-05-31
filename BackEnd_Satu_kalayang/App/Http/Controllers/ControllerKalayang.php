@@ -442,7 +442,7 @@ class ControllerKalayang extends Controller
         $validator = Validator::make($request->all(), [
             'kata_sandi' => 'required|min:6', // Minimal 6 karakter
             'gambar_qris' => 'image|mimes:jpeg,png,jpg',
-            'gambar_profille' => 'required|image|mimes:jpeg,png,jpg,gif', // Validasi ekstensi dan ukuran file
+            'gambar_profile' => 'image|mimes:jpeg,png,jpg,gif', // Validasi ekstensi dan ukuran file
         ]);
 
         if ($validator->fails()) {
@@ -452,9 +452,9 @@ class ControllerKalayang extends Controller
 
         $email = $request->post('email');
         $kata_sandi = $request->post('kata_sandi');
-        $gambar_profile =  $request->file('gambar_profille');
+        $gambar_profile =  $request->file('gambar_profile');
         $gambar_qris =  $request->file('gambar_qris');
-        $penjual = ModelKalayangPenjual::where('email', $email)->get();
+        $penjual = ModelKalayangPenjual::where('email', $email)->first();
         if ($penjual) {
 
             if (!empty($kata_sandi)) {
@@ -521,6 +521,7 @@ class ControllerKalayang extends Controller
         return response()->json(['message' => "Berhasil login", 'status' => true], 200);
     }
 
+
     public function RegisterUser(Request $request)
     {
         $email = $request->post('email');
@@ -551,6 +552,13 @@ class ControllerKalayang extends Controller
         } else {
             return response()->json(['message' => "Data tidak ditemukan", 'status' => false, 'data' => $penjual], 404);
         }
+    }
+
+    public function viewonepenjual(Request $request)
+    {
+        $email = $request->post('email');
+        $penjual = ModelKalayangPenjual::where('email', 'like', $email . '%')->first();
+        return response()->json(['message' => 'success', 'data' => $penjual], 200);
     }
 
     public function viewpenjual()
@@ -665,7 +673,6 @@ class ControllerKalayang extends Controller
                                         $msg = "Data berhasil di simpan";
                                         $sts = true;
                                         $this->sendemail_new($email);
-
                                     } else {
                                         $msg = "Data gagal di simpan";
                                         $sts = false;
@@ -814,7 +821,6 @@ class ControllerKalayang extends Controller
                     'subject' => 'Your Registration is Accepted!!!',
                 ];
                 $send = Mail::to($mailData['to'])->send(new SendEmailNew($mailData));
-             
             } else {
                 return "error";
             }

@@ -1,7 +1,8 @@
 import { route } from 'quasar/wrappers';
 <template>
+  <!-- hrsnya title ttp sesuai sama nama toko yang lagi dibuka -->
   <HeaderCreate
-    :title="menus.nama_toko"
+    title=""
     backAction="/beranda-pembeli"
     :hideLogout="true"
     :hideProfile="true"
@@ -114,7 +115,7 @@ import { route } from 'quasar/wrappers';
             src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
             alt="Deskripsi Foto"
             class="category"
-            style="margin: 10px"
+            style="margin: 10px; border-radius: 20px;"
           />
           <q-card-section
             class="row items-start no-wrap"
@@ -146,8 +147,9 @@ import { route } from 'quasar/wrappers';
           @click="addRingkasan() && $router.replace(`/ringkasan-pesanan`)"
           style="
             display: flex;
+            border-radius: 35px;
             justify-content: space-between;
-            padding: 10px 20px;
+            padding: 10px 30px;
           "
         >
           <div
@@ -160,6 +162,7 @@ import { route } from 'quasar/wrappers';
             "
           >
             <p
+            class="text-subtitle1"
               style="
                 margin: 0;
                 font-size: 19px;
@@ -169,7 +172,9 @@ import { route } from 'quasar/wrappers';
             >
               {{ totalItem }} pesanan
             </p>
-            <p style="margin: 0; font-size: 17px; font-weight: 400">
+            <p
+            class="text-subtitle2"
+            style="margin: 0; font-size: 17px; font-weight: 400">
               {{ namaTokos }}
             </p>
           </div>
@@ -192,6 +197,95 @@ import { route } from 'quasar/wrappers';
       </div> -->
     </q-page>
   </div>
+
+  <q-dialog v-model="dialogSwitch">
+    <q-card
+      class="my-card"
+      style="width: 569px; border-radius: 30px; padding: 10px"
+    >
+      <q-card-section class="row items-center q-pb-none">
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <div class="row full-width justify-center items-center text-center">
+          <div class="col">
+            <p class="text-subtitle1 text-bold q-mb-xs">
+              Yakin ingin pesan dari toko lain?
+            </p>
+            <p class="text-subtitle3" style="color: #68737c">
+              Keranjang sebelumnya akan dihapus.
+            </p>
+          </div>
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="center">
+        <q-btn
+          class="delete-btn"
+          rounded
+          outline
+          label="Batal"
+          style="text-transform: none; padding-left: 17px; padding-right: 17px"
+          color="negative"
+          v-close-popup
+        />
+        <q-btn
+          rounded
+          unelevated
+          label="Ya"
+          style="text-transform: none"
+          color="negative"
+          @click="confirmAddMenu"
+          v-close-popup
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- <q-dialog v-model="dialogTambah" :position="position">
+    <q-card
+    v-if="menus"
+      style="
+        width: 100%;
+        height: 67vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      "
+    >
+      <img
+        src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+        alt="Deskripsi Foto"
+        style="max-width: 90%; height: auto; margin: auto; margin-top: 20px"
+      />
+      <q-card-section
+        class="row items-start no-wrap"
+        style="
+          display: flex;
+          flex-direction: column;
+          padding-top: 10px;
+          flex-grow: 1;
+        "
+      >
+        <div>
+          <div class="text-weight-bold">{{ nama_menu }}</div>
+          <div class="text-grey">{{ desc_menu }}</div>
+          <div class="text-weight-bold" style="padding-top: 15px">
+            Rp{{ harga_menu }}
+          </div>
+        </div>
+        <q-btn
+          outline
+          rounded
+          style="width: 100%; margin-top: auto"
+          @click="addMenu(menus)"
+          >Tambah</q-btn
+        >
+      </q-card-section>
+    </q-card>
+  </q-dialog> -->
 
   <!-- <q-dialog v-model="dialogTambah" :position="position">
     <q-card
@@ -293,6 +387,7 @@ export default {
       autoplay2,
       dialogTambah,
       position,
+      dialogSwitch: ref(false),
 
       // openDialogTambah(bottom) {
       //   position.value = bottom;
@@ -319,12 +414,43 @@ export default {
         })
         .then((response) => {
           console.log("Data Menu:", response.data.data);
+
+          if (
+            this.menus.length > 0 &&
+            this.menus[0].id_penjual !== this.idPenjual
+          ) {
+            this.selectedMenu = menu;
+            this.dialogSwitch = true;
+            return;
+          }
+
           this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
         })
         .catch((error) => {
           console.error(error);
         });
     },
+
+    confirmAddMenu() {
+      if (this.selectedMenu) {
+        this.addMenu1(this.selectedMenu);
+      }
+    },
+
+    addMenu1(menu) {
+      axios
+        .post("http://127.0.0.1:8000/api/viewonemenu", {
+          id_menu: menu.id_menu,
+        })
+        .then((response) => {
+          console.log("Data Menu:", response.data.data);
+          this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
 
     async addRingkasan() {
       this.guestId = sessionStorage.getItem("guestId");
@@ -339,9 +465,13 @@ export default {
         // const keranjang = response.data;
         this.totalPrice = response.data.total_price_sum;
         this.totalItem = response.data.total_id_menu;
+        // this.id_penjual = response.data.id_penjual;
         this.namaTokos = response.data.nama_tokos;
 
+        this.idPenjual = response.data.data[0].id_penjual;
+
         console.log("response.data nya:", response.data);
+        console.log("lalalallalalalla", this.idPenjual);
         console.log("response.data nya:", this.totalPrice);
       } catch (error) {
         console.error("error nih", error);

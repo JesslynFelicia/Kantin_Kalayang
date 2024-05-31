@@ -1,5 +1,10 @@
 <template>
-  <HeaderLogin :button-link="true" title-button-link="Lupa Kata Sandi ?" @link="link" />
+  <HeaderCreate
+    title=""
+    backAction="/"
+    :hideLogout="true"
+    :hideProfile="true"
+  />
   <q-page class="q-pa-xl">
     <div class="text-center q-mb-xl">
       <span class="text-h4 text-weight-bold">Login</span>
@@ -7,7 +12,13 @@
     <q-form @submit="onSubmit">
       <div class="q-mb-lg">
         <label class="text-subtitle1">Email</label>
-        <q-input outlined v-model="form.email" type="email" lazy-rules :rules="formRules.email">
+        <q-input
+          outlined
+          v-model="form.email"
+          type="email"
+          lazy-rules
+          :rules="formRules.email"
+        >
           <template v-slot:prepend>
             <q-icon name="las la-envelope" />
           </template>
@@ -16,21 +27,41 @@
 
       <div class="q-mb-lg">
         <label class="text-subtitle1">Kata Sandi</label>
-        <q-input outlined v-model="form.password" :type="seePassword ? 'password' : 'text'" lazy-rules
-          :rules="formRules.password">
+        <q-input
+          outlined
+          v-model="form.password"
+          :type="seePassword ? 'password' : 'text'"
+          lazy-rules
+          :rules="formRules.password"
+        >
           <template v-slot:prepend>
             <q-icon name="las la-lock" />
           </template>
           <template v-slot:append>
-            <q-icon :name="seePassword ? 'las la-eye' : 'las la-eye-slash'" @click="seePassword = !seePassword"
-              class="cursor-pointer" />
+            <q-icon
+              :name="seePassword ? 'las la-eye' : 'las la-eye-slash'"
+              @click="seePassword = !seePassword"
+              class="cursor-pointer"
+            />
           </template>
         </q-input>
-        <q-checkbox v-model="form.remember" size="sm" label="Ingat saya" class="" />
+        <q-checkbox
+          v-model="form.remember"
+          size="sm"
+          label="Ingat saya"
+          class=""
+        />
       </div>
 
       <div class="q-mb-lg">
-        <q-btn color="primary" class="full-width" label="Masuk" type="submit" />
+        <q-btn
+          rounded
+          color="primary"
+          class="full-width"
+          style="padding: 10px"
+          label="Masuk"
+          type="submit"
+        />
       </div>
     </q-form>
   </q-page>
@@ -38,43 +69,127 @@
 </template>
 
 <script setup>
-import HeaderLogin from 'components/HeaderLogin.vue'
-import FooterApp from 'components/FooterApp.vue'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import HeaderLogin from "components/HeaderLogin.vue";
+import HeaderCreate from "components/HeaderCreate.vue";
+import FooterApp from "components/FooterApp.vue";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import useNotify from "src/composables/UseNotify";
+import { computed } from "vue";
+import { useStore } from "vuex";
+import axios from "axios";
 
 defineOptions({
-  name: 'LoginPage'
+  name: "LoginPage",
 });
 
-const router = useRouter()
+const router = useRouter();
+const store = useStore();
+// const userEmail = computed(() => store.getters.getUserEmail);
+const { notifyError, notifySuccess, notifyWarning } = useNotify();
 
-const seePassword = ref(true)
+const seePassword = ref(true);
 const form = ref({
-  email: '',
-  password: '',
-  remember: false
-})
+  email: "",
+  password: "",
+  remember: false,
+});
 
 const formRules = ref({
-  email: [val => (val && val.length > 0) || 'Email harus diisi'],
-  password: [val => (val && val.length > 0) || 'Kata sandi harus diisi']
-})
+  email: [(val) => (val && val.length > 0) || "Email harus diisi"],
+  password: [(val) => (val && val.length > 0) || "Kata sandi harus diisi"],
+});
 
-const onSubmit = () => {
-  console.log(form.value)
+const onSubmait = () => {
+  console.log(form.value);
 
-  if(form.value.email.includes('admin')) {
-    sessionStorage.setItem('role', 'admin')
-    router.push({ path: '/beranda-admin' })
+  localStorage.setItem("userEmail", form.value.email);
+
+  if (form.value.email.includes("admin")) {
+    sessionStorage.setItem("role", "admin");
+    router.push({ path: "/beranda-admin" });
   } else {
-    sessionStorage.setItem('role', 'penjual')
-    router.push({ path: '/beranda-penjual' })
+    sessionStorage.setItem("role", "penjual");
+    router.push({ path: "/profile" });
+    // notifySuccess("Login berhasil!");
   }
+};
 
-}
+const onSusbmit = async () => {
+  try {
+    const payload = {
+      email: form.value.email,
+      kata_sandi: form.value.password,
+    };
+
+    localStorage.setItem("userEmail", form.value.email);
+
+    const response = await axios.post(
+      "http://127.0.0.1:8000/api/newlogin",
+      payload
+    );
+
+    if (response.data.status) {
+      // Kirim email ke API viewonepenjual
+      const emailPayload = {
+        email: form.value.email,
+      };
+      await axios.post(
+        "http://127.0.0.1:8000/api/viewonepenjual",
+        emailPayload
+      );
+
+      notifySuccess(response.data.message);
+      if (form.value.email.includes("admin")) {
+        sessionStorage.setItem("role", "admin");
+        router.push({ path: "/beranda-admin" });
+      } else {
+        sessionStorage.setItem("role", "penjual");
+        router.push({ path: "/profile" });
+      }
+    } else {
+      notifyError(response.data.message);
+    }
+  } catch (error) {
+    notifyError("Terjadi kesalahan saat melakukan login.");
+    console.error("Error:", error);
+  }
+};
+
+const onSubmit = async () => {
+  try {
+    const payload = {
+      email: form.value.email,
+      kata_sandi: form.value.password,
+    };
+
+    localStorage.setItem("userEmail", form.value.email);
+
+    const response = await axios.post(
+      "http://127.0.0.1:8000/api/newlogin",
+      payload
+    );
+
+    if (response.data.status) {
+      if (form.value.email.includes("admin")) {
+        sessionStorage.setItem("role", "admin");
+        router.push({ path: "/beranda-admin" });
+      } else {
+        sessionStorage.setItem("role", "penjual");
+        router.push({ path: "/profile" });
+        notifySuccess("Login berhasil!");
+        notifyWarning("Mohon ganti password Anda!");
+      }
+    } else {
+      notifyError(response.data.message);
+    }
+  } catch (error) {
+    notifyError("Terjadi kesalahan saat melakukan login.");
+    console.error("Error:", error);
+  }
+};
 
 const link = () => {
-  router.push({ path: 'forgot-password' })
-}
+  router.push({ path: "forgot-password" });
+};
 </script>

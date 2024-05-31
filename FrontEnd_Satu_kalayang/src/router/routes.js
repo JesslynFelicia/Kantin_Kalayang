@@ -277,17 +277,17 @@ const routes = [
                 import ("pages/page-penjual/pesanan/EditPesanan.vue")
         }]
     },
-    {
-        path: '/profile',
-        component: () =>
-            import ('layouts/MainLayout1.vue'),
-        children: [{
-            path: '',
-            component: () =>
-                //viewprofile - done
-                import ("pages/page-penjual/ProfilePenjual.vue")
-        }]
-    },
+    // {
+    //     path: '/profile-penjual',
+    //     component: () =>
+    //         import ('layouts/MainLayout1.vue'),
+    //     children: [{
+    //         path: '',
+    //         component: () =>
+    //             //viewprofile - done
+    //             import ("pages/page-penjual/ProfilePenjual.vue")
+    //     }]
+    // },
 
 
 	{
