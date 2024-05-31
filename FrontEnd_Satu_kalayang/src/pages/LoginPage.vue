@@ -45,12 +45,20 @@
             />
           </template>
         </q-input>
-        <q-checkbox
-          v-model="form.remember"
-          size="sm"
-          label="Ingat saya"
-          class=""
-        />
+        <div class="row items-center justify-between">
+          <q-checkbox
+            v-model="form.remember"
+            size="sm"
+            label="Ingat saya"
+            class=""
+          />
+          <q-btn
+            flat
+            color="primary"
+            label="Hubungi admin"
+            @click="contactAdmin"
+          />
+        </div>
       </div>
 
       <div class="q-mb-lg">
@@ -188,8 +196,31 @@ const onSubmit = async () => {
     console.error("Error:", error);
   }
 };
+</script>
 
-const link = () => {
-  router.push({ path: "forgot-password" });
+<script>
+export default {
+  methods: {
+    // Method untuk membuka aplikasi email dengan email tujuan
+    contactAdmin() {
+      const email = "admin@puprkalayang";
+      const subject = "Pertanyaan/Pesan untuk Admin";
+      const body = "Tulis pesan Anda di sini.";
+
+      // Membangun URL untuk membuka aplikasi email
+      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
+
+      // Membuka aplikasi email
+      window.location.href = mailtoLink;
+    },
+  },
 };
 </script>
+
+<style>
+.q-btn {
+  text-transform: none;
+}
+</style>
