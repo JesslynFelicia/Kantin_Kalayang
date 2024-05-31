@@ -176,7 +176,7 @@ const onSubmit = async () => {
         router.push({ path: "/beranda-admin" });
       } else {
         sessionStorage.setItem("role", "penjual");
-        router.push({ path: "/profile" });
+        router.push({ path: "/profile" ,params: { email: emailPayload}});
         notifySuccess("Login berhasil!");
         notifyWarning("Mohon ganti password Anda!");
       }

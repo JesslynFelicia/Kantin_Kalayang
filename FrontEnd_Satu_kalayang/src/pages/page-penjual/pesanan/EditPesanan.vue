@@ -92,6 +92,51 @@
   </q-page>
 </template>
 
+<script>
+
+
+
+import axios from 'axios';
+
+export default {
+  data() {
+formdata:{
+      $id_menu = "",
+        $jenis = "",
+        $nama_menu = "",
+        $harga_menu = "",
+        $ekstra = "",
+        $status_menu = "",
+        $desc_menu = ""
+}
+
+  },
+  methods: {
+    handleFileUpload(event) {
+      this.file = event.target.files[0];
+    },
+    async submitForm() {
+      const formData = new FormData();
+      formData.append('firstName', this.firstName);
+      formData.append('lastName', this.lastName);
+      formData.append('file', this.file);
+
+      try {
+        const response = await axios.post('https://example.com/api/data', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': 'Bearer your-token' // if needed
+          }
+        });
+        console.log('Data posted successfully:', response.data);
+      } catch (error) {
+        console.error('Error posting data:', error);
+      }
+    }
+  }
+};
+</script>
+
 <script setup>
 import HeaderLogin from "components/HeaderLogin.vue";
 import { ref } from "vue";

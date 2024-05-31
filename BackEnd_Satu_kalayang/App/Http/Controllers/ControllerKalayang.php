@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ModelKalayangMenu;
 use App\Models\ModelKalayangTransaksi;
+use App\Models\ModelKalayangAdmin;
 use App\Models\ModelKalayangPenjual;
 use App\Models\ModelKalayangTransaksiTemp;
 use Illuminate\Support\Facades\DB;
@@ -508,8 +509,15 @@ class ControllerKalayang extends Controller
         $kata_sandi = $request->post('kata_sandi');
         $penjual = ModelKalayangPenjual::where('email', $email)->first();
 
+
         if (!$penjual) {
-            return response()->json(['message' => "Akun belum terdaftar", 'status' => false], 404);
+            $admin = ModelKalayangAdmin::where('username', $request->email)->first();
+            if ($admin && Hash::check($kata_sandi, $admin->password)) {
+                $role = $admin->role;
+                return response()->json(['message' => "Berhasil login", 'status' => true, 'role' => $role], 200);
+            } else {
+                return response()->json(['message' => "Akun tidak ditemukan", 'status' => false], 404);
+            }
         }
 
         $emaildatabase = $penjual->email;

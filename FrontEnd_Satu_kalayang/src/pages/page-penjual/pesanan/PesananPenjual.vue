@@ -76,11 +76,25 @@
 </template>
 
 <script setup>
+
 import { onMounted, ref, computed } from 'vue'
 import HeaderCreate from "components/HeaderCreate.vue"
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { toRupiah } from 'src/libs/currency'
 import { usePesananStore } from 'src/stores/pesanan-store';
+
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import MyApp from '../../PengaturanPeran.vue'; // Replace with your main Vue component
+
+const app = createApp(MyApp);
+
+// Initialize Pinia
+const pinia = createPinia();
+app.use(pinia);
+
+// Mount the app
+app.mount('#app');
 
 defineOptions({
   name: 'DetailRekap'
@@ -88,6 +102,8 @@ defineOptions({
 
 const pesananStore = usePesananStore()
 const resultData = ref({})
+
+
 const rows = ref([
   { pesanan: 'Pesanan 1', quantity: 1, total: 10000, price: 10000 },
   { pesanan: 'Pesanan 2', quantity: 2, total: 20000, price: 10000 },

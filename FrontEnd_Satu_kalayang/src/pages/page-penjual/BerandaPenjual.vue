@@ -108,9 +108,11 @@ import { route } from 'quasar/wrappers';
   </div>
 </template>
 
+
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
 import { ref } from "vue";
+
 
 export default {
   components: {
@@ -124,7 +126,7 @@ export default {
 
     const autoplay1 = ref(true);
     const autoplay2 = ref(true);
-
+    props: ['email']
     return {
       text,
       slide1,
@@ -133,7 +135,51 @@ export default {
       autoplay2,
     };
   },
-};
+  datapenjual:{
+    id_penjual : axios.post("http://127.0.0.1:8000/api/viewmenupenjual", {
+        email: this.email
+      })
+  },
+  formdata:{
+      $id_menu : "",
+        $jenis : "",
+        $nama_menu : "",
+        $harga_menu : "",
+        $ekstra : "",
+        $status_menu: "",
+        $desc_menu : ""
+},
+mounted() {
+    this.getdata();
+  },
+methods:{
+    getdata(){
+        axios.post("http://127.0.0.1:8000/api/viewmenupenjual",datapenjual).then(response => {
+        // Handle the successful response here
+        console.log('Response data:', response.data);
+        formdata.$id_menu = response.id_menu;
+       formdata.$jenis = response.jenis;
+       formdata.$nama_menu = response.nama_menu;
+       formdata.$harga_menu = response.harga_menu;
+       formdata.$status_menu = response.status_menu
+       formdata.$desc_menu = response.desc_menu;
+
+      })
+      .catch(error => {
+        // Handle errors here
+        console.error('There was an error!', error);
+      });
+  }
+    }
+}
+
+
+
+
+
+
+
+
 </script>
 
 <style>
