@@ -12,9 +12,18 @@
     <q-form @submit="onSubmit">
       <div class="q-mb-lg">
         <label class="text-subtitle1">Nama Toko</label>
-        <q-input outlined disable v-model="form.nama_toko">
+        <q-input outlined v-model="namaToko">
           <template v-slot:prepend>
             <q-icon name="las la-store" />
+          </template>
+        </q-input>
+      </div>
+
+      <div class="q-mb-lg">
+        <label class="text-subtitle1">Nomor Toko</label>
+        <q-input outlined disable v-model="nomorToko" lazy-rules>
+          <template v-slot:prepend>
+            <q-icon name="las la-phone" />
           </template>
         </q-input>
       </div>
@@ -31,30 +40,23 @@
       </div>
 
       <div class="q-mb-lg">
-        <label class="text-subtitle1">Nomor Toko</label>
+        <label class="text-subtitle1">Kata Sandi</label>
         <q-input
           outlined
-          v-model="form.nomor_toko"
-          lazy-rules
-          :rules="formRules.nomor_toko"
-        >
-          <template v-slot:prepend>
-            <q-icon name="las la-phone" />
-          </template>
-        </q-input>
-      </div>
-
-      <div class="q-mb-lg">
-        <label class="text-subtitle1">Password</label>
-        <q-input
-          outlined
-          type="password"
           v-model="form.password"
+          :type="seePassword ? 'password' : 'text'"
           lazy-rules
           :rules="formRules.password"
         >
           <template v-slot:prepend>
             <q-icon name="las la-lock" />
+          </template>
+          <template v-slot:append>
+            <q-icon
+              :name="seePassword ? 'las la-eye' : 'las la-eye-slash'"
+              @click="seePassword = !seePassword"
+              class="cursor-pointer"
+            />
           </template>
         </q-input>
       </div>
@@ -63,7 +65,7 @@
         <label class="text-subtitle1">New Password</label>
         <q-input
           outlined
-          type="password"
+          :type="seeNewPassword ? 'password' : 'text'"
           v-model="form.new_password"
           lazy-rules
           :rules="formRules.new_password"
@@ -71,14 +73,20 @@
           <template v-slot:prepend>
             <q-icon name="las la-lock" />
           </template>
+          <template v-slot:append>
+            <q-icon
+              :name="seeNewPassword ? 'las la-eye' : 'las la-eye-slash'"
+              @click="seeNewPassword = !seeNewPassword"
+              class="cursor-pointer"
+            />
+          </template>
         </q-input>
       </div>
 
       <div class="q-mb-lg">
         <label class="text-subtitle1">Foto Profil</label>
         <q-uploader
-          @uploaded="onUploadSuccess('foto_profil')"
-          @failed="onUploadFail"
+          v-model="form.foto_profil"
           url=""
           label="Unggah Foto Profil"
           color="primary"
@@ -93,8 +101,7 @@
       <div class="q-mb-lg">
         <label class="text-subtitle1">QRIS</label>
         <q-uploader
-          @uploaded="onUploadSuccess('qris')"
-          @failed="onUploadFail"
+          v-model="form.qris"
           url=""
           label="Unggah QRIS"
           color="primary"
@@ -103,6 +110,7 @@
           bordered
           accept=".png, .jpg, .jpeg"
           style="max-width: 300px"
+          @change="handleFileChange"
         />
       </div>
 
@@ -111,7 +119,7 @@
           color="primary"
           class="full-width"
           label="Edit Profil"
-          type="submit"
+          @click="updateProfile"
           rounded
           style="padding: 12px"
         />
@@ -161,37 +169,84 @@ const formRules = ref({
   qris: [(val) => val !== null || "QRIS harus diunggah"],
 });
 
-const onSubmit = () => {
-  // if (form.value.qris === null) {
-  //   notifyError("Anda harus mengunggah QRIS.");
-  //   return;
-  // }
+// const onSubmit = () => {
+//   // if (form.value.qris === null) {
+//   //   notifyError("Anda harus mengunggah QRIS.");
+//   //   return;
+//   // }
 
-  if (form.value.new_password === form.value.password) {
-    notifyError("New password harus berbeda dari password.");
-    return;
+//   if (form.value.new_password === form.value.password) {
+//     notifyError("New password harus berbeda dari password.");
+//     return;
+//   }
+
+//   notifySuccess("Akun berhasil diedit!");
+//   router.push({ path: "/beranda-penjual" });
+// };
+
+// const onUploadSuccess = (field) => (response) => {
+//   form.value[field] = response;
+//   notifySuccess("Upload berhasil!");
+
+//   if (field === "qris") {
+//     form.value.qris = response;
+//   }
+// };
+
+const updateProfile = async () => {
+  try {
+    const payload = {
+      email: userEmail.value,
+      kata_sandi: form.value.new_password,
+      gambar_profile: form.value.foto_profil,
+      gambar_qris: form.value.qris,
+    };
+
+    const formData = new FormData();
+    Object.keys(payload).forEach((key) => {
+      formData.append(key, payload[key]);
+    });
+
+    const response = await axios.post(
+      "http://127.0.0.1:8000/api/updatedatapenjual",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      console.log(response.data.message);
+      console.log("hohoho", form.value.qris);
+    } else {
+      // Handle error
+      console.error("Update failed:", response.data.error);
+    }
+  } catch (error) {
+    console.error("Error updating profile:", error);
   }
-
-  notifySuccess("Akun berhasil diedit!");
-  router.push({ path: "/beranda-penjual" });
 };
 
-const onUploadSuccess = (field) => (response) => {
-  form.value[field] = response;
-  notifySuccess("Upload berhasil!");
-
-  if (field === "qris") {
-    form.value.qris = response;
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  form.value.qris = file;
+  if (form.value.qris !== null) {
+    console.log("gambar masuk");
   }
 };
 
-const onUploadFail = (error) => {
-  notifyError("Upload gagal!");
-};
+// const onUploadFail = (error) => {
+//   notifyError("Upload gagal!");
+// };
 </script>
 
 <script>
 import axios from "axios";
+
+const seePassword = ref(true);
+const seeNewPassword = ref(true);
 
 export default {
   components: {
@@ -200,6 +255,8 @@ export default {
 
   data() {
     return {
+      namaToko: "",
+      nomorToko: "",
       result: {
         jenis: "",
       },
@@ -210,35 +267,56 @@ export default {
     this.getdata();
   },
   methods: {
-    getdata() {
-      axios
-        .post("http://127.0.0.1:8000/api/viewprofile")
-        .then((response) => {
-          this.result.jenis = response.jenis;
-          console.log("jenis?", this.result.jenis);
-          return response;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    // getdata() {
+    //   axios
+    //     .post("http://127.0.0.1:8000/api/viewprofile")
+    //     .then((response) => {
+    //       this.result.jenis = response.jenis;
+    //       console.log("jenis?", this.result.jenis);
+    //       return response;
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //     });
+    // },
+
+    async getdata() {
+      const loggedInUserEmail = localStorage.getItem("loggedInUserEmail");
+      if (loggedInUserEmail) {
+        try {
+          const response = await axios.post(
+            "http://127.0.0.1:8000/api/viewonepenjual",
+            { email: loggedInUserEmail }
+          );
+          // const penjualData = response.data.data;
+          this.namaToko = response.data.data.nama_toko;
+          this.nomorToko = response.data.data.nomor_toko;
+
+          console.log("a", this.namaToko);
+        } catch (error) {
+          console.error("Error fetching penjual data:", error);
+        }
+      } else {
+        console.error("No logged in user email found.");
+      }
     },
 
-     fetchSellerInfo(email) {
+    fetchSellerInfo(email) {
       // Panggil API untuk mendapatkan informasi penjual berdasarkan email
       fetch(`/viewpenjual?email=${email}`)
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           const sellerId = data.id_penjual;
           // Panggil API kedua untuk mendapatkan informasi detail penjual berdasarkan ID penjual
           return fetch(`/viewpenjual?id=${sellerId}`);
         })
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           // Simpan informasi penjual ke objek
           this.sellerInfo = data;
         })
-        .catch(error => {
-          console.error('Error fetching seller info:', error);
+        .catch((error) => {
+          console.error("Error fetching seller info:", error);
         });
     },
   },
