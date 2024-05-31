@@ -43,12 +43,16 @@ import FooterApp from 'components/FooterApp.vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useNotify from "src/composables/UseNotify";
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 defineOptions({
   name: 'LoginPage'
 });
 
 const router = useRouter()
+const store = useStore();
+// const userEmail = computed(() => store.getters.getUserEmail);
 const { notifyError, notifySuccess } = useNotify();
 
 const seePassword = ref(true)
@@ -66,18 +70,20 @@ const formRules = ref({
 const onSubmit = () => {
   console.log(form.value)
 
+  localStorage.setItem('userEmail', form.value.email);
+
   if(form.value.email.includes('admin')) {
     sessionStorage.setItem('role', 'admin')
     router.push({ path: '/beranda-admin' })
   } else {
     sessionStorage.setItem('role', 'penjual')
-    router.push({ path: '/beranda-penjual' })
-    notifySuccess("Login berhasil!");
+    router.push({ path: '/profile' })
+    // notifySuccess("Login berhasil!");
   }
-
 }
 
 const link = () => {
   router.push({ path: 'forgot-password' })
 }
 </script>
+
