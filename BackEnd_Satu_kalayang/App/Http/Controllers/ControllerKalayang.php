@@ -442,7 +442,7 @@ class ControllerKalayang extends Controller
         $validator = Validator::make($request->all(), [
             'kata_sandi' => 'required|min:6', // Minimal 6 karakter
             'gambar_qris' => 'image|mimes:jpeg,png,jpg',
-            'gambar_profille' => 'image|mimes:jpeg,png,jpg,gif', // Validasi ekstensi dan ukuran file
+            'gambar_profile' => 'image|mimes:jpeg,png,jpg,gif', // Validasi ekstensi dan ukuran file
         ]);
 
         if ($validator->fails()) {
@@ -516,7 +516,7 @@ class ControllerKalayang extends Controller
         $password = $penjual->kata_sandi;
 
         if ($email != $emaildatabase || $kata_sandi != $password) {
-            return response()->json(['message' => "Email atau Password salah", 'status' => false], 404 );
+            return response()->json(['message' => "Email atau Password salah", 'status' => false], 404);
         }
         return response()->json(['message' => "Berhasil login", 'status' => true], 200);
     }
@@ -673,7 +673,6 @@ class ControllerKalayang extends Controller
                                         $msg = "Data berhasil di simpan";
                                         $sts = true;
                                         $this->sendemail_new($email);
-
                                     } else {
                                         $msg = "Data gagal di simpan";
                                         $sts = false;
@@ -822,7 +821,6 @@ class ControllerKalayang extends Controller
                     'subject' => 'Your Registration is Accepted!!!',
                 ];
                 $send = Mail::to($mailData['to'])->send(new SendEmailNew($mailData));
-
             } else {
                 return "error";
             }
