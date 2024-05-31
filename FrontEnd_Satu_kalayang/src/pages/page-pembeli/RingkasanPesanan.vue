@@ -174,7 +174,6 @@ export default {
   },
 
   methods: {
-
     async addRingkasan() {
       this.guestId = sessionStorage.getItem("guestId");
 
@@ -192,6 +191,8 @@ export default {
         console.error("error nih", error);
       }
     },
+
+    
   },
 };
 </script>

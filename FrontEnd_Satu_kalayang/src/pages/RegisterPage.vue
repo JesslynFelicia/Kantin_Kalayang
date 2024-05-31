@@ -1,13 +1,8 @@
 <template>
-    <HeaderCreate
-    title=""
-    backAction="/beranda-admin"
-    :hideLogout="true"
-    :hideProfile="true"
-  >
+  <HeaderCreate title="" backAction="/" :hideLogout="true" :hideProfile="true">
   </HeaderCreate>
 
-  <q-page class="q-pa-xl" style="padding-top: 0%;" >
+  <q-page class="q-pa-xl" style="padding-top: 0%">
     <div class="text-center q-mb-xl">
       <span class="text-h4 text-weight-bold">Register</span>
     </div>
@@ -164,7 +159,7 @@ export default {
 </script>
 
 <style>
-.q-btn{
+.q-btn {
   text-transform: none;
 }
 </style>

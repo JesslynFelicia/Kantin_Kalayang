@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ModelKalayangMenu;
 use App\Models\ModelKalayangTransaksi;
 use App\Models\ModelKalayangPenjual;
+use App\Models\ModelKalayangAdmin;
 use App\Models\ModelKalayangTransaksiTemp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -502,14 +503,41 @@ class ControllerKalayang extends Controller
         }
     }
 
+    // public function loginnewuser(Request $request)
+    // {
+    //     $email = $request->post('email');
+    //     $kata_sandi = $request->post('kata_sandi');
+    //     $penjual = ModelKalayangPenjual::where('email', $email)->first();
+
+    //     if (!$penjual) {
+    //         return response()->json(['message' => "Akun belum terdaftar", 'status' => false], 404);
+    //     }
+
+    //     $emaildatabase = $penjual->email;
+    //     $password = $penjual->kata_sandi;
+
+    //     if ($email != $emaildatabase || $kata_sandi != $password) {
+    //         return response()->json(['message' => "Email atau Password salah", 'status' => false], 404);
+    //     }
+    //     return response()->json(['message' => "Berhasil login", 'status' => true], 200);
+    // }
+
+
     public function loginnewuser(Request $request)
     {
         $email = $request->post('email');
         $kata_sandi = $request->post('kata_sandi');
         $penjual = ModelKalayangPenjual::where('email', $email)->first();
 
+
         if (!$penjual) {
-            return response()->json(['message' => "Akun belum terdaftar", 'status' => false], 404);
+            $admin = ModelKalayangAdmin::where('username', $request->email)->first();
+            if ($admin && Hash::check($kata_sandi, $admin->password)) {
+                $role = $admin->role;
+                return response()->json(['message' => "Berhasil login", 'status' => true, 'role' => $role], 200);
+            } else {
+                return response()->json(['message' => "Akun tidak ditemukan", 'status' => false], 404);
+            }
         }
 
         $emaildatabase = $penjual->email;
