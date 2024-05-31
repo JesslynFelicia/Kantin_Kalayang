@@ -114,7 +114,7 @@ const routes = [
   },
   {
     path: '/profile',
-    component: () => import('layouts/MainLayout1.vue'),
+    component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import("pages/page-penjual/ProfilePage.vue") }
     ]

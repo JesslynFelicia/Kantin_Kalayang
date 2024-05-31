@@ -115,7 +115,6 @@
         <label class="text-subtitle1">QRIS</label>
         <q-uploader
           v-model="form.qris"
-          url=""
           label="Unggah QRIS"
           color="primary"
           square
@@ -182,23 +181,70 @@ const formRules = ref({
   qris: [(val) => val !== null || "QRIS harus diunggah"],
 });
 
-// const onSubmit = () => {
-//   // if (form.value.qris === null) {
-//   //   notifyError("Anda harus mengunggah QRIS.");
-//   //   return;
-//   // }
 
-//   if (form.value.new_password === form.value.password) {
-//     notifyError("New password harus berbeda dari password.");
-//     return;
+// ASU
+// const updateProfile = async () => {
+//   try {
+//     const payload = {
+//       email: userEmail.value,
+//       kata_sandi: form.value.new_password,
+//       gambar_profile: form.value.gambar_profile,
+//       qris: form.value.qris,
+//     };
+
+//     const formData = new FormData();
+//     Object.keys(payload).forEach((key) => {
+//       formData.append(key, payload[key]);
+//     });
+
+
+
+//     const response = await axios.post(
+//       "http://127.0.0.1:8000/api/updatedatapenjual",
+//       formData,
+//       {
+//         headers: {
+//           "Content-Type": "multipart/form-data",
+//         },
+//       }
+//     );
+
+//     if (response.status === 200) {
+//       console.log(response.data.message);
+//       notifySuccess("Akun berhasil diedit!");
+//       router.push({ path: "/beranda-penjual" });
+//     } else {
+//       console.error("Update failed:", response.data.error);
+//     }
+//   } catch (error) {
+//     console.error("Error updating profile:", error);
+//     notifyError("Gagal mengedit akun");
 //   }
+// };
 
-//   notifySuccess("Akun berhasil diedit!");
-//   router.push({ path: "/beranda-penjual" });
+// const handleProfile = (event) => {
+//   const file = event.target.files[0];
+//   form.value.gambar_profile = file;
+//   if (form.value.gambar_profile !== null) {
+//     console.log("gambar profile masuk", form.value.gambar_profile);
+//   }
+// };
+
+// const handleQris = (event) => {
+//   const file = event.target.files[0];
+//   form.value.qris = file;
+//   if (form.value.qris !== null) {
+//     console.log("gambar qris masuk", form.value.qris);
+//   }
 // };
 
 const updateProfile = async () => {
   try {
+    if (!form.value.qris) {
+      notifyError("QRIS tidak boleh kosong");
+      return;
+    }
+
     const payload = {
       email: userEmail.value,
       kata_sandi: form.value.new_password,
@@ -208,7 +254,9 @@ const updateProfile = async () => {
 
     const formData = new FormData();
     Object.keys(payload).forEach((key) => {
-      formData.append(key, payload[key]);
+      if (payload[key] !== null && payload[key] !== undefined) {
+        formData.append(key, payload[key]);
+      }
     });
 
     const response = await axios.post(
@@ -228,6 +276,7 @@ const updateProfile = async () => {
     } else {
       console.error("Update failed:", response.data.error);
     }
+
   } catch (error) {
     console.error("Error updating profile:", error);
     notifyError("Gagal mengedit akun");
@@ -249,6 +298,7 @@ const handleQris = (event) => {
     console.log("gambar qris masuk", form.value.qris);
   }
 };
+
 </script>
 
 <script>

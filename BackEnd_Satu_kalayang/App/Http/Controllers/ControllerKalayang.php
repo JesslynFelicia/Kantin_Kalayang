@@ -7,6 +7,7 @@ use App\Models\ModelKalayangMenu;
 use App\Models\ModelKalayangTransaksi;
 use App\Models\ModelKalayangAdmin;
 use App\Models\ModelKalayangPenjual;
+use App\Models\ModelKalayangAdmin;
 use App\Models\ModelKalayangTransaksiTemp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -278,7 +279,6 @@ class ControllerKalayang extends Controller
         $catatan_pemesan = $request->post('catatan_pemesan');
         $ekstra_menu = $request->post('ekstra_menu');
 
-
         $transaction = new ModelKalayangTransaksi();
         $transaction->id_menu = $id_menu;
         $transaction->id_penjual = $id_penjual;
@@ -502,6 +502,26 @@ class ControllerKalayang extends Controller
             return  response()->json(['message' => "gagal mencari id", 'status' => false], 404);
         }
     }
+
+    // public function loginnewuser(Request $request)
+    // {
+    //     $email = $request->post('email');
+    //     $kata_sandi = $request->post('kata_sandi');
+    //     $penjual = ModelKalayangPenjual::where('email', $email)->first();
+
+    //     if (!$penjual) {
+    //         return response()->json(['message' => "Akun belum terdaftar", 'status' => false], 404);
+    //     }
+
+    //     $emaildatabase = $penjual->email;
+    //     $password = $penjual->kata_sandi;
+
+    //     if ($email != $emaildatabase || $kata_sandi != $password) {
+    //         return response()->json(['message' => "Email atau Password salah", 'status' => false], 404);
+    //     }
+    //     return response()->json(['message' => "Berhasil login", 'status' => true], 200);
+    // }
+
 
     public function loginnewuser(Request $request)
     {
