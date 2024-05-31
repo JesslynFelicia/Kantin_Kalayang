@@ -4,9 +4,9 @@
     <div class="q-pa-md">
       <q-table title="" :rows="rows" :columns="columns">
         <template v-slot:body="props">
-          <q-tr :props="props" @click="() => $router.push(`rekap-penjual/${props.row.id}/detail`)">
+          <q-tr :props="props" @click="() => $router.push(`rekap-penjual/${stringToDate(props.row.date)}/detail`)">
             <q-td key="date" :props="props">
-              {{ formatToDatetime(props.row.date) }}
+              {{ props.row.date }}
             </q-td>
             <q-td key="quantity" :props="props">
               {{ props.row.quantity }}
@@ -28,7 +28,8 @@ import HeaderCreate from "components/HeaderCreate.vue";
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { getRekap } from 'src/composables/useRekapComposables'
 import { toRupiah } from 'src/libs/currency'
-import { formatToDatetime } from 'src/libs/dateTime'
+import { stringToDate } from 'src/libs/dateTime'
+import { api } from 'src/boot/axios'
 
 const rows = ref([])
 
@@ -42,7 +43,16 @@ const columns = [
 const getData = async () => {
   try {
     showLoading()
-    const data = await getRekap()
+    const { data: response } = await api.post('/viewrekap', {
+      id_penjual: sessionStorage.getItem('id_penjual')
+    })
+    const data = response.data.map((e) => {
+      return {
+        date: e.formatted_tanggal_pemesanan,
+        quantity: e.Jumlah_pesan,
+        total: e.harga_menu
+      }
+    })
     rows.value = data
     hideLoading()
   } catch (error) {

@@ -68,15 +68,15 @@ import axios from 'axios'
 import HeaderCreate from "components/HeaderCreate.vue";
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { toRupiah } from 'src/libs/currency'
-import { usePesananStore } from 'src/stores/pesanan-store';
+// import { usePesananStore } from 'src/stores/pesanan-store';
 
 const router = useRouter()
-const pesananStore = usePesananStore()
+//const pesananStore = usePesananStore()
 
-const disableButton = ref(true)
-const statusPesanan = computed(() => {
-  return pesananStore.statusPesanan
-})
+const disableButton = ref(false)
+// // const statusPesanan = computed(() => {
+//   return pesananStore.statusPesanan
+// })
 
 const dataPesanan = ref([
   {
@@ -107,11 +107,11 @@ const getData = async () => {
      * cek status pesanan dari be.
      * ini hanya contoh.
      */
-    if(statusPesanan.value == 'CHECK') {
-      disableButton.value = true
-    } else {
-      disableButton.value = false
-    }
+    // if(statusPesanan.value == 'CHECK') {
+    //   disableButton.value = true
+    // } else {
+    //   disableButton.value = false
+    // }
   } catch (error) {
     console.log(error)
   }

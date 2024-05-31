@@ -40,7 +40,7 @@
         <label class="text-subtitle1">Harga</label>
         <q-input
           outlined
-          v-model="form.harga"
+          v-model="form.harga_menu"
           type="number"
           lazy-rules
           :rules="formRules.harga"
@@ -52,8 +52,8 @@
       </div>
 
       <div class="form-group">
-        <label class="text-subtitle1">Harga Diskon</label>
-        <q-input outlined v-model="form.harga_diskon" type="number">
+        <label class="text-subtitle1">Jenis</label>
+        <q-input outlined v-model="form.jenis" >
           <template v-slot:prepend>
             <q-icon name="las la-tag" />
           </template>
@@ -61,8 +61,8 @@
       </div>
 
       <div class="form-group">
-        <label class="text-subtitle1">Keterangan Diskon</label>
-        <q-input outlined v-model="form.ket_diskon">
+        <label class="text-subtitle1">Ekstra</label>
+        <q-input outlined v-model="form.ekstra">
           <template v-slot:prepend>
             <q-icon name="las la-info-circle" />
           </template>
@@ -92,71 +92,29 @@
   </q-page>
 </template>
 
-<script>
-
-
-
-import axios from 'axios';
-
-export default {
-  data() {
-formdata:{
-      $id_menu = "",
-        $jenis = "",
-        $nama_menu = "",
-        $harga_menu = "",
-        $ekstra = "",
-        $status_menu = "",
-        $desc_menu = ""
-}
-
-  },
-  methods: {
-    handleFileUpload(event) {
-      this.file = event.target.files[0];
-    },
-    async submitForm() {
-      const formData = new FormData();
-      formData.append('firstName', this.firstName);
-      formData.append('lastName', this.lastName);
-      formData.append('file', this.file);
-
-      try {
-        const response = await axios.post('https://example.com/api/data', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': 'Bearer your-token' // if needed
-          }
-        });
-        console.log('Data posted successfully:', response.data);
-      } catch (error) {
-        console.error('Error posting data:', error);
-      }
-    }
-  }
-};
-</script>
-
 <script setup>
 import HeaderLogin from "components/HeaderLogin.vue";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import HeaderCreate from "components/HeaderCreate.vue";
 import useNotify from "src/composables/UseNotify";
+import { api } from "src/boot/axios"
+
 
 defineOptions({
-  name: "EditPesananPage",
+  name: "EditPesanan",
 });
 
+const route = useRoute();
 const router = useRouter();
 const { notifyError, notifySuccess } = useNotify();
 
 const form = ref({
   nama_menu: "",
   desc_menu: "",
-  harga: "",
-  harga_diskon: "",
-  ket_diskon: "",
+  harga_menu: "",
+  jenis: "",
+  ekstra: "",
   menu_tersedia: true,
 });
 
@@ -165,12 +123,43 @@ const formRules = ref({
   harga: [(val) => (val && val > 0) || "Harga harus diisi"],
 });
 
-const onSubmit = () => {
-  console.log(form.value);
-
-  notifySuccess("Menu berhasil diedit!");
-  router.push({ path: "/beranda-penjual" });
+const onSubmit = async () => {
+  try {
+    const { data: response } = await api.post('/updatemenu', {
+      ...form.value,
+      status_menu: form.value.menu_tersedia ? 'READY' : 'NONE'
+    })
+    console.log(response.data)
+    notifySuccess("Menu berhasil diedit!");
+    router.push({ path: "/beranda-penjual" });
+  } catch (error) {
+    console.log(error)
+  }
 };
+
+const getData = async () => {
+  try {
+    const { data: response } = await api.post('/viewonemenu', {
+      id_menu: route.params.id
+    })
+
+    form.value = {
+      id_menu: route.params.id,
+      nama_menu: response.data.nama_menu,
+      desc_menu: response.data.desc_menu,
+      harga_menu: response.data.harga_menu,
+      menu_tersedia: response.data.status_menu == 'READY' ? true : false,
+      jenis: response.data.jenis,
+      ekstra: response.data.ekstra,
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+onMounted(() => {
+  getData()
+})
 </script>
 
 <style scoped>

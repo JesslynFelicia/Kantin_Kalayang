@@ -118,6 +118,11 @@ const routes = [{
         path: '/beranda-penjual',
         component: () =>
             import ('layouts/MainLayout1.vue'),
+        beforeEnter: (to, from) => {
+          if(!sessionStorage.getItem("role")) {
+            return false
+          }
+        },
         children: [{
             path: '',
             component: () =>
@@ -128,6 +133,11 @@ const routes = [{
         path: '/riwayat-penjual',
         component: () =>
             import ('layouts/MainLayout1.vue'),
+        beforeEnter: (to, from) => {
+          if(!sessionStorage.getItem("role")) {
+            return false
+          }
+        },
         children: [{
             path: '',
             component: () =>
@@ -138,6 +148,11 @@ const routes = [{
         path: '/rekap-penjual',
         component: () =>
             import ('layouts/MainLayout1.vue'),
+        beforeEnter: (to, from) => {
+          if(!sessionStorage.getItem("role")) {
+            return false
+          }
+        },
         children: [{
                 path: '',
                 component: () =>
@@ -154,6 +169,11 @@ const routes = [{
         path: '/pesanan-penjual',
         component: () =>
             import ('layouts/MainLayout1.vue'),
+        // beforeEnter: (to, from) => {
+        //   if(!sessionStorage.getItem("role")) {
+        //     return false
+        //   }
+        // },
         children: [{
             path: '',
             component: () =>
@@ -161,9 +181,14 @@ const routes = [{
         }]
     },
     {
-        path: '/edit-pesanan',
+        path: '/edit-pesanan/:id',
         component: () =>
             import ('layouts/MainLayout1.vue'),
+        beforeEnter: (to, from) => {
+          if(!sessionStorage.getItem("role")) {
+            return false
+          }
+        },
         children: [{
             path: '',
             component: () =>

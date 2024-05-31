@@ -115,6 +115,7 @@ import { route } from 'quasar/wrappers';
 import HeaderCreate from "components/HeaderCreate.vue";
 import { ref } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
 export default {
   components: {
@@ -129,6 +130,7 @@ export default {
   },
 
   setup() {
+    const router = useRouter()
     const text = ref("");
 
     const slide1 = ref(1);
@@ -136,6 +138,7 @@ export default {
 
     const autoplay1 = ref(true);
     const autoplay2 = ref(true);
+    const loading = ref(false)
 
     return {
       text,
@@ -143,55 +146,39 @@ export default {
       slide2,
       autoplay1,
       autoplay2,
+      loading,
+      router
     };
   },
   mounted() {
-    this.getdata();
+    this.getdatamenu();
   },
   formdata: {
     id_penjual: "",
   },
   showdatamenu: {},
   methods: {
-    getdata() {
-      const email = ref(localStorage.getItem("userEmail")).value;
 
-      axios
-        .post("http://127.0.0.1:8000/api/viewonepenjual", {
-          email: email,
-        })
-        .then((response) => {
-          // Handle the response here
-          console.log(response.data);
-          // this.id_penjual = response.data.id_penjual;
-          this.id_penjual = 1;
-          console.log(this.id_penjual);
-          this.getdatamenu();
-        })
-        .catch((err) => {
-          // Handle errors here
-          this.error = err;
-          console.error(err);
-        });
-    },
-
-    getdatamenu() {
-      console.log("getdatamenu");
-      console.log(this.id_penjual);
-      axios
+    async getdatamenu() {
+      this.loading = true
+      await axios
         .post("http://127.0.0.1:8000/api/viewmenupenjual", {
-          id_penjual: this.id_penjual,
+          id_penjual: sessionStorage.getItem('id_penjual'),
         })
         .then((response) => {
           this.menus = response.data.data;
-          console.log(response.data);
         })
         .catch((err) => {
           // Handle errors here
           this.error = err;
           console.error(err);
         });
+      this.loading = false
     },
+
+    editMenu(id) {
+      this.router.push(`/edit-pesanan/${id}`)
+    }
   },
 };
 </script>
