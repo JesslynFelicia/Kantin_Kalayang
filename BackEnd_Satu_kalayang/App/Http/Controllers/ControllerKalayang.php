@@ -278,7 +278,6 @@ class ControllerKalayang extends Controller
         $catatan_pemesan = $request->post('catatan_pemesan');
         $ekstra_menu = $request->post('ekstra_menu');
 
-
         $transaction = new ModelKalayangTransaksi();
         $transaction->id_menu = $id_menu;
         $transaction->id_penjual = $id_penjual;

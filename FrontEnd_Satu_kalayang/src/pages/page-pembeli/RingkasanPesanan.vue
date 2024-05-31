@@ -69,7 +69,7 @@
         <q-item v-for="menu in ringkasanPesanan" :key="menu.id_menu">
           <q-item-section top avatar>
             <q-avatar rounded>
-              <img  />
+              <img />
             </q-avatar>
           </q-item-section>
 
@@ -81,7 +81,9 @@
           </q-item-section>
 
           <q-item-section side>
-            <q-item-label caption>{{ menu.harga_menu * menu.count}}</q-item-label>
+            <q-item-label caption>{{
+              menu.harga_menu * menu.count
+            }}</q-item-label>
           </q-item-section>
         </q-item>
         <q-separator spaced />
@@ -121,8 +123,8 @@
           color="primary"
           class="full-width"
           label="Bayar"
-          @click="onSubmit"
-        rounded
+          @click="saveTransaction"
+          rounded
         />
       </div>
     </q-footer>
@@ -131,7 +133,6 @@
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
-import { useRouter } from "vue-router";
 import HeaderCreate from "components/HeaderCreate.vue";
 import {
   showLoading,
@@ -149,6 +150,9 @@ const onSubmit = () => {
 
 <script>
 import axios from "axios";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const selected = ref(null);
 const subSelected = ref(null);
@@ -186,13 +190,36 @@ export default {
         );
 
         this.ringkasanPesanan = response.data.data;
+        this.id_menu = response.data.data[0].id_menu;
+        this.id_penjual = response.data.data[0].id_penjual;
+        this.status_pesanan = response.data.data[0].status_pesanan;
+
         this.totalPriceSum = response.data.total_price_sum;
       } catch (error) {
         console.error("error nih", error);
       }
     },
 
-    
+    async saveTransaction() {
+      try {
+        const requestBody = {
+          // ringkasanPesanan: this.ringkasanPesanan,
+          id_menu: this.id_menu,
+          id_penjual: this.id_penjual,
+          status_pesanan: this.status_pesanan,
+        };
+
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/savetransaksi",
+          requestBody
+        );
+
+        this.$router.replace("/status-pesanan");
+        console.log("Transaksi berhasil disimpan:", response.data);
+      } catch (error) {
+        console.error("Terjadi kesalahan saat menyimpan transaksi:", error);
+      }
+    },
   },
 };
 </script>
