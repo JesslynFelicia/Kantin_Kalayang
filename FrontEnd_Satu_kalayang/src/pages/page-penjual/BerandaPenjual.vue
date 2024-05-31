@@ -24,45 +24,88 @@ import { route } from 'quasar/wrappers';
         </q-input>
       </div>
 
-      <div
-        style="flex-direction: column; margin-top:10px"
-      >
-      <h6 style="font-weight: 800; margin: 2% 3.5%">
-        Menu
-      </h6>
-      <div style="display: flex">
+      <div style="flex-direction: column; margin-top: 10px">
+        <!-- <h6 style="font-weight: 800; margin: 2% 3.5%">Menu</h6> -->
+        <q-page>
+          <p
+            style="
+              font-weight: bold;
+              margin: 0;
+              font-size: 24px;
+              padding: 22px 10px 0px 17px;
+            "
+          >
+            Menu yang tersedia
+          </p>
 
-
-        <!-- disini ngambil data -->
-        <div style="text-align: center">
-          <img
-            src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
-            alt="Deskripsi Foto"
-            class="category"
-          />
-          <div style="display: flex; margin-left: 10%">
-            <div style="text-align: left">
-              <p style="margin: 0; font-weight: 700; font-size: 15px">Menu 1</p>
-              <p style="margin: 0">18.000</p>
-            </div>
-            <q-btn
-              unelevated
-              size="11px"
-              no-caps
-              rounded
-              class="text-weight-medium"
-              icon="edit"
-              @click="$router.replace('/edit-pesanan')"
-              style="margin-left: auto; margin-bottom: auto; margin-right: 5%"
+          <div v-if="loading">
+            <q-skeleton
+              v-for="(_, index) in 5"
+              :key="index"
+              type="rect"
+              style="margin-bottom: 16px"
             />
           </div>
-        </div>
 
+          <div v-else class="menu-grid">
+            <div v-for="(menu, index) in menus" :key="index" class="menu-item">
+              <div style="position: relative; width: 100%">
+                <img
+                  v-if="menu.nama_menu"
+                  src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+                  alt="Deskripsi Foto"
+                  style="width: 100%; height: auto; border-radius: 8px"
+                />
+                <q-skeleton
+                  v-else
+                  type="rect"
+                  style="width: 100%; height: auto; border-radius: 8px"
+                />
+              </div>
 
-
-
-        
-      </div>
+              <div style="flex: 1; margin-top: 8px; text-align: center">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <p style="font-weight: bold; margin: 0; font-size: 18px">
+                    {{ menu.nama_menu || "Loading..." }}
+                  </p>
+                  <q-btn
+                    flat
+                    icon="edit"
+                    color="primary"
+                    @click="editMenu(menu.id_menu)"
+                    style="margin-left: 8px"
+                  />
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  margin-top: 4px;
+                "
+              >
+                <q-icon name="paid" size="30px" color="secondary" />
+                <p
+                  style="
+                    margin: 0%;
+                    padding-left: 5px;
+                    font-size: 16px;
+                    color: #555;
+                  "
+                >
+                  {{ menu.harga_menu || "Loading..." }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </q-page>
       </div>
     </q-page>
   </div>
@@ -71,12 +114,20 @@ import { route } from 'quasar/wrappers';
 <script>
 import HeaderCreate from "components/HeaderCreate.vue";
 import { ref } from "vue";
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   components: {
     HeaderCreate,
   },
+
+  data() {
+    return {
+      id_penjual: "", // Pastikan ini diisi dengan nilai yang benar
+      menus: [],
+    };
+  },
+
   setup() {
     const text = ref("");
 
@@ -93,63 +144,55 @@ export default {
       autoplay1,
       autoplay2,
     };
-  }, mounted() {
+  },
+  mounted() {
     this.getdata();
-
   },
-  formdata:{
-    id_penjual : ""
+  formdata: {
+    id_penjual: "",
   },
-  showdatamenu:{
-
-  },
+  showdatamenu: {},
   methods: {
     getdata() {
       const email = ref(localStorage.getItem("userEmail")).value;
 
-      axios.post("http://127.0.0.1:8000/api/viewonepenjual", {
-        email: email
-      })
-      .then(response => {
-        // Handle the response here
-        console.log(response.data);
-        // this.id_penjual = response.data.id_penjual;
-        this.id_penjual = 1;
-        console.log(this.id_penjual);
-        this.getdatamenu();
-      })
-      .catch(err => {
-        // Handle errors here
-        this.error = err;
-        console.error(err);
-      });
+      axios
+        .post("http://127.0.0.1:8000/api/viewonepenjual", {
+          email: email,
+        })
+        .then((response) => {
+          // Handle the response here
+          console.log(response.data);
+          // this.id_penjual = response.data.id_penjual;
+          this.id_penjual = 1;
+          console.log(this.id_penjual);
+          this.getdatamenu();
+        })
+        .catch((err) => {
+          // Handle errors here
+          this.error = err;
+          console.error(err);
+        });
     },
 
-  getdatamenu(){
-    console.log("getdatamenu");
-    console.log(this.id_penjual);
-    axios.post("http://127.0.0.1:8000/api/viewmenupenjual", {
-        id_penjual : this.id_penjual
-      })
-      .then(response => {
-        // Handle the response here
-        console.log(response.data);
-
-      })
-      .catch(err => {
-        // Handle errors here
-        this.error = err;
-        console.error(err);
-      });
-    }
-
+    getdatamenu() {
+      console.log("getdatamenu");
+      console.log(this.id_penjual);
+      axios
+        .post("http://127.0.0.1:8000/api/viewmenupenjual", {
+          id_penjual: this.id_penjual,
+        })
+        .then((response) => {
+          this.menus = response.data.data;
+          console.log(response.data);
+        })
+        .catch((err) => {
+          // Handle errors here
+          this.error = err;
+          console.error(err);
+        });
+    },
   },
-
-
-
-
-
-
 };
 </script>
 
@@ -159,6 +202,18 @@ export default {
     display: flex;
     flex-direction: column;
   }
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 16px;
 }
 
 .category {
