@@ -397,7 +397,7 @@ class ControllerKalayang extends Controller
 
         $request->validate([
             'qris' => 'required|image|mimes:jpeg,png,jpg,gif',
-            'Profile' => 'required|image|mimes:jpeg,png,jpg,gif'
+            'gambar_profile' => 'required|image|mimes:jpeg,png,jpg,gif'
         ]);
 
         $email = $request->post('email');
@@ -415,8 +415,8 @@ class ControllerKalayang extends Controller
 
             $id = $penjual->id_penjual;
 
-            if ($request->file('Qris')->isValid()) {
-                $file = $request->file('Qris');
+            if ($request->file('qris')->isValid()) {
+                $file = $request->file('qris');
                 $datagambar = file_get_contents($file->getRealPath());
                 $propertiesgambar = getimagesize($file->getRealPath());
 
@@ -428,8 +428,8 @@ class ControllerKalayang extends Controller
                 $image->save();
             }
 
-            if ($request->file('Profile')->isValid()) {
-                $file = $request->file('Profile');
+            if ($request->file('gambar_profile')->isValid()) {
+                $file = $request->file('gambar_profile');
                 $datagambar = file_get_contents($file->getRealPath());
                 $propertiesgambar = getimagesize($file->getRealPath());
 
