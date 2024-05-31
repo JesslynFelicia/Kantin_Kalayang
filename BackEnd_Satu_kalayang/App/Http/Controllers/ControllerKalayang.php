@@ -442,7 +442,7 @@ class ControllerKalayang extends Controller
         $validator = Validator::make($request->all(), [
             'kata_sandi' => 'required|min:6', // Minimal 6 karakter
             'gambar_qris' => 'image|mimes:jpeg,png,jpg',
-            'gambar_profille' => 'required|image|mimes:jpeg,png,jpg,gif', // Validasi ekstensi dan ukuran file
+            'gambar_profille' => 'image|mimes:jpeg,png,jpg,gif', // Validasi ekstensi dan ukuran file
         ]);
 
         if ($validator->fails()) {

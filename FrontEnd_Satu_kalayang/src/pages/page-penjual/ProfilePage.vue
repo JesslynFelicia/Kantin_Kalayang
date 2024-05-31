@@ -95,6 +95,7 @@
           bordered
           accept=".png, .jpg, .jpeg"
           style="max-width: 300px"
+          @change="handleProfile"
         />
       </div>
 
@@ -110,7 +111,7 @@
           bordered
           accept=".png, .jpg, .jpeg"
           style="max-width: 300px"
-          @change="handleFileChange"
+          @change="handleQris"
         />
       </div>
 
@@ -199,7 +200,7 @@ const updateProfile = async () => {
       email: userEmail.value,
       kata_sandi: form.value.new_password,
       gambar_profile: form.value.foto_profil,
-      gambar_qris: form.value.qris,
+      qris: form.value.qris,
     };
 
     const formData = new FormData();
@@ -229,11 +230,19 @@ const updateProfile = async () => {
   }
 };
 
-const handleFileChange = (event) => {
+const handleProfile = (event) => {
+  const file = event.target.files[0];
+  form.value.foto_profil = file;
+  if (form.value.foto_profil !== null) {
+    console.log("gambar foto profil masuk", form.value.foto_profil);
+  }
+};
+
+const handleQris = (event) => {
   const file = event.target.files[0];
   form.value.qris = file;
   if (form.value.qris !== null) {
-    console.log("gambar masuk");
+    console.log("gambar qris masuk");
   }
 };
 
