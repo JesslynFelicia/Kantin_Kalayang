@@ -82,6 +82,19 @@ import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { toRupiah } from 'src/libs/currency'
 import { usePesananStore } from 'src/stores/pesanan-store';
 
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import MyApp from '../../PengaturanPeran.vue'; // Replace with your main Vue component
+
+const app = createApp(MyApp);
+
+// Initialize Pinia
+const pinia = createPinia();
+app.use(pinia);
+
+// Mount the app
+app.mount('#app');
+
 defineOptions({
   name: 'DetailRekap'
 });
