@@ -5,23 +5,22 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ModelKalayangMenu;
 use App\Models\ModelKalayangTransaksi;
-use App\Models\ModelKalayangAdmin;
 use App\Models\ModelKalayangPenjual;
-use App\Models\ModelKalayangAdmin;
 use App\Models\ModelKalayangTransaksiTemp;
+use App\Models\ModelKalayangAdmin;
+use App\Models\ModelKalayangGambar;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendEmail;
 use App\Mail\SendEmailNew;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redis;
 use Termwind\Components\Raw;
 use Illuminate\Support\Facades\Validator;
 
 class ControllerKalayang extends Controller
 {
-
-
 
     //Controller Menu CRUD
     public function makemenu(Request $request)
@@ -79,8 +78,15 @@ class ControllerKalayang extends Controller
     public function viewmenuonepenjual(Request $request)
     {
         $id_penjual = $request->post('id_penjual');
-        $menu = ModelKalayangMenu::where('id_penjual', $id_penjual)->get();
-        return response()->json(['message' => 'success', 'data' => $menu], 200);
+
+        if(empty($id_penjual)){
+            return response()->json(['message' => 'failed'], 404);
+        }
+        else{
+            $menu = ModelKalayangMenu::where('id_penjual', $id_penjual)->get();
+            return response()->json(['message' => 'success', 'data' => $menu], 200);
+        }
+
     }
 
     public function updatemenu(Request $request)
@@ -272,26 +278,30 @@ class ControllerKalayang extends Controller
 
     public function savetransaksi(Request $request)
     {
-        $id_menu = $request->post('id_menu');
-        $id_penjual = $request->post('id_penjual');
+
+        $guestId = $request->post('guest_id');
         $nomor_meja = $request->post('nomor_meja');
         $status_pesanan = $request->post('status_pesanan');
-        $catatan_pemesan = $request->post('catatan_pemesan');
-        $ekstra_menu = $request->post('ekstra_menu');
+        $pesanan = $request->post('Pesanan');
 
-        $transaction = new ModelKalayangTransaksi();
-        $transaction->id_menu = $id_menu;
-        $transaction->id_penjual = $id_penjual;
-        $transaction->id_order = $this->generateUniqueNumber();
-        $transaction->nomor_meja = $nomor_meja;
-        $transaction->status_pesanan = $status_pesanan;
-        $transaction->catatan_pemesan = $catatan_pemesan;
-        $transaction->ekstra_menu = $ekstra_menu;
-        $transaction->save();
+        $transaksiList = ModelKalayangTransaksiTemp::where('guest_id', $guestId)->get();
+        $id_order = $this->generateUniqueNumber();
+        foreach ($transaksiList as $transaksi) {
+            $transaction = new ModelKalayangTransaksi();
+            $transaction->id_menu = $transaksi->id_menu;
+            $transaction->id_penjual = $transaksi->id_penjual;
+            $transaction->id_order = $id_order;
+            $transaction->nomor_meja = $nomor_meja;
+            $transaction->status_pesanan = $status_pesanan;
+            $transaction->pesanan = $pesanan;
+            $transaction->catatan_pemesan = $transaksi->note;
+            $transaction->save();
+        }
 
         if ($transaction) {
             $msg = "Data berhasil di simpan";
             $sts = true;
+            ModelKalayangTransaksiTemp::where('guest_id', $guestId)->delete();
         } else {
             $msg = "Data gagal di simpan";
             $sts = false;
@@ -373,77 +383,11 @@ class ControllerKalayang extends Controller
         return response()->json(['message' => 'success', 'data' => $alltransaksi, 'detail' => $detailtransaksi], 200);
     }
 
-    //Controller Penjual
-    public function savedatapenjual(Request $request)
-    {
-        $nama_pemilik_toko = $request->post('nama_pemilik_toko');
-        $nama_toko = $request->post('nama_toko');
-        $nomor_telepon = $request->post('nomor_telepon');
-        $nomor_toko = $request->post('nomor_toko');
-        $email = $request->post('email');
-        $existingEmail = ModelKalayangPenjual::where('email', $email)->first();
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $msg = "Format email tidak valid";
-            $sts = false;
-            return response()->json(['message' => $msg, 'status' => $sts], 404);
-        } else {
-            if ($existingEmail) {
-                $msg = "Email sudah terdaftar";
-                $sts = false;
-                return response()->json(['message' => $msg, 'status' => $sts], 404);
-            } else {
-                if ($nama_pemilik_toko) {
-                    if ($nama_toko) {
-                        if ($nomor_telepon) {
-                            if ($nomor_toko) {
-                                if ($email) {
-                                    $savedata = new ModelKalayangPenjual();
-                                    $savedata->nama_pemilik = $nama_pemilik_toko;
-                                    $savedata->nama_toko = $nama_toko;
-                                    $savedata->nomor_telepon = $nomor_telepon;
-                                    $savedata->nomor_toko = $nomor_toko;
-                                    $savedata->email = $email;
-                                    $savedata->save();
-
-                                    if ($savedata) {
-                                        $msg = "Data berhasil di simpan";
-                                        $sts = true;
-                                    } else {
-                                        $msg = "Data gagal di simpan";
-                                        $sts = false;
-                                    }
-                                } else {
-                                    $sts = false;
-                                    $msg = "Email tidak boleh kosong";
-                                }
-                            } else {
-                                $sts = false;
-                                $msg = "Nomor toko tidak boleh kosong";
-                            }
-                        } else {
-                            $sts = false;
-                            $msg = "Nomor telepon tidak boleh kosong";
-                        }
-                    } else {
-                        $sts = false;
-                        $msg = "Nama toko tidak boleh kosong";
-                    }
-                } else {
-                    $sts = false;
-                    $msg = "Nama pemilik toko tidak boleh kosong";
-                }
-                return response()->json(['message' => $msg, 'status' => $sts], 200);
-            }
-        }
-    }
-
     public function updatedatapenjual(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
             'kata_sandi' => 'required|min:6', // Minimal 6 karakter
-            'gambar_qris' => 'image|mimes:jpeg,png,jpg',
-            'gambar_profile' => 'image|mimes:jpeg,png,jpg,gif', // Validasi ekstensi dan ukuran file
         ]);
 
         if ($validator->fails()) {
@@ -451,31 +395,51 @@ class ControllerKalayang extends Controller
         }
 
 
+        $request->validate([
+            'qris' => 'required|image|mimes:jpeg,png,jpg,gif',
+            'Profile' => 'required|image|mimes:jpeg,png,jpg,gif'
+        ]);
+
         $email = $request->post('email');
         $kata_sandi = $request->post('kata_sandi');
-        $gambar_profile =  $request->file('gambar_profile');
-        $gambar_qris =  $request->file('gambar_qris');
+        $password = Hash::make($kata_sandi);
         $penjual = ModelKalayangPenjual::where('email', $email)->first();
         if ($penjual) {
 
             if (!empty($kata_sandi)) {
-                $penjual->kata_sandi = $kata_sandi;
-            }
-
-            if ($gambar_profile) {
-                $imageNameProfile = time() . '.' . $gambar_profile->getClientOriginalExtension();
-                $gambar_profile->storeAs('public/profiles', $imageNameProfile);
-                $penjual->gambar_profile = 'profiles/' . $imageNameProfile;
-            }
-
-            // Simpan gambar QRIS jika ada
-            if ($gambar_qris) {
-                $imageNameQris = time() . '.' . $gambar_qris->getClientOriginalExtension();
-                $gambar_qris->storeAs('public/qris', $imageNameQris);
-                $penjual->gambar_qris = 'qris/' . $imageNameQris;
+                $penjual->kata_sandi = $password;
+                $penjual->status_acc = 'True';
             }
 
             $penjual->save();
+
+            $id = $penjual->id_penjual;
+
+            if ($request->file('Qris')->isValid()) {
+                $file = $request->file('Qris');
+                $datagambar = file_get_contents($file->getRealPath());
+                $propertiesgambar = getimagesize($file->getRealPath());
+
+                $image = new ModelKalayangGambar();
+                $image->id_penjual = $id;
+                $image->format_gambar     = $propertiesgambar['mime'];
+                $image->data_image = $datagambar;
+                $image->gambar  = 'QRIS';
+                $image->save();
+            }
+
+            if ($request->file('Profile')->isValid()) {
+                $file = $request->file('Profile');
+                $datagambar = file_get_contents($file->getRealPath());
+                $propertiesgambar = getimagesize($file->getRealPath());
+
+                $image = new ModelKalayangGambar();
+                $image->id_penjual = $id;
+                $image->format_gambar     = $propertiesgambar['mime'];
+                $image->data_image = $datagambar;
+                $image->gambar  = 'PROFILE';
+                $image->save();
+            }
 
             return response()->json(['message' => 'Data penjual berhasil diperbarui'], 200);
         } else {
@@ -503,26 +467,6 @@ class ControllerKalayang extends Controller
         }
     }
 
-    // public function loginnewuser(Request $request)
-    // {
-    //     $email = $request->post('email');
-    //     $kata_sandi = $request->post('kata_sandi');
-    //     $penjual = ModelKalayangPenjual::where('email', $email)->first();
-
-    //     if (!$penjual) {
-    //         return response()->json(['message' => "Akun belum terdaftar", 'status' => false], 404);
-    //     }
-
-    //     $emaildatabase = $penjual->email;
-    //     $password = $penjual->kata_sandi;
-
-    //     if ($email != $emaildatabase || $kata_sandi != $password) {
-    //         return response()->json(['message' => "Email atau Password salah", 'status' => false], 404);
-    //     }
-    //     return response()->json(['message' => "Berhasil login", 'status' => true], 200);
-    // }
-
-
     public function loginnewuser(Request $request)
     {
         $email = $request->post('email');
@@ -543,42 +487,18 @@ class ControllerKalayang extends Controller
         $emaildatabase = $penjual->email;
         $password = $penjual->kata_sandi;
 
-        if ($email != $emaildatabase || $kata_sandi != $password) {
-            return response()->json(['message' => "Email atau Password salah", 'status' => false], 404);
-        }
-        return response()->json(['message' => "Berhasil login", 'status' => true], 200);
-    }
-
-
-    public function RegisterUser(Request $request)
-    {
-        $email = $request->post('email');
-        $penjual = ModelKalayangPenjual::where('email', 'like', $email . '%')->first();
-    }
-
-    //E-Mail
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function sendemail(Request $request)
-    {
-        $email = $request->post('email');
-        $penjual = ModelKalayangPenjual::where('email', 'like', $email . '%')->first();
-        if ($penjual) {
-            session(['namaPemilik' => $penjual['nama_pemilik']]);
-            session(['email' => $penjual['email']]);
-            session(['nomorTelepon' => $penjual['nomor_telepon']]);
-            session(['KataSandi' => $penjual['kata_sandi']]);
-            if ($email) {
-                Mail::to($email)->send(new SendEmail());
-            } else {
-                return "error";
+        $status = $penjual->status_acc;
+        if ($status == 'False') {
+            if ($email != $emaildatabase || $kata_sandi != $password) {
+                return response()->json(['message' => "Email atau Password salah", 'status' => false], 404);
             }
-            return  response()->json(['message' => "berhasil kirim", 'status' => true], 200);
-        } else {
-            return response()->json(['message' => "Data tidak ditemukan", 'status' => false, 'data' => $penjual], 404);
+            return response()->json(['message' => "Berhasil login", 'status' => true,'status_akun'=>$status], 200);
+        }
+        if ($status == 'True') {
+            if ($email == $emaildatabase && Hash::check($kata_sandi, $penjual->kata_sandi)) {
+                return response()->json(['message' => "Berhasil login", 'status' => true,'status_akun'=>$status], 200);
+            }
+            return response()->json(['message' => "Email atau Password salah", 'status' => false], 404);
         }
     }
 
@@ -591,13 +511,13 @@ class ControllerKalayang extends Controller
 
     public function viewpenjual()
     {
-        $allpenjual = ModelKalayangPenjual::where('status_acc', 'WAITING')->get();
+        $allpenjual = ModelKalayangPenjual::all();
         return response()->json(['message' => 'success', 'data' => $allpenjual], 200);
     }
 
     public function Viewpenjualall()
     {
-        $allpenjual = ModelKalayangPenjual::where('status_acc', 'APPROVE')->get();
+        $allpenjual = ModelKalayangPenjual::all();
         return response()->json(['message' => 'success', 'data' => $allpenjual], 200);
     }
 
@@ -627,42 +547,39 @@ class ControllerKalayang extends Controller
         }
     }
 
-    public function ApproveAdmin(Request $request)
+    public function status_pesanan(Request $request)
     {
-        $status = $request->post('status');
-        $id_penjual = $request->post('id_penjual');
-        $accstatus = ModelKalayangPenjual::where('id_penjual', $id_penjual)->first();
-        $accstatus->status_acc = $status;
-        $accstatus->save();
-        return response()->json(['message' => 'success'], 200);
+        $nomor_transaksi = $request->post('id_order');
+        $transaksi = ModelKalayangTransaksi::where('id_order', $nomor_transaksi)->get();
+
+        return response()->json(['message' => $transaksi], 200);
     }
 
-    public function viewpembayaran(Request $request)
+    public function forgot_password(Request $request)
     {
-        $status = $request->post('status');
-        $id_penjual = $request->post('id_penjual');
-        $accstatus = ModelKalayangPenjual::where('id_penjual', $id_penjual)->first();
-        $accstatus->status_acc = $status;
-        $accstatus->save();
-        return response()->json(['message' => 'success'], 200);
-    }
+        $email = $request->post('email');
+        $penjual = ModelKalayangPenjual::where('email', $email)->first();
+        $kata_sandi_random = Str::password(16, true, true, false, false);
+        $status = 'False';
+        if ($penjual) {
+            // Update atribut model dengan nilai baru
+            $penjual->kata_sandi = $kata_sandi_random;
+            $penjual->status_acc = $status;
 
-
-    //Controller Private Function
-    private function generateUniqueNumber()
-    {
-        $date = date('dmy');
-        $lastNumber = ModelKalayangTransaksi::where('id_order', 'like', '#M' . $date . '%')->max('id_order');
-        $lastSequentialNumber = $lastNumber ? intval(substr($lastNumber, 10)) : 0;
-        if (!$lastNumber) {
-            $nextSequentialNumber = 1;
-        } else {
-            $nextSequentialNumber = $lastSequentialNumber + 1;
+            // Simpan perubahan
+            $penjual->save();
         }
-        return '#M' . $date . sprintf('%04d', $nextSequentialNumber);
-    }
 
-    // Han Vir
+        if ($penjual) {
+            $msg = "password berhasil di reset";
+            $sts = true;
+            $this->sendemail_forgotpass($email);
+        } else {
+            $msg = "Data gagal di simpan";
+            $sts = false;
+        }
+        return response()->json(['message' => $msg, 'status' => $sts], 200);
+    }
 
     public function savedatapenjual_new(Request $request)
     {
@@ -671,6 +588,7 @@ class ControllerKalayang extends Controller
         $nomor_telepon = $request->post('nomor_telepon');
         $nomor_toko = $request->post('nomor_toko');
         $email = $request->post('email');
+        $kata_sandi_random = Str::password(16, true, true, false, false);
         $existingEmail = ModelKalayangPenjual::where('email', $email)->first();
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $msg = "Format email tidak valid";
@@ -693,8 +611,7 @@ class ControllerKalayang extends Controller
                                     $savedata->nomor_telepon = $nomor_telepon;
                                     $savedata->nomor_toko = $nomor_toko;
                                     $savedata->email = $email;
-                                    // $savedata->status_acc = 'WAITING';
-                                    $savedata->kata_sandi = Str::password(16, true, true, false, false);
+                                    $savedata->kata_sandi = $kata_sandi_random;
                                     $savedata->save();
 
                                     if ($savedata) {
@@ -857,4 +774,174 @@ class ControllerKalayang extends Controller
             return false;
         }
     }
+
+    public function sendemail_forgotpass($email)
+    {
+        $penjual = ModelKalayangPenjual::where('email', 'like', $email . '%')->first();
+        if ($email) {
+            if ($penjual) {
+                $content = '<!DOCTYPE html>
+                <html>
+
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                    <style>
+                        body {
+                            height: 750px;
+                            margin: 2px;
+                            padding: 2px;
+                            font-family: Helvetica, Arial, sans-serif;
+                        }
+
+                        .button-container {
+                            margin: 40px 0;
+                        }
+
+                        #box {
+                            width: 850px;
+                            margin: 0 auto;
+                            height: 100%;
+                        }
+
+                        #header {
+                            height: 200px;
+                            width: 100%;
+                            position: relative;
+                            display: block;
+                            border-bottom: 1px solid #504597;
+                        }
+
+                        .button {
+                            background-color: #d60e0e;
+                            border: none;
+                            color: white !important;
+                            padding: 10px 25px;
+                            text-align: center;
+                            text-decoration: none;
+                            margin: auto;
+                            font-size: 22px;
+                            cursor: pointer;
+                            border-radius: 10px;
+                        }
+
+                        #image {
+                            width: 150px;
+                            height: auto;
+                            margin-top: 16px;
+                        }
+
+                        #rightbar {
+                            width: 100%;
+                            height: 560px;
+                            padding: 0px;
+                        }
+
+                        .text-div {
+                            font-size: 18px;
+                            margin-bottom: 3px;
+                        }
+
+                        #footer {
+                            clear: both;
+                            height: 40px;
+                            text-align: center;
+                            background-color: #2d0f80;
+                            margin: 0px;
+                            padding: 0px;
+                            color: white;
+                        }
+
+                        p,
+                        pre {
+                            font-size: 18px;
+                            line-height: 1.4;
+                        }
+
+                        .heading {
+                            color: #504597;
+                            font-size: 24px;
+                        }
+                    </style>
+                </head>
+
+                <body>
+                    <!-- mail body -->
+                    <div id="box">
+                        <div id="header">
+                        </div>
+                        <div class="spacing"></div>
+                        <div id="rightbar">
+                            <h1 class="heading"></h1>
+                            <p>Hi, ' . $penjual['nama_pemilik'] . '</p>
+                            <p>Dengan email yang terdaftar  ' . $penjual['email'] . '</p>
+                            <p>Terimakasih telah menghubungi kami di kantin kalayang</p>
+                            <p>dengan email ini kami telah melakukan reset kata sandi anda</p>
+                            <p>Password baru : ' . $penjual['kata_sandi'] . '</p>
+                            <p>Mohon setelah anda berhasil login dapat langsung mengganti password anda</p>
+                            <div class="text-div">Terima kasih,</div>
+                            <div class="text-div">Admin Kantin Kalayang</div>
+                        </div>
+                    </div>
+                </body>
+
+                </html>';
+                $mailData = [
+                    'to' => $penjual['email'],
+                    'content' => $content,
+                    'subject' => 'Your New Passowrd',
+                ];
+                $send = Mail::to($mailData['to'])->send(new SendEmailNew($mailData));
+            } else {
+                return "error";
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //Controller Private Function
+    private function generateUniqueNumber()
+    {
+        $date = date('dmy');
+        $lastNumber = ModelKalayangTransaksi::where('id_order', 'like', '#M' . $date . '%')->max('id_order');
+        $lastSequentialNumber = $lastNumber ? intval(substr($lastNumber, 10)) : 0;
+        if (!$lastNumber) {
+            $nextSequentialNumber = 1;
+        } else {
+            $nextSequentialNumber = $lastSequentialNumber + 1;
+        }
+        return '#M' . $date . sprintf('%04d', $nextSequentialNumber);
+    }
+
+
+    //E-Mail
+    // /**
+    //  * Get the authenticated User.
+    //  *
+    //  * @return \Illuminate\Http\JsonResponse
+    //  */
+    // public function sendemail(Request $request)
+    // {
+    //     $email = $request->post('email');
+    //     $penjual = ModelKalayangPenjual::where('email', 'like', $email . '%')->first();
+    //     if ($penjual) {
+    //         session(['namaPemilik' => $penjual['nama_pemilik']]);
+    //         session(['email' => $penjual['email']]);
+    //         session(['nomorTelepon' => $penjual['nomor_telepon']]);
+    //         session(['KataSandi' => $penjual['kata_sandi']]);
+    //         if ($email) {
+    //             Mail::to($email)->send(new SendEmail());
+    //         } else {
+    //             return "error";
+    //         }
+    //         return  response()->json(['message' => "berhasil kirim", 'status' => true], 200);
+    //     } else {
+    //         return response()->json(['message' => "Data tidak ditemukan", 'status' => false, 'data' => $penjual], 404);
+    //     }
+    // }
+
+
 }

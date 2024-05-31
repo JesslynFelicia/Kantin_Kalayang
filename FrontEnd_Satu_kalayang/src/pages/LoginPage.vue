@@ -179,12 +179,19 @@ const onSubmit = async () => {
     );
 
     if (response.data.status) {
+
       if (form.value.email.includes("admin")) {
         sessionStorage.setItem("role", "admin");
         router.push({ path: "/register" });
-      } else {
+      } else if (response.data.status_akun=="False") {
         sessionStorage.setItem("role", "penjual");
-        router.push({ path: "/profile" ,params: { email: emailPayload}});
+        router.push({ path: "/profile" ,params: { email: ref(localStorage.getItem("userEmail") || "") }});
+        notifySuccess("Login berhasil!");
+        notifyWarning("Mohon ganti password Anda!");
+      }
+      else if (response.data.status_akun=="True"){
+        sessionStorage.setItem("role", "penjual");
+        router.push({ path: "/beranda-penjual" ,params: { email: ref(localStorage.getItem("userEmail") || "") }});
         notifySuccess("Login berhasil!");
         notifyWarning("Mohon ganti password Anda!");
       }

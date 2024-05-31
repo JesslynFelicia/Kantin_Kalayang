@@ -178,7 +178,7 @@ const formRules = ref({
     (val) =>
       val !== form.value.password || "New password harus berbeda dari password",
   ],
-  qris: [(val) => val !== null || "QRIS harus diunggah"],
+  // qris: [(val) => val !== null || "QRIS harus diunggah"],
 });
 
 
@@ -240,10 +240,10 @@ const formRules = ref({
 
 const updateProfile = async () => {
   try {
-    if (!form.value.qris) {
-      notifyError("QRIS tidak boleh kosong");
-      return;
-    }
+    // if (!form.value.qris) {
+    //   notifyError("QRIS tidak boleh kosong");
+    //   return;
+    // }
 
     const payload = {
       email: userEmail.value,
@@ -272,7 +272,13 @@ const updateProfile = async () => {
     if (response.status === 200) {
       console.log(response.data.message);
       notifySuccess("Akun berhasil diedit!");
+      console.log(userEmail.value)
+      try{
       router.push({ path: "/beranda-penjual" });
+      }
+      catch{
+        console.log(error);
+      }
     } else {
       console.error("Update failed:", response.data.error);
     }
