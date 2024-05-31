@@ -123,7 +123,7 @@
           color="primary"
           class="full-width"
           label="Bayar"
-          @click="saveTransaction"
+          @click="saveTransaksi"
           rounded
         />
       </div>
@@ -141,7 +141,6 @@ import {
 import { toRupiah } from "src/libs/currency";
 
 const router = useRouter();
-const table = ref("");
 
 const onSubmit = () => {
   router.push({ path: "/pembayaran" });
@@ -156,6 +155,7 @@ const router = useRouter();
 
 const selected = ref(null);
 const subSelected = ref(null);
+// const table = "";
 
 export default {
   name: "HalamanToko",
@@ -168,6 +168,7 @@ export default {
     return {
       harga_menu: "",
       totalPriceSum: "",
+      table: "",
 
       ringkasanPesanan: [],
     };
@@ -200,20 +201,22 @@ export default {
       }
     },
 
-    async saveTransaction() {
+    async saveTransaksi() {
       try {
         const requestBody = {
           // ringkasanPesanan: this.ringkasanPesanan,
           id_menu: this.id_menu,
           id_penjual: this.id_penjual,
           status_pesanan: this.status_pesanan,
+          nomor_meja: this.table,
         };
 
         const response = await axios.post(
           "http://127.0.0.1:8000/api/savetransaksi",
-          requestBody
+          requestBody,
         );
 
+        console.log("Table value:", this.table);
         this.$router.replace("/status-pesanan");
         console.log("Transaksi berhasil disimpan:", response.data);
       } catch (error) {

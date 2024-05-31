@@ -9,7 +9,7 @@
         icon="arrow_back"
       ></q-btn>
 
-      <q-toolbar-title style="width: 10px; padding: 0%; font-weight: bold;">
+      <q-toolbar-title style="width: 10px; padding: 0%; font-weight: bold">
         {{ title }}
       </q-toolbar-title>
       <div style="display: flex; align-items: center">
@@ -61,7 +61,6 @@
           flat
           filled
           label="Batal"
-          @click="hapusData()"
           style="text-transform: none; padding-left: 17px; padding-right: 17px"
           v-close-popup
         />
@@ -108,7 +107,7 @@ export default defineComponent({
 
     return {
       dialogLogout,
-      router
+      router,
     };
   },
 
@@ -118,9 +117,13 @@ export default defineComponent({
     },
 
     logout() {
+      // sessionStorage.removeItem("guestId");
+      // sessionStorage.removeItem("role");
+
       this.dialogLogout = false;
-      this.router.push("/login");
-    }
+
+      this.$router.replace("/login");
+    },
   },
 });
 </script>
