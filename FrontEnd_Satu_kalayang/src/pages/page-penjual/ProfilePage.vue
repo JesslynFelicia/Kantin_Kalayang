@@ -43,7 +43,7 @@
         <label class="text-subtitle1">Kata Sandi</label>
         <q-input
           outlined
-          v-model="form.password"
+          v-model="password"
           :type="seePassword ? 'password' : 'text'"
           lazy-rules
           :rules="formRules.password"
@@ -158,7 +158,7 @@ const userEmail = ref(localStorage.getItem("userEmail") || "");
 const { notifyError, notifySuccess } = useNotify();
 
 const form = ref({
-  nama_toko: "",
+  nama_toko: '',
   email: "",
   nomor_toko: "",
   password: "",
@@ -181,6 +181,7 @@ const formRules = ref({
   qris: [(val) => val !== null || "QRIS harus diunggah"],
 });
 
+
 // ASU
 // const updateProfile = async () => {
 //   try {
@@ -195,6 +196,8 @@ const formRules = ref({
 //     Object.keys(payload).forEach((key) => {
 //       formData.append(key, payload[key]);
 //     });
+
+
 
 //     const response = await axios.post(
 //       "http://127.0.0.1:8000/api/updatedatapenjual",
@@ -274,6 +277,7 @@ const updateProfile = async () => {
     } else {
       console.error("Update failed:", response.data.error);
     }
+
   } catch (error) {
     console.error("Error updating profile:", error);
     notifyError("Gagal mengedit akun");
@@ -295,6 +299,7 @@ const handleQris = (event) => {
     console.log("gambar qris masuk", form.value.qris);
   }
 };
+
 </script>
 
 <script>
@@ -348,8 +353,9 @@ export default {
           this.nama_toko = response.data.data.nama_toko;
           console.log(this.nama_toko);
           this.nomorToko = response.data.data.nomor_toko;
-
-          // console.log("a", this.nama_toko);
+          this.password = response.data.data.kata_sandi;
+          this.orderStatus = response.data.status;
+          console.log("Status Pesanan:", this.orderStatus);
         } catch (error) {
           console.error("Error fetching penjual data:", error);
         }
@@ -360,13 +366,14 @@ export default {
 
     fetchSellerInfo(email) {
       // Panggil API untuk mendapatkan informasi penjual berdasarkan email
+      // eslint-disable-next-line
       fetch(`/viewpenjual?email=${email}`)
         .then((response) => response.json())
         .then((data) => {
           const sellerId = data.id_penjual;
           // Panggil API kedua untuk mendapatkan informasi detail penjual berdasarkan ID penjual
           return fetch(`/viewpenjual?id=${sellerId}`);
-        })
+        },)
         .then((response) => response.json())
         .then((data) => {
           // Simpan informasi penjual ke objek

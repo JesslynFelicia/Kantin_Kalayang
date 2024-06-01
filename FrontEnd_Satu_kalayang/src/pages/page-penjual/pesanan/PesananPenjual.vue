@@ -84,11 +84,11 @@
     </div>
   </q-page>
 </template>
-
+<!--
 <script setup>
 
-import { onMounted, ref, computed } from 'vue'
-import HeaderCreate from "components/HeaderCreate.vue"
+import { onMounted, computed } from 'vue'
+
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { toRupiah } from 'src/libs/currency'
 import { groupBy } from 'src/libs/dateTime'
@@ -110,7 +110,7 @@ const statusPesanan = computed(() => {
 const getData = async () => {
   try {
     showLoading()
-    const { data: response } = await api.post('/viewpesanan', {
+    const { data: response } = await api.post("http://127.0.0.1:8000/api/viewonepenjual", {
       id_penjual: sessionStorage.getItem('id_penjual')
     })
 
@@ -145,9 +145,93 @@ const onCancel = async () => {
   }
 }
 
-onMounted(() => {
-  getData()
-})
 
+
+
+</script> -->
+
+<script>
+import HeaderCreate from "components/HeaderCreate.vue";
+import { ref } from "vue";
+import axios from 'axios';
+export default
+{
+  components: {
+    HeaderCreate,
+  },
+  formdata:{
+    id_penjual : ""
+  },
+  showdaftarpesanan:{
+    id_menu: "7",
+id_order: "#M3105240001",
+formatted_tanggal_pemesanan: "31/05/2024 09:56",
+nomor_meja: "18",
+status_pesanan: "CHECK",
+catatan_pemesan: "",
+created_at: "2024-05-31T14:34:56.000000Z",
+updated_at: "2024-05-31T14:34:56.000000Z",
+Jumlah_pesan: "x2",
+id_penjual: "1",
+harga_menu: "40000"
+
+  },
+  mounted(){
+this.getdata()
+  },
+  methods: {
+    getdata() {
+      const email = ref(localStorage.getItem("userEmail")).value;
+
+      axios.post("http://127.0.0.1:8000/api/viewonepenjual", {
+        email: email
+      })
+      .then(response => {
+        // Handle the response here
+        console.log(response.data);
+        // this.id_penjual = response.data.id_penjual;
+        this.id_penjual = 1;
+        console.log(this.id_penjual);
+        this.getdatariwayat();
+      })
+      .catch(err => {
+        // Handle errors here
+        this.error = err;
+        console.error(err);
+      })
+    },
+
+  getdatariwayat(){
+    console.log("getdatamenu")
+    console.log(this.id_penjual)
+    axios.post("http://127.0.0.1:8000/api/viewtransaksi", {
+        id_penjual : this.id_penjual
+      })
+      .then(response => {
+        // Handle the response here
+        console.log(response.data.data);
+
+        id_menu = response.data.data.id_menu;
+id_order = response.data.data.id_order;
+formatted_tanggal_pemesanan = response.data.data.formatted_tanggal_pemesanan;
+nomor_meja = response.data.data.nomor_meja;
+status_pesanan = response.data.data.status_pesanan;
+catatan_pemesan = response.data.data.catatan_pemesan;
+created_at = response.data.data.created_at;
+updated_at = response.data.data.updated_at;
+Jumlah_pesan = response.data.data.Jumlah_pesan;
+id_penjual = response.data.data.id_penjual;
+harga_menu = response.data.data.harga_menu;
+
+
+
+      })
+      .catch(err => {
+        // Handle errors here
+        this.error = err;
+        console.error(err);
+      })
+    },
+  },};
 
 </script>

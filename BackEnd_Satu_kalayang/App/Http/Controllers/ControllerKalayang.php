@@ -259,7 +259,7 @@ class ControllerKalayang extends Controller
             DB::raw('MAX(tb_transaksi.nomor_meja) AS nomor_meja'),
             DB::raw('MAX(tb_transaksi.status_pesanan) AS status_pesanan'),
             DB::raw('MAX(tb_transaksi.catatan_pemesan) AS catatan_pemesan'),
-            DB::raw('MAX(tb_transaksi.ekstra_menu) AS ekstra_menu'),
+            // DB::raw('MAX(tb_transaksi.ekstra_menu) AS ekstra_menu'),
             DB::raw('MAX(tb_transaksi.created_at) AS created_at'),
             DB::raw('MAX(tb_transaksi.updated_at) AS updated_at'),
             DB::raw("CONCAT('x', COUNT(tb_transaksi.id_menu)) AS Jumlah_pesan"),
@@ -268,7 +268,7 @@ class ControllerKalayang extends Controller
         )
             ->join('tb_menu', 'tb_menu.id_menu', '=', 'tb_transaksi.id_menu')
             ->where('tb_transaksi.id_penjual', $id_penjual)
-            ->where('tb_transaksi.nomor_meja',  $nomor_meja)
+
             ->whereNotIn('tb_transaksi.status_pesanan', ['SELESAI'])
             ->groupBy('tb_transaksi.id_menu', 'tb_transaksi.id_penjual')
             ->get();
@@ -376,71 +376,88 @@ class ControllerKalayang extends Controller
 
     public function updatedatapenjual(Request $request)
     {
-
+        // Validasi input
         $validator = Validator::make($request->all(), [
-            'nama_toko' => 'required|min:6', // Minimal 6 karakter
-            'kata_sandi' => 'required|min:6', // Minimal 6 karakter
+            'email' => 'required|email', // Validasi email
+            'kata_sandi' => 'required|min:6', // Minimal 6 karakter untuk kata sandi
+            'qris' => 'required|image|mimes:jpeg,png,jpg,gif', // Validasi file QRIS
+            'gambar_profile' => 'image|mimes:jpeg,png,jpg,gif'
         ]);
 
+        // Jika validasi gagal, kembalikan respon dengan pesan error
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 400);
         }
 
-
-        $request->validate([
-            'qris' => 'required|image|mimes:jpeg,png,jpg,gif',
-            'gambar_profile' => 'required|image|mimes:jpeg,png,jpg,gif'
-        ]);
-
         $email = $request->post('email');
         $kata_sandi = $request->post('kata_sandi');
-        $password = Hash::make($kata_sandi);
         $nama_toko = $request->post('nama_toko');
-        $penjual = ModelKalayangPenjual::where('email', $email)->first();
-        if ($penjual) {
+        $password = Hash::make($kata_sandi);
 
+        // Temukan penjual berdasarkan email
+        $penjual = ModelKalayangPenjual::where('email', $email)->first();
+
+        // Jika penjual ditemukan
+        if ($penjual) {
+            // Perbarui kata sandi dan status akun jika kata sandi diisi
             if (!empty($kata_sandi)) {
                 $penjual->kata_sandi = $password;
-                $penjual->nama_toko = $nama_toko;
                 $penjual->status_acc = 'True';
             }
-
+            $penjual->nama_toko = $nama_toko;
             $penjual->save();
 
             $id = $penjual->id_penjual;
+            $check_qris = ModelKalayangGambar::where('id_penjual', $id)->where('gambar', 'QRIS')->first();
+            $check_profile = ModelKalayangGambar::where('id_penjual', $id)->where('gambar', 'PROFILE')->first();
 
+            // Perbarui atau buat data gambar QRIS
             if ($request->file('qris')->isValid()) {
-                $file = $request->file('qris');
-                $datagambar = file_get_contents($file->getRealPath());
-                $propertiesgambar = getimagesize($file->getRealPath());
+                $file_qris = $request->file('qris');
+                $datagambar_qris = file_get_contents($file_qris->getRealPath());
+                $propertiesgambar_qris = getimagesize($file_qris->getRealPath());
 
-                $image = new ModelKalayangGambar();
-                $image->id_penjual = $id;
-                $image->format_gambar     = $propertiesgambar['mime'];
-                $image->data_image = $datagambar;
-                $image->gambar  = 'QRIS';
-                $image->save();
+                if ($check_qris) {
+                    $check_qris->format_gambar = $propertiesgambar_qris['mime'];
+                    $check_qris->data_image = $datagambar_qris;
+                    $check_qris->save();
+                } else {
+                    $image_qris = new ModelKalayangGambar();
+                    $image_qris->id_penjual = $id;
+                    $image_qris->format_gambar = $propertiesgambar_qris['mime'];
+                    $image_qris->data_image = $datagambar_qris;
+                    $image_qris->gambar = 'QRIS';
+                    $image_qris->save();
+                }
             }
 
-            if ($request->file('gambar_profile')->isValid()) {
-                $file = $request->file('gambar_profile');
-                $datagambar = file_get_contents($file->getRealPath());
-                $propertiesgambar = getimagesize($file->getRealPath());
+            // Perbarui atau buat data gambar profile jika ada file diunggah
+            if ($request->file('gambar_profile')) {
+                $file_profile = $request->file('gambar_profile');
+                $datagambar_profile = file_get_contents($file_profile->getRealPath());
+                $propertiesgambar_profile = getimagesize($file_profile->getRealPath());
 
-                $image = new ModelKalayangGambar();
-                $image->id_penjual = $id;
-                $image->format_gambar     = $propertiesgambar['mime'];
-                $image->data_image = $datagambar;
-                $image->gambar  = 'PROFILE';
-                $image->save();
+                if ($check_profile) {
+                    $check_profile->format_gambar = $propertiesgambar_profile['mime'];
+                    $check_profile->data_image = $datagambar_profile;
+                    $check_profile->save();
+                } else {
+                    $image_profile = new ModelKalayangGambar();
+                    $image_profile->id_penjual = $id;
+                    $image_profile->format_gambar = $propertiesgambar_profile['mime'];
+                    $image_profile->data_image = $datagambar_profile;
+                    $image_profile->gambar = 'PROFILE';
+                    $image_profile->save();
+                }
             }
 
+            // Berhasil mengupdate data penjual, kembalikan respon sukses
             return response()->json(['message' => 'Data penjual berhasil diperbarui'], 200);
         } else {
+            // Penjual tidak ditemukan, kembalikan respon dengan pesan error
             return response()->json(['error' => 'Data penjual tidak ditemukan.'], 404);
         }
     }
-
     public function generatepassword(Request $request)
     {
         $email = $request->post('email');
