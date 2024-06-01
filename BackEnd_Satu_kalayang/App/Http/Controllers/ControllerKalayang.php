@@ -271,21 +271,14 @@ class ControllerKalayang extends Controller
 
     public function savetransaksi(Request $request)
     {
-        $id_menu = $request->post('id_menu');
-        $id_penjual = $request->post('id_penjual');
+        $guestId = $request->post('guest_id');
         $nomor_meja = $request->post('nomor_meja');
-        $status_pesanan = $request->post('status_pesanan');
-        $catatan_pemesan = $request->post('catatan_pemesan');
-        $ekstra_menu = $request->post('ekstra_menu');
+        $pesanan = $request->post('Pesanan');
 
         $transaction = new ModelKalayangTransaksi();
-        $transaction->id_menu = $id_menu;
-        $transaction->id_penjual = $id_penjual;
-        $transaction->id_order = $this->generateUniqueNumber();
+        $transaction->guest_id = $guestId;
         $transaction->nomor_meja = $nomor_meja;
-        $transaction->status_pesanan = $status_pesanan;
-        $transaction->catatan_pemesan = $catatan_pemesan;
-        $transaction->ekstra_menu = $ekstra_menu;
+        $transaction->pesanan = $pesanan;
         $transaction->save();
 
         if ($transaction) {
@@ -440,6 +433,7 @@ class ControllerKalayang extends Controller
     {
 
         $validator = Validator::make($request->all(), [
+            'nama_toko' => 'required|min:6', // Minimal 6 karakter
             'kata_sandi' => 'required|min:6', // Minimal 6 karakter
             'gambar_qris' => 'image|mimes:jpeg,png,jpg',
             'gambar_profile' => 'image|mimes:jpeg,png,jpg,gif', // Validasi ekstensi dan ukuran file

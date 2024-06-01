@@ -108,62 +108,6 @@ const formRules = ref({
   password: [(val) => (val && val.length > 0) || "Kata sandi harus diisi"],
 });
 
-const onSubmait = () => {
-  console.log(form.value);
-
-  localStorage.setItem("userEmail", form.value.email);
-
-  if (form.value.email.includes("admin")) {
-    sessionStorage.setItem("role", "admin");
-    router.push({ path: "/beranda-admin" });
-  } else {
-    sessionStorage.setItem("role", "penjual");
-    router.push({ path: "/profile" });
-    // notifySuccess("Login berhasil!");
-  }
-};
-
-const onSusbmit = async () => {
-  try {
-    const payload = {
-      email: form.value.email,
-      kata_sandi: form.value.password,
-    };
-
-    localStorage.setItem("userEmail", form.value.email);
-
-    const response = await axios.post(
-      "http://127.0.0.1:8000/api/newlogin",
-      payload
-    );
-
-    if (response.data.status) {
-      // Kirim email ke API viewonepenjual
-      const emailPayload = {
-        email: form.value.email,
-      };
-      await axios.post(
-        "http://127.0.0.1:8000/api/viewonepenjual",
-        emailPayload
-      );
-
-      notifySuccess(response.data.message);
-      if (form.value.email.includes("admin")) {
-        sessionStorage.setItem("role", "admin");
-        router.push({ path: "/beranda-admin" });
-      } else {
-        sessionStorage.setItem("role", "penjual");
-        router.push({ path: "/profile" });
-      }
-    } else {
-      notifyError(response.data.message);
-    }
-  } catch (error) {
-    notifyError("Terjadi kesalahan saat melakukan login.");
-    console.error("Error:", error);
-  }
-};
-
 const onSubmit = async () => {
   try {
     const payload = {
