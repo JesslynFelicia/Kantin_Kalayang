@@ -181,7 +181,6 @@ const formRules = ref({
   qris: [(val) => val !== null || "QRIS harus diunggah"],
 });
 
-
 // ASU
 // const updateProfile = async () => {
 //   try {
@@ -196,8 +195,6 @@ const formRules = ref({
 //     Object.keys(payload).forEach((key) => {
 //       formData.append(key, payload[key]);
 //     });
-
-
 
 //     const response = await axios.post(
 //       "http://127.0.0.1:8000/api/updatedatapenjual",
@@ -277,7 +274,6 @@ const updateProfile = async () => {
     } else {
       console.error("Update failed:", response.data.error);
     }
-
   } catch (error) {
     console.error("Error updating profile:", error);
     notifyError("Gagal mengedit akun");
@@ -299,7 +295,6 @@ const handleQris = (event) => {
     console.log("gambar qris masuk", form.value.qris);
   }
 };
-
 </script>
 
 <script>

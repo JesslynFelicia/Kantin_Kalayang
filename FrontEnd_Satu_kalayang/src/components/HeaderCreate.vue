@@ -81,7 +81,8 @@
 <script>
 import router from "src/router";
 import { defineComponent, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter } from "vue-router"
+import { useCookies } from "vue3-cookies";
 
 export default defineComponent({
   name: "HeaderCreate",
@@ -104,10 +105,12 @@ export default defineComponent({
   setup() {
     const dialogLogout = ref(false);
     const router = useRouter();
+    const { cookies } = useCookies()
 
     return {
       dialogLogout,
       router,
+      cookies
     };
   },
 
@@ -118,7 +121,8 @@ export default defineComponent({
 
     logout() {
       // sessionStorage.removeItem("guestId");
-      // sessionStorage.removeItem("role");
+      sessionStorage.removeItem("role");
+      this.cookies.remove('penjualdata')
 
       this.dialogLogout = false;
 

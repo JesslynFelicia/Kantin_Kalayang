@@ -14,7 +14,8 @@ import { onMounted } from 'vue';
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { getHistory } from 'src/composables/useHistoryComposables'
 import { toRupiah } from 'src/libs/currency'
-import { formatToDatetime, today } from 'src/libs/dateTime'
+import { stringToDate, today } from 'src/libs/dateTime'
+import { api } from 'src/boot/axios';
 
 defineOptions({
   name: 'IndexPage'
@@ -31,7 +32,7 @@ const columns = [
     label: 'Waktu',
     align: 'left',
     field: 'date',
-    format: val => `${formatToDatetime(val)}`
+    format: val => `${stringToDate(val)}`
   },
   {
     name: 'totalOrder',
@@ -45,8 +46,18 @@ const columns = [
 const getData = async () => {
   try {
     showLoading()
-    const data = await getHistory()
-    rows.value = data
+    const { data: response } = await api.post('/viewrekap', {
+      id_penjual: sessionStorage.getItem('id_penjual')
+    })
+
+    rows.value = response.data.map(e => {
+      return {
+        id: e.id_order,
+        totalOrder: e.harga_menu,
+        date: e.formatted_tanggal_pemesanan,
+        name: e.nama_menu
+      }
+    })
     hideLoading()
   } catch (error) {
     console.log(error)

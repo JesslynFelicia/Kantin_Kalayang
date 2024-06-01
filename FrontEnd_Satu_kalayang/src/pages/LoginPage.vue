@@ -31,8 +31,7 @@
           outlined
           v-model="form.password"
           :type="seePassword ? 'password' : 'text'"
-          lazy-rules
-          :rules="formRules.password"
+
         >
           <template v-slot:prepend>
             <q-icon name="las la-lock" />
@@ -86,6 +85,7 @@ import useNotify from "src/composables/UseNotify";
 import { computed } from "vue";
 import { useStore } from "vuex";
 import axios from "axios";
+import { useCookies } from "vue3-cookies";
 
 defineOptions({
   name: "LoginPage",
@@ -93,6 +93,7 @@ defineOptions({
 
 const router = useRouter();
 const store = useStore();
+const { cookies } = useCookies();
 // const userEmail = computed(() => store.getters.getUserEmail);
 const { notifyError, notifySuccess, notifyWarning } = useNotify();
 
@@ -105,64 +106,8 @@ const form = ref({
 
 const formRules = ref({
   email: [(val) => (val && val.length > 0) || "Email harus diisi"],
-  password: [(val) => (val && val.length > 0) || "Kata sandi harus diisi"],
+  // password: [(val) => (val && val.length > 0) || "Kata sandi harus diisi"],
 });
-
-const onSubmait = () => {
-  console.log(form.value);
-
-  localStorage.setItem("userEmail", form.value.email);
-
-  if (form.value.email.includes("admin")) {
-    sessionStorage.setItem("role", "admin");
-    router.push({ path: "/beranda-admin" });
-  } else {
-    sessionStorage.setItem("role", "penjual");
-    router.push({ path: "/profile" });
-    // notifySuccess("Login berhasil!");
-  }
-};
-
-const onSusbmit = async () => {
-  try {
-    const payload = {
-      email: form.value.email,
-      kata_sandi: form.value.password,
-    };
-
-    localStorage.setItem("userEmail", form.value.email);
-
-    const response = await axios.post(
-      "http://127.0.0.1:8000/api/newlogin",
-      payload
-    );
-
-    if (response.data.status) {
-      // Kirim email ke API viewonepenjual
-      const emailPayload = {
-        email: form.value.email,
-      };
-      await axios.post(
-        "http://127.0.0.1:8000/api/viewonepenjual",
-        emailPayload
-      );
-
-      notifySuccess(response.data.message);
-      if (form.value.email.includes("admin")) {
-        sessionStorage.setItem("role", "admin");
-        router.push({ path: "/beranda-admin" });
-      } else {
-        sessionStorage.setItem("role", "penjual");
-        router.push({ path: "/profile" });
-      }
-    } else {
-      notifyError(response.data.message);
-    }
-  } catch (error) {
-    notifyError("Terjadi kesalahan saat melakukan login.");
-    console.error("Error:", error);
-  }
-};
 
 const onSubmit = async () => {
   try {
@@ -180,18 +125,21 @@ const onSubmit = async () => {
 
     if (response.data.status) {
 
+      const { data: response } = await axios.post(
+        "http://127.0.0.1:8000/api/viewonepenjual",
+        {
+          email: form.value.email
+        }
+      );
+
       if (form.value.email.includes("admin")) {
         sessionStorage.setItem("role", "admin");
-        router.push({ path: "/register" });
-      } else if (response.data.status_akun=="False") {
+        router.push({ path: "/beranda-admin" });
+      } else {
         sessionStorage.setItem("role", "penjual");
-        router.push({ path: "/profile" ,params: { email: ref(localStorage.getItem("userEmail") || "") }});
-        notifySuccess("Login berhasil!");
-        notifyWarning("Mohon ganti password Anda!");
-      }
-      else if (response.data.status_akun=="True"){
-        sessionStorage.setItem("role", "penjual");
-        router.push({ path: "/beranda-penjual" ,params: { email: ref(localStorage.getItem("userEmail") || "") }});
+        sessionStorage.setItem("id_penjual", response.data.id_penjual)
+        cookies.set('penjualdata', JSON.stringify(response.data))
+        router.push({ path: "/profile" });
         notifySuccess("Login berhasil!");
         notifyWarning("Mohon ganti password Anda!");
       }
