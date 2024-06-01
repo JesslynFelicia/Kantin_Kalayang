@@ -50,7 +50,7 @@
             <div style="text-align: center; margin-top: 5px">Riwayat</div>
           </q-item-section>
         </q-item>
-        <q-item
+        <!-- <q-item
           clickable
           v-ripple
           :active="$route.path === '/rekap-penjual'"
@@ -62,7 +62,7 @@
             <q-icon name="pie_chart" size="25px" class="icon-center"></q-icon>
             <div style="text-align: center; margin-top: 5px">Rekap</div>
           </q-item-section>
-        </q-item>
+        </q-item> -->
         <q-item
           clickable
           v-ripple

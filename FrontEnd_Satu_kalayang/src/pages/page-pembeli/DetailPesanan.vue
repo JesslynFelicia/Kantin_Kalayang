@@ -104,6 +104,7 @@
             />
           </div>
           <q-btn
+            rounded
             color="primary"
             class="full-width"
             @click="addToCart(menus)"

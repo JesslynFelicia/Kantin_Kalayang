@@ -67,17 +67,17 @@
     <div style="max-width: 350px">
       <q-list padding>
         <q-item v-for="menu in ringkasanPesanan" :key="menu.id_menu">
-          <q-item-section top avatar>
-            <q-avatar rounded>
-              <img />
-            </q-avatar>
+          <q-item-section>
+            <q-item-label>{{ menu.count }}x</q-item-label>
           </q-item-section>
 
           <q-item-section>
-            <q-item-label>{{ menu.nama_menu }}</q-item-label>
-            <q-item-label caption>
+            <q-item-label>{{
+              menu.nama_menu
+            }}</q-item-label>
+            <!-- <q-item-label caption>
               <span class="text" @click="() => {}">Edit</span>
-            </q-item-label>
+            </q-item-label> -->
           </q-item-section>
 
           <q-item-section side>

@@ -110,7 +110,7 @@ import { route } from 'quasar/wrappers';
                 {{ toko.nama_toko || "Loading..." }}
               </p>
 
-              <div style="display: flex; align-items: center">
+              <!-- <div style="display: flex; align-items: center">
                 <q-icon name="paid" size="30px" color="secondary" />
                 <p
                   style="
@@ -122,7 +122,7 @@ import { route } from 'quasar/wrappers';
                 >
                   {{ "harusnya range harga" || "Loading..." }}
                 </p>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

@@ -115,7 +115,7 @@ import { route } from 'quasar/wrappers';
             src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
             alt="Deskripsi Foto"
             class="category"
-            style="margin: 10px; border-radius: 20px;"
+            style="margin: 10px; border-radius: 20px"
           />
           <q-card-section
             class="row items-start no-wrap"
@@ -162,7 +162,7 @@ import { route } from 'quasar/wrappers';
             "
           >
             <p
-            class="text-subtitle1"
+              class="text-subtitle1"
               style="
                 margin: 0;
                 font-size: 19px;
@@ -173,8 +173,9 @@ import { route } from 'quasar/wrappers';
               {{ totalItem }} pesanan
             </p>
             <p
-            class="text-subtitle2"
-            style="margin: 0; font-size: 17px; font-weight: 400">
+              class="text-subtitle2"
+              style="margin: 0; font-size: 17px; font-weight: 400"
+            >
               {{ namaTokos }}
             </p>
           </div>
@@ -451,7 +452,6 @@ export default {
         });
     },
 
-
     async addRingkasan() {
       this.guestId = sessionStorage.getItem("guestId");
       try {
@@ -461,14 +461,13 @@ export default {
             guestId: this.guestId,
           }
         );
-
         // const keranjang = response.data;
         this.totalPrice = response.data.total_price_sum;
         this.totalItem = response.data.total_id_menu;
-        // this.id_penjual = response.data.id_penjual;
         this.namaTokos = response.data.nama_tokos;
 
-        this.idPenjual = response.data.data[0].id_penjual;
+        this.idPenjual = this.$route.params.id;
+        // this.idPenjual = response.data.data[0].id_penjual;
 
         console.log("response.data nya:", response.data);
         console.log("lalalallalalalla", this.idPenjual);
