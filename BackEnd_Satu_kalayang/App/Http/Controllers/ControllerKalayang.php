@@ -278,25 +278,15 @@ class ControllerKalayang extends Controller
 
     public function savetransaksi(Request $request)
     {
-
         $guestId = $request->post('guest_id');
         $nomor_meja = $request->post('nomor_meja');
-        $status_pesanan = $request->post('status_pesanan');
         $pesanan = $request->post('Pesanan');
 
-        $transaksiList = ModelKalayangTransaksiTemp::where('guest_id', $guestId)->get();
-        $id_order = $this->generateUniqueNumber();
-        foreach ($transaksiList as $transaksi) {
-            $transaction = new ModelKalayangTransaksi();
-            $transaction->id_menu = $transaksi->id_menu;
-            $transaction->id_penjual = $transaksi->id_penjual;
-            $transaction->id_order = $id_order;
-            $transaction->nomor_meja = $nomor_meja;
-            $transaction->status_pesanan = $status_pesanan;
-            $transaction->pesanan = $pesanan;
-            $transaction->catatan_pemesan = $transaksi->note;
-            $transaction->save();
-        }
+        $transaction = new ModelKalayangTransaksi();
+        $transaction->guest_id = $guestId;
+        $transaction->nomor_meja = $nomor_meja;
+        $transaction->pesanan = $pesanan;
+        $transaction->save();
 
         if ($transaction) {
             $msg = "Data berhasil di simpan";
@@ -387,6 +377,7 @@ class ControllerKalayang extends Controller
     {
 
         $validator = Validator::make($request->all(), [
+            'nama_toko' => 'required|min:6', // Minimal 6 karakter
             'kata_sandi' => 'required|min:6', // Minimal 6 karakter
         ]);
 

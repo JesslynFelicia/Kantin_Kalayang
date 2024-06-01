@@ -181,7 +181,6 @@ const formRules = ref({
   // qris: [(val) => val !== null || "QRIS harus diunggah"],
 });
 
-
 // ASU
 // const updateProfile = async () => {
 //   try {
@@ -196,8 +195,6 @@ const formRules = ref({
 //     Object.keys(payload).forEach((key) => {
 //       formData.append(key, payload[key]);
 //     });
-
-
 
 //     const response = await axios.post(
 //       "http://127.0.0.1:8000/api/updatedatapenjual",
@@ -246,6 +243,7 @@ const updateProfile = async () => {
     // }
 
     const payload = {
+      // nama_toko: this.namaToko,
       email: userEmail.value,
       kata_sandi: form.value.new_password,
       gambar_profile: form.value.gambar_profile,
@@ -282,7 +280,6 @@ const updateProfile = async () => {
     } else {
       console.error("Update failed:", response.data.error);
     }
-
   } catch (error) {
     console.error("Error updating profile:", error);
     notifyError("Gagal mengedit akun");
@@ -304,7 +301,6 @@ const handleQris = (event) => {
     console.log("gambar qris masuk", form.value.qris);
   }
 };
-
 </script>
 
 <script>
@@ -347,7 +343,7 @@ export default {
     // },
 
     async getdata() {
-      const loggedInUserEmail = localStorage.getItem("loggedInUserEmail");
+      const loggedInUserEmail = localStorage.getItem("userEmail");
       if (loggedInUserEmail) {
         try {
           const response = await axios.post(
