@@ -4,8 +4,8 @@
     <div v-for="order in orders" :key="order.id_order" class="q-mb-md">
       <q-card>
         <q-card-section>
-          <div :class="statusClass(order.status_pesanan)">
-            {{ order.status_pesanan }}
+          <div :class="statusClass(status)">
+            {{ status }}
           </div>
         </q-card-section>
 
@@ -16,7 +16,9 @@
         </q-card-section>
 
         <q-card-section>
-          <div class="text-right text-subtitle1">Total yang harus dibayar: Rp</div>
+          <div class="text-right text-subtitle1">
+            Total yang harus dibayar: Rp
+          </div>
         </q-card-section>
 
         <q-separator />
@@ -25,12 +27,22 @@
           <q-btn
             color="negative"
             label="Tolak Pesanan"
-            @click="rejectOrder(order)"
+            v-if="!orderCompleted[order.id_order]"
+            :disabled="orderAccepted[order.id_order]"
+            @click="rejectOrder(order.id_order)"
           />
           <q-btn
+            v-if="!orderAccepted[order.id_order]"
             color="positive"
             label="Terima Pesanan"
-            @click="acceptOrder(order)"
+            @click="acceptOrder(order.id_order)"
+          />
+          <q-btn
+            v-else
+            color="positive"
+            label="Pesanan Selesai"
+            :disabled="orderCompleted[order.id_order]"
+            @click="completeOrder(order.id_order)"
           />
         </q-card-actions>
       </q-card>
@@ -69,6 +81,11 @@ export default {
 
   data() {
     return {
+      id_order: "",
+      // orderAccepted: false,
+      // orderCompleted: false,
+      orderAccepted: {},
+      orderCompleted: {},
       resultData: [],
       orders: [],
       status: "Menunggu Konfirmasi", // atau 'Pesanan di Proses'
@@ -85,25 +102,46 @@ export default {
           label: "Harga Satuan",
           align: "right",
           field: "harga",
-          format: (val) => `Rp ${val}`,
+          format: (val) => `Rp${val}`,
         },
         {
           name: "total",
           label: "Total",
           align: "right",
           field: "total",
-          format: (val) => `Rp ${val}`,
+          format: (val) => `Rp${val}`,
         },
       ],
-      rows: [
-        {
-          pesanan: this.nama_menu1,
-          // jumlah: this.order.Jumlah_pesan,
-          // harga: this.order.harga_menu,
-          // total: this.order.Jumlah_pesan * order.harga_menu,
-        },
-      ],
+      // rows: [
+      //   {
+      //     pesanan: this.nama_menu1,
+      //     // jumlah: this.order.Jumlah_pesan,
+      //     // harga: this.order.harga_menu,
+      //     // total: this.order.Jumlah_pesan * order.harga_menu,
+      //   },
+      // ],
     };
+  },
+
+  computed: {
+    ordersByOrderId() {
+      const ordersByOrderId = {};
+      this.orders.forEach((order) => {
+        if (!ordersByOrderId[order.id_order]) {
+          ordersByOrderId[order.id_order] = {
+            id_order: order.id_order,
+            status_pesanan: order.status_pesanan,
+            rows: [],
+          };
+        }
+        ordersByOrderId[order.id_order].rows.push({
+          nama_menu: order.nama_menu,
+          jumlah_pesan: order.Jumlah_pesan,
+          harga_menu: order.harga_menu,
+        });
+      });
+      return Object.values(ordersByOrderId);
+    },
   },
 
   methods: {
@@ -164,15 +202,19 @@ export default {
         })
         .then((response) => {
           console.log("response", response.data.data);
+          response.data.data.forEach((item) => {
+            console.log("id_order:", item.id_order);
+          });
           this.orders = response.data.data.map((order) => {
-            const nama_menu = this.getMenu(order.id_menu);
-            console.log("h1", this.nama_menu1);
+            // const nama_menu = this.getMenu(order.id_menu);
+            // const id_order = this.acceptOrder(order.id_order);
+            const id_order = order.id_order;
             return {
-              id_order: order.id_order,
-              status_pesanan: order.status_pesanan,
+              id_order: id_order,
+              // status_pesanan: order.status_pesanan,
               rows: [
                 {
-                  pesanan: nama_menu,
+                  pesanan: order.nama_menu,
                   jumlah: order.Jumlah_pesan,
                   harga: order.harga_menu,
                   total: order.Jumlah_pesan * order.harga_menu,
@@ -186,54 +228,20 @@ export default {
         });
     },
 
-    getMenu(id_menu) {
+    completeOrder() {
       axios
-        .post("http://127.0.0.1:8000/api/viewonemenu", {
-          id_menu: id_menu,
+        .post("http://127.0.0.1:8000/api/status_pesanan", {
+          id_order: this.id_order,
+          status: this.status,
+          guestId: "",
         })
         .then((response) => {
-          console.log("response", response.data.data);
-          if (response.data.data) {
-            const nama_menu1 = response.data.data.nama_menu;
-            console.log("haa", nama_menu1);
-            return response.data.data.nama_menu;
-          } else {
-            console.log("Menu not found for id_menu:", id_menu);
-            return ""; // Atau apa yang sesuai dengan kebutuhan Anda
-          }
+          this.status = "Pesanan Selesai";
+          this.orderCompleted = true;
+          console.log(response);
         })
-        .catch((err) => {
-          console.error(err);
-          return ""; // Atau apa yang sesuai dengan kebutuhan Anda
-        });
-    },
-
-    getDataRiwayat1() {
-      console.log("getdatamenu");
-      console.log(this.id_penjual);
-      axios
-        .post("http://127.0.0.1:8000/api/viewtransaksi", {
-          id_penjual: this.id_penjual,
-        })
-        .then((response) => {
-          console.log("response", response.data.data);
-          this.id_menu = response.data.data[0].id_menu;
-          this.id_order = response.data.data[0].id_order;
-          this.formatted_tanggal_pemesanan =
-            response.data.data[0].formatted_tanggal_pemesanan;
-          this.nomor_meja = response.data.data[0].nomor_meja;
-          this.status_pesanan = response.data.data[0].status_pesanan;
-          this.catatan_pemesan = response.data.data[0].catatan_pemesan;
-          this.created_at = response.data.data[0].created_at;
-          this.updated_at = response.data.data[0].updated_at;
-          this.Jumlah_pesan = response.data.data[0].Jumlah_pesan;
-          this.id_penjual = response.data.data[0].id_penjual;
-          this.harga_menu = response.data.data[0].harga_menu;
-        })
-        .catch((err) => {
-          // Handle errors here
-          this.error = err;
-          console.error(err);
+        .catch((error) => {
+          console.error(error);
         });
     },
 
@@ -248,11 +256,12 @@ export default {
 
     rejectOrder() {
       this.status = "Pesanan Ditolak";
-      // tambahkan logika lain jika diperlukan
     },
+
     acceptOrder() {
-      this.status = "Pesanan di Proses"; // Mengubah status menjadi 'Pesanan di Proses'
-      // tambahkan logika lain jika diperlukan
+      this.status = "Pesanan di Proses";
+
+      this.orderAccepted = true;
     },
   },
 };
