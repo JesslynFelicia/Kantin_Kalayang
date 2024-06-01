@@ -16,11 +16,7 @@
           <div class="text-center">
             <span class="text-subtitle1 text-weight-bold">Toko 1</span>
           </div>
-          <q-img
-            class="rounded-borders"
-            src="/src/assets/qris.png"
-            style="width: 250px; height: 250px;"
-          />
+          <img :src="imageBlobUrl" alt="Image" />
         </div>
       </q-card-section>
     </q-card>
@@ -64,7 +60,7 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+
 import HeaderCreate from "components/HeaderCreate.vue";
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { toRupiah } from 'src/libs/currency'
@@ -132,3 +128,67 @@ onMounted(() => {
 }
 
 </style>
+
+<script>
+
+import axios from 'axios';
+export default
+{
+  components: {
+    HeaderCreate,
+  },
+  formdata:{
+    id_penjual : ""
+  },
+  qris:{
+    imageBlobUrl: ''
+  },
+  mounted(){
+this.getdata()
+  },
+  methods: {
+    getdata() {
+      const email = ref(localStorage.getItem("userEmail")).value;
+
+      axios.post("http://127.0.0.1:8000/api/viewonepenjual", {
+        email: email
+      })
+      .then(response => {
+        // Handle the response here
+        console.log(response.data);
+        // this.id_penjual = response.data.id_penjual;
+        this.id_penjual = 1;
+        console.log(this.id_penjual);
+        this.getqris();
+      })
+      .catch(err => {
+        // Handle errors here
+        this.error = err;
+        console.error(err);
+      })
+    },
+
+  getqris(){
+    console.log("getdatamenu")
+    console.log(this.id_penjual)
+    axios.post("http://127.0.0.1:8000/api/showqris", {
+        id_penjual : this.id_penjual,
+        qris : "qris"
+      })
+      .then(response => {
+        // Handle the response here
+        //
+        this.imageBlobUrl = URL.createObjectURL(response.data);
+        console.log(response.data);
+
+      })
+      .catch(err => {
+        // Handle errors here
+        this.error = err;
+        console.error(err);
+      });
+    }
+
+  }
+  }
+</script>
