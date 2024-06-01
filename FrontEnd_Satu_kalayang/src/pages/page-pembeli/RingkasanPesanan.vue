@@ -72,9 +72,7 @@
           </q-item-section>
 
           <q-item-section>
-            <q-item-label>{{
-              menu.nama_menu
-            }}</q-item-label>
+            <q-item-label>{{ menu.nama_menu }}</q-item-label>
             <!-- <q-item-label caption>
               <span class="text" @click="() => {}">Edit</span>
             </q-item-label> -->
@@ -191,7 +189,7 @@ export default {
 
         this.ringkasanPesanan = response.data.data;
         // this.id_menu = response.data.data[0].id_menu;
-        // this.id_penjual = response.data.data[0].id_penjual;
+        this.id_penjual = response.data.data.id_penjual;
         // this.status_pesanan = response.data.data[0].status_pesanan;
 
         this.totalPriceSum = response.data.total_price_sum;
@@ -214,9 +212,11 @@ export default {
 
       try {
         const requestBody = {
+          id_penjual: this.id_penjual,
           guestId: this.guestId,
           pesanan: this.selected,
           nomor_meja: this.table,
+          status_pembayaran: "belum dibayar",
         };
 
         const response = await axios.post(

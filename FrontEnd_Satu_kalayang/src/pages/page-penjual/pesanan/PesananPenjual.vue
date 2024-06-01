@@ -27,22 +27,22 @@
           <q-btn
             color="negative"
             label="Tolak Pesanan"
-            v-if="!orderCompleted"
-            :disabled="orderAccepted"
-            @click="rejectOrder(order)"
+            v-if="!orderCompleted[order.id_order]"
+            :disabled="orderAccepted[order.id_order]"
+            @click="rejectOrder(order.id_order)"
           />
           <q-btn
-            v-if="!orderAccepted"
+            v-if="!orderAccepted[order.id_order]"
             color="positive"
             label="Terima Pesanan"
-            @click="acceptOrder(order)"
+            @click="acceptOrder(order.id_order)"
           />
           <q-btn
             v-else
             color="positive"
             label="Pesanan Selesai"
-            :disable="orderCompleted"
-            @click="completeOrder(order)"
+            :disabled="orderCompleted[order.id_order]"
+            @click="completeOrder(order.id_order)"
           />
         </q-card-actions>
       </q-card>
@@ -81,9 +81,11 @@ export default {
 
   data() {
     return {
-      id_orders: [],
-      orderAccepted: false,
-      orderCompleted: false,
+      id_order: "",
+      // orderAccepted: false,
+      // orderCompleted: false,
+      orderAccepted: {},
+      orderCompleted: {},
       resultData: [],
       orders: [],
       status: "Menunggu Konfirmasi", // atau 'Pesanan di Proses'
@@ -119,6 +121,27 @@ export default {
       //   },
       // ],
     };
+  },
+
+  computed: {
+    ordersByOrderId() {
+      const ordersByOrderId = {};
+      this.orders.forEach((order) => {
+        if (!ordersByOrderId[order.id_order]) {
+          ordersByOrderId[order.id_order] = {
+            id_order: order.id_order,
+            status_pesanan: order.status_pesanan,
+            rows: [],
+          };
+        }
+        ordersByOrderId[order.id_order].rows.push({
+          nama_menu: order.nama_menu,
+          jumlah_pesan: order.Jumlah_pesan,
+          harga_menu: order.harga_menu,
+        });
+      });
+      return Object.values(ordersByOrderId);
+    },
   },
 
   methods: {
