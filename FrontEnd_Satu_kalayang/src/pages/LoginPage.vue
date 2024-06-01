@@ -31,7 +31,8 @@
           outlined
           v-model="form.password"
           :type="seePassword ? 'password' : 'text'"
-
+          lazy-rules
+          :rules="formRules.password"
         >
           <template v-slot:prepend>
             <q-icon name="las la-lock" />
@@ -79,7 +80,7 @@
 import HeaderLogin from "components/HeaderLogin.vue";
 import HeaderCreate from "components/HeaderCreate.vue";
 import FooterApp from "components/FooterApp.vue";
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { useRouter } from "vue-router";
 import useNotify from "src/composables/UseNotify";
 import { computed } from "vue";
@@ -106,7 +107,7 @@ const form = ref({
 
 const formRules = ref({
   email: [(val) => (val && val.length > 0) || "Email harus diisi"],
-  // password: [(val) => (val && val.length > 0) || "Kata sandi harus diisi"],
+  password: [(val) => (val && val.length > 0) || "Kata sandi harus diisi"],
 });
 
 const onSubmit = async () => {
@@ -132,13 +133,19 @@ const onSubmit = async () => {
         }
       );
 
+      if(form.value.remember) {
+        cookies.set('data', {
+          email: form.value.email,
+          password: form.value.password
+        })
+      }
+
       if (form.value.email.includes("admin")) {
         sessionStorage.setItem("role", "admin");
         router.push({ path: "/beranda-admin" });
       } else {
         sessionStorage.setItem("role", "penjual");
         sessionStorage.setItem("id_penjual", response.data.id_penjual)
-        cookies.set('penjualdata', JSON.stringify(response.data))
         router.push({ path: "/profile" });
         notifySuccess("Login berhasil!");
         notifyWarning("Mohon ganti password Anda!");
@@ -150,7 +157,8 @@ const onSubmit = async () => {
     notifyError("Terjadi kesalahan saat melakukan login.");
     console.error("Error:", error);
   }
-};
+}
+
 </script>
 
 <script>

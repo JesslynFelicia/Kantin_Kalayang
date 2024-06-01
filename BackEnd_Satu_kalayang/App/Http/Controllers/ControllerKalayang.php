@@ -265,6 +265,7 @@ class ControllerKalayang extends Controller
             DB::raw("CONCAT('x', COUNT(tb_transaksi.id_menu)) AS Jumlah_pesan"),
             'tb_transaksi.id_penjual',
             DB::raw('SUM(tb_menu.harga_menu) AS harga_menu'),
+            'tb_menu.nama_menu'
         )
             ->join('tb_menu', 'tb_menu.id_menu', '=', 'tb_transaksi.id_menu')
             ->where('tb_transaksi.id_penjual', $id_penjual)
@@ -537,6 +538,36 @@ class ControllerKalayang extends Controller
         $email = $request->post('email');
         $allpenjual = ModelKalayangPenjual::where('email', $email)->get();
         return response()->json(['message' => 'success', 'data' => $allpenjual], 200);
+    }
+
+    public function riwayatpenjual(Request $request)
+    {
+        $perPage = $request->input('perPage', 10);
+        $id_penjual = $request->input('id_penjual');
+        $penjual = ModelKalayangTransaksi::select(
+            'tb_transaksi.id_menu',
+            DB::raw('MAX(tb_transaksi.id_order) AS id_order'),
+            DB::raw("DATE_FORMAT(MAX(tb_transaksi.tanggal_pemesanan), '%d/%m/%Y %h:%s') AS formatted_tanggal_pemesanan"),
+            DB::raw('MAX(tb_transaksi.nomor_meja) AS nomor_meja'),
+            DB::raw('MAX(tb_transaksi.status_pesanan) AS status_pesanan'),
+            DB::raw('MAX(tb_transaksi.catatan_pemesan) AS catatan_pemesan'),
+            // DB::raw('MAX(tb_transaksi.ekstra_menu) AS ekstra_menu'),
+            DB::raw('MAX(tb_transaksi.created_at) AS created_at'),
+            DB::raw('MAX(tb_transaksi.updated_at) AS updated_at'),
+            DB::raw("CONCAT('x', COUNT(tb_transaksi.id_menu)) AS Jumlah_pesan"),
+            'tb_transaksi.id_penjual',
+            DB::raw('SUM(tb_menu.harga_menu) AS harga_menu'),
+            'tb_menu.nama_menu'
+        )
+            ->join('tb_menu', 'tb_menu.id_menu', '=', 'tb_transaksi.id_menu')
+            ->where('tb_transaksi.id_penjual', $id_penjual)
+
+            // ->where('tb_transaksi.status_pesanan', ['SELESAI'])
+            ->groupBy('tb_transaksi.id_menu', 'tb_transaksi.id_penjual', 'tb_transaksi.id_order','tb_menu.nama_menu')
+            ->paginate($perPage);
+        // $penjual = ModelKalayangTransaksi::where('id_penjual', $id_penjual)->paginate($perPage);
+
+        return response()->json($penjual);
     }
 
     public function showqris(Request $request)

@@ -3,14 +3,44 @@
   <q-page class="">
     <div class="q-pa-md">
       <div class="text-bold q-mb-sm">{{ today() }}</div>
-      <q-table title="" :rows="rows" :columns="columns" row-key="name" />
+      <q-table
+        flat bordered
+        title=""
+        :rows="rows"
+        :columns="columns"
+        row-key="name"
+        v-model:pagination="pagination"
+        @request="onRequest"
+      >
+      <template v-slot:pagination="scope">
+          <q-btn
+            icon="chevron_left"
+            color="grey-8"
+            round
+            dense
+            flat
+            :disable="scope.isFirstPage"
+            @click="scope.prevPage"
+          />
+
+          <q-btn
+            icon="chevron_right"
+            color="grey-8"
+            round
+            dense
+            flat
+            :disable="scope.isLastPage"
+            @click="scope.nextPage"
+          />
+        </template>
+      </q-table>
     </div>
   </q-page>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
-
+import { onMounted, ref, computed, watch } from 'vue';
+import HeaderCreate from 'src/components/HeaderCreate.vue';
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { getHistory } from 'src/composables/useHistoryComposables'
 import { toRupiah } from 'src/libs/currency'
@@ -43,13 +73,29 @@ const columns = [
   },
 ]
 
+const pagination = ref({
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 10,
+  // rowsNumber: 0
+})
+
+const onRequest = async (props) => {
+  pagination.value.page = props.pagination.page
+  pagination.value.rowsPerPage = props.pagination.rowsPerPage
+  await getData()
+}
+
 const getData = async () => {
   try {
     showLoading()
-    const { data: response } = await api.post('/viewrekap', {
-      id_penjual: sessionStorage.getItem('id_penjual')
+    const { data: response } = await api.post(`/riwayatpenjual?page=${pagination.value.page}`, {
+      id_penjual: sessionStorage.getItem('id_penjual'),
+      perPage: pagination.value.rowsPerPage
     })
-
+    console.log(response.data)
+    pagination.value.rowsNumber = response.total
     rows.value = response.data.map(e => {
       return {
         id: e.id_order,
@@ -67,67 +113,5 @@ const getData = async () => {
 onMounted(() => {
   getData()
 })
-</script>
-
-<script>
-import HeaderCreate from "components/HeaderCreate.vue";
-import { ref } from "vue";
-import axios from 'axios';
-export default
-{
-  components: {
-    HeaderCreate,
-  },
-  formdata:{
-    id_penjual : ""
-  },
-  showdatariwayat:{
-
-  },
-  mounted(){
-this.getdata()
-  },
-  methods: {
-    getdata() {
-      const email = ref(localStorage.getItem("userEmail")).value;
-
-      axios.post("http://127.0.0.1:8000/api/viewonepenjual", {
-        email: email
-      })
-      .then(response => {
-        // Handle the response here
-        console.log(response.data);
-        // this.id_penjual = response.data.id_penjual;
-        this.id_penjual = 1;
-        console.log(this.id_penjual);
-        this.getdatariwayat();
-      })
-      .catch(err => {
-        // Handle errors here
-        this.error = err;
-        console.error(err);
-      })
-    },
-
-  getdatariwayat(){
-    console.log("getdatamenu")
-    console.log(this.id_penjual)
-    axios.post("http://127.0.0.1:8000/api/viewrekap", {
-        id_penjual : this.id_penjual
-      })
-      .then(response => {
-        // Handle the response here
-        console.log(response.data);
-
-      })
-      .catch(err => {
-        // Handle errors here
-        this.error = err;
-        console.error(err);
-      });
-    }
-
-  }
-  }
 </script>
 

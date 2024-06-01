@@ -144,8 +144,8 @@ export default {
         })
         .then((response) => {
           console.log(response.data);
-          // this.id_penjual = response.data.id_penjual;
-          this.id_penjual = 1;
+          this.id_penjual = response.data.data.id_penjual;
+          // this.id_penjual = 1;
           console.log(this.id_penjual);
           console.log("response11", response.data.data);
           this.getDataRiwayat();
