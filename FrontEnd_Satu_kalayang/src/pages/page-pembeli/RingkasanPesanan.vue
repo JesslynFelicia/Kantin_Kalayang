@@ -131,30 +131,15 @@
   </q-page>
 </template>
 
-<script setup>
-import { onMounted, ref, computed } from "vue";
-import HeaderCreate from "components/HeaderCreate.vue";
-import {
-  showLoading,
-  hideLoading,
-} from "src/composables/useLoadingComposables";
-import { toRupiah } from "src/libs/currency";
-
-const router = useRouter();
-
-const onSubmit = () => {
-  router.push({ path: "/pembayaran" });
-};
-</script>
-
 <script>
 import axios from "axios";
 import { useRouter } from "vue-router";
+import useNotify from "src/composables/UseNotify";
+import HeaderCreate from "components/HeaderCreate.vue";
+import { onMounted, ref, computed } from "vue";
 
-const router = useRouter();
-
-const selected = ref(null);
-const subSelected = ref(null);
+// const selected = ref(null);
+// const subSelected = ref(null);
 // const table = "";
 
 export default {
@@ -169,6 +154,8 @@ export default {
       harga_menu: "",
       totalPriceSum: "",
       table: "",
+      selected: null,
+      subSelected: null,
 
       ringkasanPesanan: [],
     };
@@ -176,6 +163,18 @@ export default {
 
   mounted() {
     this.addRingkasan();
+  },
+
+  setup() {
+    const router = useRouter();
+    const { notifyError, notifySuccess, notifyWarning } = useNotify();
+
+    return {
+      router,
+      notifyError,
+      notifySuccess,
+      notifyWarning,
+    };
   },
 
   methods: {
@@ -191,9 +190,9 @@ export default {
         );
 
         this.ringkasanPesanan = response.data.data;
-        this.id_menu = response.data.data[0].id_menu;
-        this.id_penjual = response.data.data[0].id_penjual;
-        this.status_pesanan = response.data.data[0].status_pesanan;
+        // this.id_menu = response.data.data[0].id_menu;
+        // this.id_penjual = response.data.data[0].id_penjual;
+        // this.status_pesanan = response.data.data[0].status_pesanan;
 
         this.totalPriceSum = response.data.total_price_sum;
       } catch (error) {
@@ -202,21 +201,31 @@ export default {
     },
 
     async saveTransaksi() {
+      if (this.selected === null) {
+        this.notifyWarning("Silakan pilih tipe pemesanan terlebih dahulu!");
+        return;
+      }
+      if (this.subSelected === "antar" && !this.table) {
+        this.notifyWarning("Silakan isi nomor meja terlebih dahulu!");
+      }
+      if (this.selected === "dinein" && !this.subSelected) {
+        this.notifyWarning("Silakan pilih tipe pengantaran terlebih dahulu!");
+      }
+
       try {
         const requestBody = {
-          // ringkasanPesanan: this.ringkasanPesanan,
-          id_menu: this.id_menu,
-          id_penjual: this.id_penjual,
-          status_pesanan: this.status_pesanan,
+          guestId: this.guestId,
+          pesanan: this.selected,
           nomor_meja: this.table,
         };
 
         const response = await axios.post(
           "http://127.0.0.1:8000/api/savetransaksi",
-          requestBody,
+          requestBody
         );
 
         console.log("Table value:", this.table);
+        console.log("Table value:", this.selected);
         this.$router.replace("/status-pesanan");
         console.log("Transaksi berhasil disimpan:", response.data);
       } catch (error) {
