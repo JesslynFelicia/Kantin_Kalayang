@@ -9,8 +9,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import HeaderCreate from "components/HeaderCreate.vue";
+import { onMounted } from 'vue';
+
 import { showLoading, hideLoading } from 'src/composables/useLoadingComposables'
 import { getHistory } from 'src/composables/useHistoryComposables'
 import { toRupiah } from 'src/libs/currency'
@@ -57,3 +57,66 @@ onMounted(() => {
   getData()
 })
 </script>
+
+<script>
+import HeaderCreate from "components/HeaderCreate.vue";
+import { ref } from "vue";
+import axios from 'axios';
+export default
+{
+  components: {
+    HeaderCreate,
+  },
+  formdata:{
+    id_penjual : ""
+  },
+  showdatariwayat:{
+
+  },
+  mounted(){
+this.getdata()
+  },
+  methods: {
+    getdata() {
+      const email = ref(localStorage.getItem("userEmail")).value;
+
+      axios.post("http://127.0.0.1:8000/api/viewonepenjual", {
+        email: email
+      })
+      .then(response => {
+        // Handle the response here
+        console.log(response.data);
+        // this.id_penjual = response.data.id_penjual;
+        this.id_penjual = 1;
+        console.log(this.id_penjual);
+        this.getdatariwayat();
+      })
+      .catch(err => {
+        // Handle errors here
+        this.error = err;
+        console.error(err);
+      })
+    },
+
+  getdatariwayat(){
+    console.log("getdatamenu")
+    console.log(this.id_penjual)
+    axios.post("http://127.0.0.1:8000/api/viewrekap", {
+        id_penjual : this.id_penjual
+      })
+      .then(response => {
+        // Handle the response here
+        console.log(response.data);
+
+      })
+      .catch(err => {
+        // Handle errors here
+        this.error = err;
+        console.error(err);
+      });
+    }
+
+  }
+  }
+</script>
+

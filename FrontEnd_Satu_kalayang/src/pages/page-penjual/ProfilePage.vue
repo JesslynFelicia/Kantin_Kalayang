@@ -12,7 +12,7 @@
     <q-form @submit="onSubmit">
       <div class="q-mb-lg">
         <label class="text-subtitle1">Nama Toko</label>
-        <q-input outlined v-model="namaToko">
+        <q-input outlined v-model="form.nama_toko">
           <template v-slot:prepend>
             <q-icon name="las la-store" />
           </template>
@@ -178,7 +178,7 @@ const formRules = ref({
     (val) =>
       val !== form.value.password || "New password harus berbeda dari password",
   ],
-  // qris: [(val) => val !== null || "QRIS harus diunggah"],
+  qris: [(val) => val !== null || "QRIS harus diunggah"],
 });
 
 
@@ -240,12 +240,13 @@ const formRules = ref({
 
 const updateProfile = async () => {
   try {
-    // if (!form.value.qris) {
-    //   notifyError("QRIS tidak boleh kosong");
-    //   return;
-    // }
+    if (!form.value.qris) {
+      notifyError("QRIS tidak boleh kosong");
+      return;
+    }
 
     const payload = {
+      nama_toko :form.value.nama_toko,
       email: userEmail.value,
       kata_sandi: form.value.new_password,
       gambar_profile: form.value.gambar_profile,
@@ -271,14 +272,8 @@ const updateProfile = async () => {
 
     if (response.status === 200) {
       console.log(response.data.message);
-      notifySuccess("Akun berhasil diedit!");
-      console.log(userEmail.value)
-      try{
+      notifySuccess("Akun berhasil diedit!");Z
       router.push({ path: "/beranda-penjual" });
-      }
-      catch{
-        console.log(error);
-      }
     } else {
       console.error("Update failed:", response.data.error);
     }
@@ -320,7 +315,7 @@ export default {
 
   data() {
     return {
-      namaToko: "",
+      nama_toko: "",
       nomorToko: "",
       result: {
         jenis: "",
@@ -347,7 +342,7 @@ export default {
     // },
 
     async getdata() {
-      const loggedInUserEmail = localStorage.getItem("loggedInUserEmail");
+      const loggedInUserEmail = localStorage.getItem("userEmail");
       if (loggedInUserEmail) {
         try {
           const response = await axios.post(
@@ -355,10 +350,11 @@ export default {
             { email: loggedInUserEmail }
           );
           // const penjualData = response.data.data;
-          this.namaToko = response.data.data.nama_toko;
+          this.nama_toko = response.data.data.nama_toko;
+          console.log(this.nama_toko);
           this.nomorToko = response.data.data.nomor_toko;
 
-          // console.log("a", this.namaToko);
+          // console.log("a", this.nama_toko);
         } catch (error) {
           console.error("Error fetching penjual data:", error);
         }

@@ -319,7 +319,7 @@ class ControllerKalayang extends Controller
             DB::raw('MAX(tb_transaksi.nomor_meja) AS nomor_meja'),
             DB::raw('MAX(tb_transaksi.status_pesanan) AS status_pesanan'),
             DB::raw('MAX(tb_transaksi.catatan_pemesan) AS catatan_pemesan'),
-            DB::raw('MAX(tb_transaksi.ekstra_menu) AS ekstra_menu'),
+            // DB::raw('MAX(tb_transaksi.ekstra_menu) AS ekstra_menu'),
             DB::raw('MAX(tb_transaksi.created_at) AS created_at'),
             DB::raw('MAX(tb_transaksi.updated_at) AS updated_at'),
             DB::raw('COUNT(tb_transaksi.id_penjual) AS Jumlah_pesan'),
@@ -328,6 +328,7 @@ class ControllerKalayang extends Controller
         )
             ->join('tb_menu', 'tb_menu.id_menu', '=', 'tb_transaksi.id_menu')
             ->where('tb_transaksi.id_penjual', $id_penjual)
+
             ->groupBy('formatted_tanggal_pemesanan', 'tb_transaksi.id_penjual')
             ->get();
 
@@ -403,11 +404,13 @@ class ControllerKalayang extends Controller
         $email = $request->post('email');
         $kata_sandi = $request->post('kata_sandi');
         $password = Hash::make($kata_sandi);
+        $nama_toko = $request->post('nama_toko');
         $penjual = ModelKalayangPenjual::where('email', $email)->first();
         if ($penjual) {
 
             if (!empty($kata_sandi)) {
                 $penjual->kata_sandi = $password;
+                $penjual->nama_toko = $nama_toko;
                 $penjual->status_acc = 'True';
             }
 
