@@ -141,12 +141,23 @@ import { route } from 'quasar/wrappers';
 
 <script>
 import axios from "axios";
+import { useCookies } from "vue3-cookies";
+import { useRouter } from "vue-router";
 
 export default {
   data() {
     return {
       guestId: "guest",
     };
+  },
+
+  setup() {
+    const { cookies } = useCookies()
+    const router = useRouter()
+    return {
+      cookies,
+      router
+    }
   },
   methods: {
     generateGuecstId() {
@@ -170,6 +181,38 @@ export default {
       this.guestId = sessionStorage.getItem("guestId");
       this.$router.replace("/beranda-pembeli");
     },
+
+    async onRemember () {
+      const payload = {
+        email: this.cookies.get('data').email,
+        kata_sandi: this.cookies.get('data').password,
+      }
+
+      const { data } = await axios.post(
+        "http://127.0.0.1:8000/api/newlogin",
+        payload
+      );
+
+      if(!data.status) {
+        notifyError(data.message);
+      }
+
+      const { data: response } = await axios.post(
+        "http://127.0.0.1:8000/api/viewonepenjual",
+        {
+          email: payload.email
+        }
+      );
+
+      if (this.cookies.get('data').email.includes("admin")) {
+        sessionStorage.setItem("role", "admin");
+        this.router.push({ path: "/beranda-admin" });
+      } else {
+        sessionStorage.setItem("role", "penjual");
+        sessionStorage.setItem("id_penjual", response.data.id_penjual)
+        this.router.push({ path: "/profile" });
+      }
+    }
   },
 
   mounted() {
@@ -177,6 +220,12 @@ export default {
       this.guestId = sessionStorage.getItem("guestId");
     }
   },
+
+  beforeMount() {
+    if(this.cookies.get('data')) {
+      this.onRemember()
+    }
+  }
 };
 </script>
 

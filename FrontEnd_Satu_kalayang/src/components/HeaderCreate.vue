@@ -121,10 +121,11 @@ export default defineComponent({
 
     logout() {
       // sessionStorage.removeItem("guestId");
-      sessionStorage.removeItem("role");
-      this.cookies.remove('penjualdata')
-
       this.dialogLogout = false;
+
+      localStorage.clear()
+      sessionStorage.clear()
+      this.cookies.remove('data')
 
       this.$router.replace("/login");
     },
