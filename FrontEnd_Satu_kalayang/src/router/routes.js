@@ -309,61 +309,61 @@ const routes = [{
     },
 
     //penjual
-    {
-        path: '/beranda-penjual',
-        component: () =>
-            import ('layouts/MainLayout1.vue'),
-        children: [{
-            path: '',
-            component: () =>
-                //viewmenuperpenjual - api not ready
-                import ("pages/page-penjual/BerandaPenjual.vue")
-        }]
-    },
-    {
-        path: '/riwayat-penjual',
-        component: () =>
-            import ('layouts/MainLayout1.vue'),
-        children: [{
-            path: '',
-            component: () =>
-                //viewtransaksi - done
-                import ("pages/page-penjual/RiwayatPenjual.vue")
-        }]
-    },
-    {
-        path: '/rekap-penjual',
-        component: () =>
-            import ('layouts/MainLayout1.vue'),
-        children: [{
-            path: '',
-            component: () =>
-                //viewrekap - done
-                import ("pages/page-penjual/RekapPenjual.vue")
-        }]
-    },
-    {
-        path: '/pesanan-penjual',
-        component: () =>
-            import ('layouts/MainLayout1.vue'),
-        children: [{
-            path: '',
-            component: () =>
-                //viewtransaksi - done
-                import ("pages/page-penjual/pesanan/PesananPenjual.vue")
-        }]
-    },
-    {
-        path: '/edit-pesanan',
-        component: () =>
-            import ('layouts/MainLayout1.vue'),
-        children: [{
-            path: '',
-            component: () =>
-                //updatemenu -done
-                import ("pages/page-penjual/pesanan/EditPesanan.vue")
-        }]
-    },
+    // {
+    //     path: '/beranda-penjual',
+    //     component: () =>
+    //         import ('layouts/MainLayout1.vue'),
+    //     children: [{
+    //         path: '',
+    //         component: () =>
+    //             //viewmenuperpenjual - api not ready
+    //             import ("pages/page-penjual/BerandaPenjual.vue")
+    //     }]
+    // },
+    // {
+    //     path: '/riwayat-penjual',
+    //     component: () =>
+    //         import ('layouts/MainLayout1.vue'),
+    //     children: [{
+    //         path: '',
+    //         component: () =>
+    //             //viewtransaksi - done
+    //             import ("pages/page-penjual/RiwayatPenjual.vue")
+    //     }]
+    // },
+    // {
+    //     path: '/rekap-penjual',
+    //     component: () =>
+    //         import ('layouts/MainLayout1.vue'),
+    //     children: [{
+    //         path: '',
+    //         component: () =>
+    //             //viewrekap - done
+    //             import ("pages/page-penjual/RekapPenjual.vue")
+    //     }]
+    // },
+    // {
+    //     path: '/pesanan-penjual',
+    //     component: () =>
+    //         import ('layouts/MainLayout1.vue'),
+    //     children: [{
+    //         path: '',
+    //         component: () =>
+    //             //viewtransaksi - done
+    //             import ("pages/page-penjual/pesanan/PesananPenjual.vue")
+    //     }]
+    // },
+    // {
+    //     path: '/edit-pesanan',
+    //     component: () =>
+    //         import ('layouts/MainLayout1.vue'),
+    //     children: [{
+    //         path: '',
+    //         component: () =>
+    //             //updatemenu -done
+    //             import ("pages/page-penjual/pesanan/EditPesanan.vue")
+    //     }]
+    // },
     // {
     //     path: '/profile-penjual',
     //     component: () =>
