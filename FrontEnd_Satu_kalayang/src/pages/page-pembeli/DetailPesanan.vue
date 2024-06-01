@@ -78,6 +78,8 @@
               Jumlah pesanan
             </h6>
 
+            <q-btn flat color="negative" icon="delete" @click="handleDelete" />
+
             <q-btn
               rounded
               outline
@@ -208,6 +210,17 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+
+    handleDelete() {
+      this.guestId = sessionStorage.getItem("guestId");
+      axios.post("http://127.0.0.1:8000/api/deletepesanan", {
+        guestId: this.guestId,
+        id_menu, //blm bener
+      });
+      console.log(
+        "ini hit endpoint /deletepesanan dengan body guestid sama idmenu"
+      );
     },
 
     async tambah() {
