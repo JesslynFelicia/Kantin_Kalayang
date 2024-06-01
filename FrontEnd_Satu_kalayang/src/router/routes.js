@@ -169,11 +169,11 @@ const routes = [{
         path: '/pesanan-penjual',
         component: () =>
             import ('layouts/MainLayout1.vue'),
-        // beforeEnter: (to, from) => {
-        //   if(!sessionStorage.getItem("role")) {
-        //     return false
-        //   }
-        // },
+         beforeEnter: (to, from) => {
+           if(!sessionStorage.getItem("role")) {
+            return false
+          }
+         },
         children: [{
             path: '',
             component: () =>
