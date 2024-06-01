@@ -258,6 +258,7 @@ class ControllerKalayang extends Controller
             DB::raw('MAX(tb_transaksi.catatan_pemesan) AS catatan_pemesan'),
             DB::raw('MAX(tb_transaksi.created_at) AS created_at'),
             DB::raw('MAX(tb_transaksi.updated_at) AS updated_at'),
+            DB::raw('MAX(tb_menu.nama_menu) AS nama_menu'),
             DB::raw("CONCAT( COUNT(tb_transaksi.id_menu)) AS Jumlah_pesan"),
             'tb_transaksi.id_penjual',
             DB::raw('SUM(tb_menu.harga_menu) AS harga_menu'),
