@@ -84,6 +84,7 @@ export default {
 
   data() {
     return {
+      status_pesanan: "",
       id_order: "",
       orderAccepted: false,
       orderCompleted: false,

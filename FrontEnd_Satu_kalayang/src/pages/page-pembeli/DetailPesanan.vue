@@ -123,14 +123,6 @@
         </div>
       </q-page>
     </q-page-container>
-
-    <q-page-container>
-      <q-page>
-        <p>
-          {{ totalPrice }}
-        </p>
-      </q-page>
-    </q-page-container>
   </q-layout>
 </template>
 
@@ -223,7 +215,7 @@ export default {
       const guestId = sessionStorage.getItem("guestId");
       await axios.post("http://127.0.0.1:8000/api/deletepesanan", {
         guest_id: guestId,
-        id_menu: this.idMenu, //blm bener
+        id_menu: this.idMenu,
       });
       console.log(
         "ini hit endpoint /deletepesanan dengan body guestid sama idmenu"
@@ -233,16 +225,6 @@ export default {
 
     async tambah() {
       this.nilai++;
-      // try {
-      //   const response = await axios.post("http://127.0.0.1:8000/api/tambah", {
-      //     id_menu: this.menus.id_menu,
-      //   });
-
-      //   console.log("response tambah: ", response.data);
-      //   console.log("tambah: ", this.menus.id_menu);
-      // } catch (error) {
-      //   console.error("error nih", error);
-      // }
     },
   },
 
@@ -256,7 +238,7 @@ export default {
     const nilai = ref(1);
 
     const route = useRoute();
-    const idMenu = route.params.id
+    const idMenu = route.params.id;
 
     const kurangi = () => {
       if (nilai.value > 1) {
@@ -269,7 +251,7 @@ export default {
       nilai,
       // tambah,
       kurangi,
-      idMenu
+      idMenu,
     };
   },
 };

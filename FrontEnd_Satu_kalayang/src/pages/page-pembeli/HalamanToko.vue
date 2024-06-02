@@ -411,23 +411,37 @@ export default {
   },
 
   methods: {
-    addMenu(menu) {
-      axios
-        .post("http://127.0.0.1:8000/api/viewonemenu", {
-          id_menu: menu.id_menu,
+    async addMenu(menu) {
+      try {
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/viewonemenu",
+          {
+            id_menu: menu.id_menu,
+          }
+        );
+
+        console.log("Data Menu:", response.data.data);
+
+        this.id_menu = response.data.data.id_menu;
+        console.log("idmenu", this.id_menu);
+
+        this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
+
+        this.cekPesanan();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async cekPesanan() {
+      const guestId = sessionStorage.getItem("guestId");
+      await axios
+        .post("http://127.0.0.1:8000/api/cekpesanan", {
+          guest_id: guestId,
+          id_menu: this.id_menu,
         })
         .then((response) => {
-          console.log("Data Menu:", response.data.data);
-
-          if (
-            this.menus.length > 0 &&
-            this.menus[0].id_penjual !== this.idPenjual
-          ) {
-            this.selectedMenu = menu;
-            this.dialogSwitch = true;
-            return;
-          }
-
+          console.log(response);
           this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
         })
         .catch((error) => {

@@ -607,8 +607,20 @@ class ControllerKalayang extends Controller
 
     public function status_pesanan(Request $request)
     {
-        $nomor_transaksi = $request->post('id_order');
-        $transaksi = ModelKalayangTransaksi::where('id_order', $nomor_transaksi)->get();
+        $guestId = $request->post('guest_id');
+
+        // Pastikan nilai $guestId dan $nomor_transaksi tidak null
+        if (is_null($guestId)) {
+            return response()->json(['message' => 'Parameter tidak lengkap'], 400);
+        }
+
+        $transaksi = ModelKalayangTransaksi::where('guest_id', $guestId)
+            ->get();
+
+
+        if ($transaksi->isEmpty()) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
 
         return response()->json(['message' => $transaksi], 200);
     }
@@ -703,6 +715,25 @@ class ControllerKalayang extends Controller
                 return response()->json(['message' => $msg, 'status' => $sts], 200);
             }
         }
+    }
+
+
+    public function cekpesanan(Request $request)
+    {
+        $guestId = $request->input('guest_id');
+        $id_menu = $request->input('id_menu');
+
+        $pesanan = ModelKalayangTransaksiTemp::select('id_menu', DB::raw('COUNT(id_menu) as count'))
+            ->where('guest_id', $guestId)
+            ->where('id_menu', $id_menu)
+            ->groupBy('id_menu', 'id_penjual')
+            ->get();
+
+        if (($pesanan)->IsEmpty()) {
+            return response()->json(['data' =>'0'], 404);
+        }
+
+        return response()->json(['data' =>  $pesanan], 200);
     }
 
     public function sendemail_new($email)
