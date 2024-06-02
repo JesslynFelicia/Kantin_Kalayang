@@ -89,7 +89,10 @@ import { route } from 'quasar/wrappers';
               padding: 16px;
               padding-bottom: 0px;
             "
-            @click="$router.replace(`/halaman-toko/${toko.id_penjual}`)"
+            @click="() => {
+              setNamaToko(toko.nama_toko)
+              $router.replace(`/halaman-toko/${toko.id_penjual}`)
+            }"
           >
             <div style="flex: 0 0 110px; margin-right: 16px">
               <img
@@ -231,6 +234,7 @@ import HeaderCreate from "components/HeaderCreate.vue";
 // import { EventBus } from 'src/utils/EventBus.js';
 import axios from "axios";
 import { ref } from "vue";
+import useToko from "src/composables/useToko";
 
 export default {
   name: "BerandaPembeli",
@@ -285,6 +289,7 @@ export default {
 
   setup() {
     const text = ref("");
+    const { setNamaToko } = useToko()
 
     const autoplay1 = ref(true);
     const autoplay2 = ref(true);
@@ -295,6 +300,7 @@ export default {
       slide2: ref("first"),
       autoplay1,
       autoplay2,
+      setNamaToko
     };
   },
 };

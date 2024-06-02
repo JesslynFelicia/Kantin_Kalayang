@@ -2,7 +2,7 @@ import { route } from 'quasar/wrappers';
 <template>
   <!-- hrsnya title ttp sesuai sama nama toko yang lagi dibuka -->
   <HeaderCreate
-    title=""
+    :title="getNamaToko()"
     backAction="/beranda-pembeli"
     :hideLogout="true"
     :hideProfile="true"
@@ -337,6 +337,7 @@ import HeaderCreate from "components/HeaderCreate.vue";
 // import { EventBus } from "src/utils/EventBus.js";
 import axios from "axios";
 import { ref } from "vue";
+import useToko from "src/composables/useToko";
 
 export default {
   name: "HalamanToko",
@@ -373,6 +374,7 @@ export default {
   // },
 
   setup() {
+    const { getNamaToko } = useToko()
     const text = ref("");
 
     const autoplay1 = ref(true);
@@ -389,6 +391,7 @@ export default {
       dialogTambah,
       position,
       dialogSwitch: ref(false),
+      getNamaToko
 
       // openDialogTambah(bottom) {
       //   position.value = bottom;

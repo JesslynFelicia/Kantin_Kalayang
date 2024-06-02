@@ -1,7 +1,7 @@
 <template>
   <HeaderCreate
-    title="Toko 1"
-    backAction="halaman-toko/2"
+    :title="getNamaToko()"
+    :backAction="`halaman-toko/${idPenjual}`"
     :hideLogout="true"
     :hideProfile="true"
   />
@@ -64,15 +64,18 @@
       </div>
     </div>
 
-    <div style="max-width: 350px">
+    <div>
       <q-list padding>
         <q-item v-for="menu in ringkasanPesanan" :key="menu.id_menu">
-          <q-item-section>
-            <q-item-label>{{ menu.count }}x</q-item-label>
+          <!-- <q-item-section>
+            <q-item-label>{{ menu.count }}x </q-item-label>
+          </q-item-section> -->
+          <q-item-section avatar>
+            <q-item-label>{{ menu.count }}x </q-item-label>
           </q-item-section>
 
           <q-item-section>
-            <q-item-label>{{ menu.nama_menu }}</q-item-label>
+            <q-item-label> {{ menu.nama_menu }}</q-item-label>
             <!-- <q-item-label caption>
               <span class="text" @click="() => {}">Edit</span>
             </q-item-label> -->
@@ -92,7 +95,7 @@
           </q-item-section>
 
           <q-item-section side>
-            <q-item-label caption>Rp{{ totalPriceSum }}</q-item-label>
+            <q-item-label caption>Rp {{ totalPriceSum }}</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
@@ -110,7 +113,7 @@
           <q-item-section side>
             <q-item-label caption class="text-weight-bold">
               <div class="row items-center">
-                <span class="q-mr-sm">Rp{{ totalPriceSum }}</span>
+                <span class="q-mr-sm">Rp {{ totalPriceSum }}</span>
                 <q-icon name="las la-shopping-bag" size="20px" />
               </div>
             </q-item-label>
@@ -135,6 +138,7 @@ import { useRouter } from "vue-router";
 import useNotify from "src/composables/UseNotify";
 import HeaderCreate from "components/HeaderCreate.vue";
 import { onMounted, ref, computed } from "vue";
+import useToko from "src/composables/useToko";
 
 // const selected = ref(null);
 // const subSelected = ref(null);
@@ -165,13 +169,17 @@ export default {
 
   setup() {
     const router = useRouter();
+    const { getNamaToko } = useToko()
     const { notifyError, notifySuccess, notifyWarning } = useNotify();
+    const idPenjual = ref("");
 
     return {
       router,
       notifyError,
       notifySuccess,
       notifyWarning,
+      getNamaToko,
+      idPenjual
     };
   },
 
@@ -189,8 +197,10 @@ export default {
 
         this.ringkasanPesanan = response.data.data;
         // this.id_menu = response.data.data[0].id_menu;
+        console.log("ringkasan: ", this.ringkasanPesanan);
 
         this.id_penjual = response.data.data[0].id_penjual;
+        this.idPenjual = response.data.data[0].id_penjual;
         // this.status_pesanan = response.data.data[0].status_pesanan;
 
         this.totalPriceSum = response.data.total_price_sum;
