@@ -9,17 +9,12 @@
     <div style="max-width: 350px">
       <q-list padding>
         <q-item v-for="menu in ringkasanPesanan" :key="menu.id_menu">
-          <q-item-section top avatar>
-            <q-avatar rounded>
-              <img />
-            </q-avatar>
+          <q-item-section>
+            <q-item-label>{{ menu.count }}x</q-item-label>
           </q-item-section>
 
           <q-item-section>
             <q-item-label>{{ menu.nama_menu }}</q-item-label>
-            <q-item-label caption>
-              <span class="text" @click="() => {}">Edit</span>
-            </q-item-label>
           </q-item-section>
 
           <q-item-section side>
@@ -47,42 +42,54 @@
         <span class="text-subtitle1 text-weight-bold">Status pesanan kamu</span>
       </div>
 
-      <div class="row q-gutter-md q-mb-lg">
-        <div class="col text-center">
+      <div class="row q-gutter-md q-mb-lg" v-if="status_pesanan !== null">
+        <!-- Pesanan dicek -->
+        <div class="col text-center" v-if="status_pesanan !== 'TOLAK'">
           <div>
             <q-btn round color="secondary" size="md" icon="las la-check" />
           </div>
           <span class="text-caption">Pesanan dicek</span>
         </div>
-        <div class="col text-center">
-          <div>
-            <q-btn
-              round
-              :color="status === 'ditolak' ? 'negative' : 'secondary'"
-              size="md"
-              :icon="status === 'ditolak' ? 'las la-times' : 'las la-check'"
-            />
-          </div>
-          <span class="text-caption">Pesanan diproses</span>
-        </div>
-        <div class="col text-center">
+
+        <!-- Pesanan diproses -->
+        <div class="col text-center" v-if="status_pesanan !== 'TOLAK'">
           <div>
             <q-btn
               round
               :color="
-                status === 'ditolak'
-                  ? 'negative'
-                  : status === 'selesai'
+                status_pesanan === 'PROSESS'
+                  ? 'secondary'
+                  : status_pesanan === 'SELESAI'
                   ? 'secondary'
                   : 'grey-5'
               "
               size="md"
-              :icon="status === 'ditolak' ? 'las la-times' : 'las la-check'"
+              icon="las la-check"
+            />
+          </div>
+          <span class="text-caption">Pesanan diproses</span>
+        </div>
+
+        <!-- Pesanan selesai -->
+        <div class="col text-center" v-if="status_pesanan !== 'TOLAK'">
+          <div>
+            <q-btn
+              round
+              :color="status_pesanan === 'SELESAI' ? 'secondary' : 'grey-5'"
+              size="md"
+              icon="las la-check"
             />
           </div>
           <span class="text-caption">Pesanan selesai</span>
         </div>
+
+        <div class="col text-center" v-if="status_pesanan === 'TOLAK'">
+          <span class="text-caption"
+            >Pesanan ditolak penjual, silahkan hubungi penjual.</span
+          >
+        </div>
       </div>
+
       <div class="q-mb-md">
         <q-btn
           color="negative"
@@ -108,15 +115,15 @@ import { toRupiah } from "src/libs/currency";
 
 const router = useRouter();
 
-const status = ref("diterima");
+// const status = ref("CHECK");
 
 const total = computed(() =>
   dataPesanan.value.reduce((a, b) => a + b.price, 0)
 );
 
-const onSubmit = () => {
-  status.value = "selesai";
-};
+// const onSubmit = () => {
+//   status.value = "selesai";
+// };
 </script>
 
 <script>
@@ -132,10 +139,15 @@ export default {
   data() {
     return {
       harga_menu: "",
+      status_pesanan: "",
       totalPriceSum: "",
 
       ringkasanPesanan: [],
     };
+  },
+
+  formdata: {
+    id_penjual: "",
   },
 
   mounted() {
@@ -156,9 +168,32 @@ export default {
         this.ringkasanPesanan = response.data.data;
 
         this.totalPriceSum = response.data.total_price_sum;
+        this.id_penjual = response.data.data[0].id_penjual;
+        console.log(this.id_penjual);
+
+        this.getData();
       } catch (error) {
         console.error("error nih", error);
       }
+    },
+
+    getData() {
+      this.guestId = sessionStorage.getItem("guestId");
+      axios
+        .post("http://127.0.0.1:8000/api/status_pesanan", {
+          guest_id: this.guestId,
+          // id_order: this.id_order,
+          // status_pesanan: "",
+        })
+        .then((response) => {
+          this.status_pesanan = response.data.message[0].status_pesanan;
+          console.log(this.status_pesanan);
+        })
+        .catch((err) => {
+          // Handle errors here
+          this.error = err;
+          console.error(err);
+        });
     },
   },
 };
