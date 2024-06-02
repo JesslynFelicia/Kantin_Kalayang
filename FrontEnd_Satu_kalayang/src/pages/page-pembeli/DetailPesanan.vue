@@ -138,6 +138,7 @@
 import HeaderCreate from "components/HeaderCreate.vue";
 import axios from "axios";
 import { ref } from "vue";
+import { useRoute } from "vue-router";
 import useNotify from "src/composables/UseNotify";
 
 export default {
@@ -218,15 +219,16 @@ export default {
         });
     },
 
-    handleDelete() {
-      this.guestId = sessionStorage.getItem("guestId");
-      axios.post("http://127.0.0.1:8000/api/deletepesanan", {
-        guestId: this.guestId,
-        id_menu, //blm bener
+    async handleDelete() {
+      const guestId = sessionStorage.getItem("guestId");
+      await axios.post("http://127.0.0.1:8000/api/deletepesanan", {
+        guest_id: guestId,
+        id_menu: this.idMenu, //blm bener
       });
       console.log(
         "ini hit endpoint /deletepesanan dengan body guestid sama idmenu"
       );
+      this.$router.replace(`/halaman-toko/${this.menus.id_penjual}`);
     },
 
     async tambah() {
@@ -253,6 +255,9 @@ export default {
   setup() {
     const nilai = ref(1);
 
+    const route = useRoute();
+    const idMenu = route.params.id
+
     const kurangi = () => {
       if (nilai.value > 1) {
         nilai.value--;
@@ -264,6 +269,7 @@ export default {
       nilai,
       // tambah,
       kurangi,
+      idMenu
     };
   },
 };
