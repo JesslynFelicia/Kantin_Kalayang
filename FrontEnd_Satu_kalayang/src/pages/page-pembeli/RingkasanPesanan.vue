@@ -18,7 +18,7 @@
           <div class="column">
             <div class="col">
               <q-radio
-                val="ambil"
+                val="AMBIL"
                 v-model="subSelected"
                 label="Ambil Pesanan"
               />
@@ -27,7 +27,7 @@
               <div class="row">
                 <div class="col-7">
                   <q-radio
-                    val="antar"
+                    val="ANTAR"
                     v-model="subSelected"
                     label="Antar ke meja nomor"
                   />
@@ -38,7 +38,7 @@
                     v-model="table"
                     dense
                     style="width: 6ch"
-                    :disable="subSelected !== 'antar'"
+                    :disable="subSelected !== 'ANTAR'"
                   />
                 </div>
               </div>
@@ -50,7 +50,7 @@
 
     <q-item>
       <q-item-section avatar top>
-        <q-radio val="takeaway" v-model="selected" />
+        <q-radio val="BAWA_PULANG" v-model="selected" />
       </q-item-section>
       <q-item-section> Bawa pulang </q-item-section>
     </q-item>
@@ -203,7 +203,7 @@ export default {
         this.notifyWarning("Silakan pilih tipe pemesanan terlebih dahulu!");
         return;
       }
-      if (this.subSelected === "antar" && !this.table) {
+      if (this.subSelected === "ANTAR" && !this.table) {
         this.notifyWarning("Silakan isi nomor meja terlebih dahulu!");
       }
       if (this.selected === "dinein" && !this.subSelected) {
@@ -216,8 +216,12 @@ export default {
           guestId: this.guestId,
           pesanan: this.selected,
           nomor_meja: this.table,
-          status_pembayaran: "belum dibayar",
+          status_pembayaran: "SELESAI",
         };
+
+        // if (this.selected === "dinein") {
+        //   requestBody.subSelected = this.subSelected;
+        // }
 
         const response = await axios.post(
           "http://127.0.0.1:8000/api/savetransaksi",

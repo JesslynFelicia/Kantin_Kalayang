@@ -100,15 +100,6 @@
           <span class="text-caption">Pesanan selesai</span>
         </div>
       </div>
-
-      <div class="q-mb-md">
-        <q-btn
-          color="primary"
-          class="full-width"
-          label="Pesanan diterima"
-          @click="onSubmit"
-        />
-      </div>
       <div class="q-mb-md">
         <q-btn
           color="negative"

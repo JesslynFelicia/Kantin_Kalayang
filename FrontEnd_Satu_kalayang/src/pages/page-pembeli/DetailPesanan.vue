@@ -78,7 +78,13 @@
               Jumlah pesanan
             </h6>
 
-            <q-btn flat color="negative" icon="delete" @click="handleDelete" />
+            <q-btn
+              flat
+              color="negative"
+              icon="delete"
+              rounded
+              @click="handleDelete"
+            />
 
             <q-btn
               rounded

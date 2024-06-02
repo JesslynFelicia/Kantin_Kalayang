@@ -201,8 +201,8 @@ export default {
     getDataRiwayat() {
       axios
         .post("http://127.0.0.1:8000/api/viewtransaksi", {
-          id_penjual: 1,
-          // id_penjual: this.id_penjual,
+          // id_penjual: 1,
+          id_penjual: this.id_penjual,
         })
         .then((response) => {
           console.log("response", response.data.data);
