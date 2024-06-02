@@ -27,16 +27,18 @@ import { route } from 'quasar/wrappers';
       <div style="flex-direction: column; margin-top: 10px">
         <!-- <h6 style="font-weight: 800; margin: 2% 3.5%">Menu</h6> -->
         <q-page>
-          <p
-            style="
-              font-weight: bold;
-              margin: 0;
-              font-size: 24px;
-              padding: 22px 10px 0px 17px;
-            "
-          >
-            Menu yang tersedia
-          </p>
+          <div class="menu-header">
+            <p class="menu-title">Menu yang tersedia</p>
+
+            <q-btn
+              flat
+              icon="add"
+              size="20px"
+              @click="$router.replace('/buat-pesanan')"
+              class="add-button"
+              rounded
+            />
+          </div>
 
           <div v-if="loading">
             <q-skeleton
@@ -130,7 +132,7 @@ export default {
   },
 
   setup() {
-    const router = useRouter()
+    const router = useRouter();
     const text = ref("");
 
     const slide1 = ref(1);
@@ -138,7 +140,7 @@ export default {
 
     const autoplay1 = ref(true);
     const autoplay2 = ref(true);
-    const loading = ref(false)
+    const loading = ref(false);
 
     return {
       text,
@@ -147,7 +149,7 @@ export default {
       autoplay1,
       autoplay2,
       loading,
-      router
+      router,
     };
   },
   mounted() {
@@ -158,12 +160,11 @@ export default {
   },
   showdatamenu: {},
   methods: {
-
     async getdatamenu() {
-      this.loading = true
+      this.loading = true;
       await axios
         .post("http://127.0.0.1:8000/api/viewmenupenjual", {
-          id_penjual: sessionStorage.getItem('id_penjual'),
+          id_penjual: sessionStorage.getItem("id_penjual"),
         })
         .then((response) => {
           this.menus = response.data.data;
@@ -173,12 +174,12 @@ export default {
           this.error = err;
           console.error(err);
         });
-      this.loading = false
+      this.loading = false;
     },
 
     editMenu(id) {
-      this.router.push(`/edit-pesanan/${id}`)
-    }
+      this.router.push(`/edit-pesanan/${id}`);
+    },
   },
 };
 </script>
@@ -239,5 +240,22 @@ export default {
   object-fit: cover;
   width: 100%;
   height: 150px;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-title {
+  font-weight: bold;
+  font-size: 24px;
+  margin: 0;
+  padding: 22px 10px 0 17px;
+}
+
+.add-button {
+  margin-right: 10px; /* Adjust margin as needed */
 }
 </style>

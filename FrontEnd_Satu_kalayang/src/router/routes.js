@@ -196,6 +196,21 @@ const routes = [{
         }]
     },
     {
+        path: '/buat-pesanan',
+        component: () =>
+            import ('layouts/MainLayout1.vue'),
+        beforeEnter: (to, from) => {
+          if(!sessionStorage.getItem("role")) {
+            return false
+          }
+        },
+        children: [{
+            path: '',
+            component: () =>
+                import ("pages/page-penjual/pesanan/BuatPesanan.vue")
+        }]
+    },
+    {
       path: '/profile',
       component: () => import('layouts/MainLayout1.vue'),
       beforeEnter: (to, from) => {
