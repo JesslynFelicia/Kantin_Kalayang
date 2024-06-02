@@ -127,6 +127,17 @@ class ControllerKalayang extends Controller
         }
     }
 
+    public function deletepesanan(Request $request)
+    {
+        $guestId = $request->input('guest_id');
+        $id_menu = $request->input('id_menu');
+        $pesanan = ModelKalayangTransaksiTemp::where('guest_id', $guestId)->where('id_menu', $id_menu)->delete();
+        if ($pesanan) {
+            return response()->json(['message' => "berhasil"], 200);
+        }
+        return response()->json(['message' => "data tidak di temukan"], 404);
+    }
+
     public function viewonemenu(Request $request)
     {
         $id_menu = $request->post('id_menu');
@@ -262,7 +273,6 @@ class ControllerKalayang extends Controller
             DB::raw("CONCAT( COUNT(tb_transaksi.id_menu)) AS Jumlah_pesan"),
             'tb_transaksi.id_penjual',
             DB::raw('SUM(tb_menu.harga_menu) AS harga_menu'),
-            'tb_menu.nama_menu'
         )
             ->join('tb_menu', 'tb_menu.id_menu', '=', 'tb_transaksi.id_menu')
             ->where('tb_transaksi.id_penjual', $id_penjual)
@@ -272,6 +282,7 @@ class ControllerKalayang extends Controller
 
         return response()->json(['message' => 'success', 'data' => $alltransaksi], 200);
     }
+
 
     public function savetransaksi(Request $request)
     {
@@ -539,7 +550,7 @@ class ControllerKalayang extends Controller
             ->where('tb_transaksi.id_penjual', $id_penjual)
 
             // ->where('tb_transaksi.status_pesanan', ['SELESAI'])
-            ->groupBy('tb_transaksi.id_menu', 'tb_transaksi.id_penjual', 'tb_transaksi.id_order','tb_menu.nama_menu')
+            ->groupBy('tb_transaksi.id_menu', 'tb_transaksi.id_penjual', 'tb_transaksi.id_order', 'tb_menu.nama_menu')
             ->paginate($perPage);
         // $penjual = ModelKalayangTransaksi::where('id_penjual', $id_penjual)->paginate($perPage);
 

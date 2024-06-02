@@ -40,5 +40,6 @@ Route::post('/forgot_password', [ControllerKalayang::class, 'forgot_password']);
 
 //Mail
 // Route::post('/user/mail/send', [ControllerKalayang::class, 'sendemail']);
-Route::post('/savedatanew', [ControllerKalayang::class, 'savedatapenjual_new']);
 
+Route::post('/savedatanew', [ControllerKalayang::class, 'savedatapenjual_new']);
+Route::post('/deletepesanan', [ControllerKalayang::class, 'deletepesanan']);

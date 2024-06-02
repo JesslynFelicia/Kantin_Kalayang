@@ -4,8 +4,8 @@
     <div v-for="order in orders" :key="order.id_order" class="q-mb-md">
       <q-card>
         <q-card-section>
-          <div :class="statusClass(status)">
-            {{ status }}
+          <div :class="statusClass(order.localStatus)">
+            {{ order.localStatus }}
           </div>
         </q-card-section>
 
@@ -17,7 +17,7 @@
 
         <q-card-section>
           <div class="text-right text-subtitle1">
-            Total yang harus dibayar: Rp
+            Total yang harus dibayar: Rp {{ calculateTotal(order.rows) }}
           </div>
         </q-card-section>
 
@@ -25,23 +25,26 @@
 
         <q-card-actions align="right">
           <q-btn
+            v-if="
+              order.localStatus !== 'Pesanan di Proses' &&
+              order.localStatus !== 'Pesanan Selesai'
+            "
             color="negative"
             label="Tolak Pesanan"
-            v-if="!orderCompleted[order.id_order]"
-            :disabled="orderAccepted[order.id_order]"
+            :disabled="order.localStatus === 'Pesanan Ditolak'"
             @click="rejectOrder(order.id_order)"
           />
           <q-btn
-            v-if="!orderAccepted[order.id_order]"
+            v-if="order.localStatus === 'Menunggu Konfirmasi'"
             color="positive"
             label="Terima Pesanan"
             @click="acceptOrder(order.id_order)"
           />
           <q-btn
-            v-else
+            v-if="order.localStatus === 'Pesanan di Proses'"
             color="positive"
             label="Pesanan Selesai"
-            :disabled="orderCompleted[order.id_order]"
+            :disabled="order.localStatus === 'Pesanan Selesai'"
             @click="completeOrder(order.id_order)"
           />
         </q-card-actions>
@@ -82,13 +85,13 @@ export default {
   data() {
     return {
       id_order: "",
-      // orderAccepted: false,
-      // orderCompleted: false,
-      orderAccepted: {},
-      orderCompleted: {},
+      orderAccepted: false,
+      orderCompleted: false,
+      tolak: false,
+      // orderAccepted: {},
+      // orderCompleted: {},
       resultData: [],
       orders: [],
-      status: "Menunggu Konfirmasi", // atau 'Pesanan di Proses'
       columns: [
         {
           name: "pesanan",
@@ -123,26 +126,26 @@ export default {
     };
   },
 
-  computed: {
-    ordersByOrderId() {
-      const ordersByOrderId = {};
-      this.orders.forEach((order) => {
-        if (!ordersByOrderId[order.id_order]) {
-          ordersByOrderId[order.id_order] = {
-            id_order: order.id_order,
-            status_pesanan: order.status_pesanan,
-            rows: [],
-          };
-        }
-        ordersByOrderId[order.id_order].rows.push({
-          nama_menu: order.nama_menu,
-          jumlah_pesan: order.Jumlah_pesan,
-          harga_menu: order.harga_menu,
-        });
-      });
-      return Object.values(ordersByOrderId);
-    },
-  },
+  // computed: {
+  //   ordersByOrderId() {
+  //     const ordersByOrderId = {};
+  //     this.orders.forEach((order) => {
+  //       if (!ordersByOrderId[order.id_order]) {
+  //         ordersByOrderId[order.id_order] = {
+  //           id_order: order.id_order,
+  //           status_pesanan: order.status_pesanan,
+  //           rows: [],
+  //         };
+  //       }
+  //       ordersByOrderId[order.id_order].rows.push({
+  //         nama_menu: order.nama_menu,
+  //         jumlah_pesan: order.Jumlah_pesan,
+  //         harga_menu: order.harga_menu,
+  //       });
+  //     });
+  //     return Object.values(ordersByOrderId);
+  //   },
+  // },
 
   methods: {
     // getDataRiwayat() {
@@ -198,12 +201,13 @@ export default {
     getDataRiwayat() {
       axios
         .post("http://127.0.0.1:8000/api/viewtransaksi", {
-          id_penjual: this.id_penjual,
+          id_penjual: 1,
+          // id_penjual: this.id_penjual,
         })
         .then((response) => {
           console.log("response", response.data.data);
           response.data.data.forEach((item) => {
-            console.log("id_order:", item.id_order);
+            // console.log("id_order:", item.id_order);
           });
           this.orders = response.data.data.map((order) => {
             // const nama_menu = this.getMenu(order.id_menu);
@@ -211,6 +215,7 @@ export default {
             const id_order = order.id_order;
             return {
               id_order: id_order,
+              localStatus: "Menunggu Konfirmasi",
               // status_pesanan: order.status_pesanan,
               rows: [
                 {
@@ -228,40 +233,46 @@ export default {
         });
     },
 
-    completeOrder() {
+    rejectOrder(id_order) {
+      this.updateLocalStatus(id_order, "Pesanan Ditolak");
+      console.log("Rejected order id:", id_order);
+    },
+    acceptOrder(id_order) {
+      this.updateLocalStatus(id_order, "Pesanan di Proses");
+      console.log("Accepted order id:", id_order);
+    },
+    completeOrder(id_order) {
       axios
         .post("http://127.0.0.1:8000/api/status_pesanan", {
-          id_order: this.id_order,
-          status: this.status,
+          id_order: id_order,
+          status: "Pesanan Selesai",
           guestId: "",
         })
         .then((response) => {
-          this.status = "Pesanan Selesai";
-          this.orderCompleted = true;
+          this.updateLocalStatus(id_order, "Pesanan Selesai");
           console.log(response);
         })
         .catch((error) => {
           console.error(error);
         });
     },
-
+    updateLocalStatus(id_order, status) {
+      const order = this.orders.find((o) => o.id_order === id_order);
+      if (order) {
+        order.localStatus = status;
+      }
+    },
+    calculateTotal(rows) {
+      return rows.reduce((total, row) => total + row.total, 0);
+    },
     statusClass(status) {
       return {
         "status-circle": true,
         "status-waiting": status === "Menunggu Konfirmasi",
         "status-processing": status === "Pesanan di Proses",
         "status-rejected": status === "Pesanan Ditolak",
+        "status-completed": status === "Pesanan Selesai",
       };
-    },
-
-    rejectOrder() {
-      this.status = "Pesanan Ditolak";
-    },
-
-    acceptOrder() {
-      this.status = "Pesanan di Proses";
-
-      this.orderAccepted = true;
     },
   },
 };
