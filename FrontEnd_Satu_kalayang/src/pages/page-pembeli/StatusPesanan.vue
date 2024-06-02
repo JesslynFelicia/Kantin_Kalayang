@@ -72,23 +72,6 @@
               :color="
                 status === 'ditolak'
                   ? 'negative'
-                  : status === 'diterima' || status === 'selesai'
-                  ? 'secondary'
-                  : 'grey-5'
-              "
-              size="md"
-              :icon="status === 'ditolak' ? 'las la-times' : 'las la-check'"
-            />
-          </div>
-          <span class="text-caption">Pesanan diantar</span>
-        </div>
-        <div class="col text-center">
-          <div>
-            <q-btn
-              round
-              :color="
-                status === 'ditolak'
-                  ? 'negative'
                   : status === 'selesai'
                   ? 'secondary'
                   : 'grey-5'

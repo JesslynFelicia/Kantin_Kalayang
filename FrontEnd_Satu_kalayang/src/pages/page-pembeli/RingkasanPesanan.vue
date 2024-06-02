@@ -189,7 +189,8 @@ export default {
 
         this.ringkasanPesanan = response.data.data;
         // this.id_menu = response.data.data[0].id_menu;
-        this.id_penjual = response.data.data.id_penjual;
+
+        this.id_penjual = response.data.data[0].id_penjual;
         // this.status_pesanan = response.data.data[0].status_pesanan;
 
         this.totalPriceSum = response.data.total_price_sum;
@@ -213,15 +214,15 @@ export default {
       try {
         const requestBody = {
           id_penjual: this.id_penjual,
-          guestId: this.guestId,
-          pesanan: this.selected,
+          guest_id: this.guestId,
+          Pesanan: this.selected,
           nomor_meja: this.table,
-          status_pembayaran: "SELESAI",
+          status_pembayaran: "Belum dibayar",
         };
 
-        // if (this.selected === "dinein") {
-        //   requestBody.subSelected = this.subSelected;
-        // }
+        if (this.selected === "dinein") {
+          requestBody.Pesanan = this.subSelected;
+        }
 
         const response = await axios.post(
           "http://127.0.0.1:8000/api/savetransaksi",
@@ -230,7 +231,7 @@ export default {
 
         console.log("Table value:", this.table);
         console.log("Table value:", this.selected);
-        this.$router.replace("/status-pesanan");
+        this.$router.replace("/pembayaran");
         console.log("Transaksi berhasil disimpan:", response.data);
       } catch (error) {
         console.error("Terjadi kesalahan saat menyimpan transaksi:", error);

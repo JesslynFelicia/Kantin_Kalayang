@@ -284,28 +284,59 @@ class ControllerKalayang extends Controller
     }
 
 
+
     public function savetransaksi(Request $request)
     {
+
         $guestId = $request->post('guest_id');
         $nomor_meja = $request->post('nomor_meja');
+        $status_pesanan = "CHECK";
         $pesanan = $request->post('Pesanan');
+        $status_pembayaran = $request->post('status_pembayaran');
 
-        $transaction = new ModelKalayangTransaksi();
-        $transaction->guest_id = $guestId;
-        $transaction->nomor_meja = $nomor_meja;
-        $transaction->pesanan = $pesanan;
-        $transaction->save();
-
-        if ($transaction) {
-            $msg = "Data berhasil di simpan";
-            $sts = true;
-            ModelKalayangTransaksiTemp::where('guest_id', $guestId)->delete();
-        } else {
-            $msg = "Data gagal di simpan";
-            $sts = false;
+        if ($status_pembayaran == "Belum dibayar") {
+            $transaksiList = ModelKalayangTransaksiTemp::where('guest_id', $guestId)->get();
+            if ($transaksiList->isNotEmpty()) {
+                ModelKalayangTransaksiTemp::where('guest_id', $guestId)->update(['nomor_meja' => $nomor_meja, 'pesanan' => $pesanan]);
+                return response()->json(['message' => 'Data berhasil di simpan', 'sts' => true], 200);
+            } else {
+                return response()->json(['message' => 'Data gagal di simpan', 'sts' => false], 404);
+            }
         }
+        if ($status_pembayaran == "Sudah dibayar") {
+            $transaksiList = ModelKalayangTransaksiTemp::where('guest_id', $guestId)->get();
+            if ($transaksiList->isNotEmpty()) {
+                $id_order = $this->generateUniqueNumber();
+                foreach ($transaksiList as $transaksi) {
+                    $transaction = new ModelKalayangTransaksi();
+                    $transaction->id_menu = $transaksi->id_menu;
+                    $transaction->id_penjual = $transaksi->id_penjual;
+                    $transaction->id_order = $id_order;
+                    $transaction->guest_id  = $guestId;
+                    $transaction->nomor_meja =  $transaksi->nomor_meja;
+                    $transaction->status_pesanan = $status_pesanan;
+                    $transaction->pesanan = $transaksi->pesanan;
+                    $transaction->catatan_pemesan = $transaksi->note;
+                    $transaction->save();
+                }
 
-        return response()->json(['message' => $msg, 'status' => $sts], 200);
+                if ($transaction) {
+                    $msg = "Data berhasil di simpan";
+                    $sts = true;
+                    $code = 200;
+                    ModelKalayangTransaksiTemp::where('guest_id', $guestId)->delete();
+                } else {
+                    $msg = "Data gagal di simpan";
+                    $sts = false;
+                    $code = 404;
+                }
+            } else {
+                $msg = "Data kosong";
+                $sts = false;
+                $code = 404;
+            }
+            return response()->json(['message' => $msg, 'sts' => $sts], $code);
+        }
     }
 
     public function viewrekap(Request $request)
@@ -559,21 +590,19 @@ class ControllerKalayang extends Controller
 
     public function showqris(Request $request)
     {
-        $id_penjual = $request->post('id_penjual');
-        // Ambil data pengguna dari database
-        $penjual = ModelKalayangPenjual::where('email', $id_penjual)->get();
 
-        // Jika pengguna ditemukan
-        if ($penjual) {
-            // Ambil path gambar profil dari data pengguna
-            $gambarProfilePath = $penjual->gambar_profile;
+        $id_penjual = $request->input('id_penjual');
+        $qris = strtoupper($request->input('qris'));
+        $gambar = ModelKalayangGambar::where('id_penjual', $id_penjual)->where('gambar', $qris)->first();
 
-            // Tampilkan gambar di halaman web menggunakan path
-            return view('profile', ['gambarProfilePath' => $gambarProfilePath]);
-        } else {
-            // Jika pengguna tidak ditemukan, tampilkan pesan kesalahan
-            return 'User not found';
+        if (!$gambar) {
+            return response()->json(['error' => 'Image not found'], 404);
         }
+
+        // Mengembalikan respons gambar dengan data gambar, nama file, dan Content-Type yang sesuai
+        return response($gambar->data_image)
+            ->header('Content-Disposition', 'attachment; filename="' . $gambar->gambar . '"')
+            ->header('Content-Type', $gambar->format_gambar);
     }
 
     public function status_pesanan(Request $request)
