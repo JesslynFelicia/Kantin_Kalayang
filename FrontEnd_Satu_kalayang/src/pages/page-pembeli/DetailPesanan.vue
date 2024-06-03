@@ -80,6 +80,7 @@
 
             <q-btn
               flat
+              v-if="!deleteicon"
               color="negative"
               icon="delete"
               rounded
@@ -94,11 +95,12 @@
               icon="remove"
               size="sm"
               style="width: 30px; height: 30px"
-              :disable="nilai === 1"
+              :disable="count === 1"
             />
 
             <p style="margin: 0%; font-size: 20px; font-weight: 800">
-              {{ nilai }}
+              <!-- {{ count === 0 ? 1 : count }} -->
+              {{ count }}
             </p>
 
             <q-btn
@@ -158,6 +160,8 @@ export default {
       },
       menus: null,
       // nama_menu: "",
+      count: 1,
+      deleteicon: false,
     };
   },
   mounted() {
@@ -165,10 +169,17 @@ export default {
   },
   created() {},
 
+  computed: {
+    totalPrice() {
+      const adjustedCount = this.count === 0 ? 1 : this.count;
+      return adjustedCount * this.menus.harga_menu;
+    },
+  },
+
   methods: {
     async addToCart(menu) {
       this.guestId = sessionStorage.getItem("guestId");
-      const id_menu_array = Array(this.nilai).fill(menu.id_menu);
+      const id_menu_array = Array(this.count).fill(menu.id_menu);
 
       // const { notifyError, notifySuccess } = useNotify();
 
@@ -203,11 +214,33 @@ export default {
         })
         .then((response) => {
           this.menus = response.data.data;
-          this.tambah();
-          this.nilai--;
+          this.id_menu = response.data.data.id_menu;
+          // this.tambah();
+          // this.nilai--;
+          console.log("abu", this.menus.harga_menu);
+
+          this.cekPesanan();
         })
         .catch((error) => {
           console.error(error);
+        });
+    },
+
+    async cekPesanan() {
+      const guestId = sessionStorage.getItem("guestId");
+      await axios
+        .post("http://127.0.0.1:8000/api/cekpesanan", {
+          guest_id: guestId,
+          id_menu: this.id_menu,
+        })
+        .then((response) => {
+          console.log(response);
+          this.count = response.data.data[0].count;
+          console.log("ahjgsjhasksa", this.count);
+        })
+        .catch((error) => {
+          console.error(error);
+          this.deleteicon = true;
         });
     },
 
@@ -224,33 +257,27 @@ export default {
     },
 
     async tambah() {
-      this.nilai++;
+      this.count++;
     },
-  },
 
-  computed: {
-    totalPrice() {
-      return this.menus ? this.menus.harga_menu * this.nilai : 0;
+    kurangi() {
+      if (this.count > 1) {
+        this.count--;
+      }
     },
   },
 
   setup() {
-    const nilai = ref(1);
+    // const nilai = ref(1);
 
     const route = useRoute();
     const idMenu = route.params.id;
 
-    const kurangi = () => {
-      if (nilai.value > 1) {
-        nilai.value--;
-      }
-    };
-
     return {
       note: ref(""),
-      nilai,
+      // nilai,
       // tambah,
-      kurangi,
+
       idMenu,
     };
   },
