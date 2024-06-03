@@ -1,31 +1,59 @@
 <template>
   <HeaderCreate title="Pesanan" backAction="/beranda-penjual" />
-  <q-page class="q-pa-md">
-    <div v-for="order in orders" :key="order.id_order" class="q-mb-md">
+  <q-page class="q-pa-sm flex-center bg-grey-3">
+    <!-- <div> -->
+    <div
+      v-for="order in orders"
+      :key="order.id_order"
+      class="q-mb-md"
+      style="margin-bottom: 10px"
+    >
       <q-card>
+        <!-- <q-card v-for="order in orders" :key="order.id_order"> -->
         <q-card-section>
           <div class="row">
             <div :class="statusClass(order.localStatus)" class="col">
-              <q-badge :color="colorClass(order.localStatus)">
+              <q-badge
+                rounded
+                style="padding: 8px 15px"
+                :color="colorClass(order.localStatus)"
+              >
                 {{ order.localStatus }}
               </q-badge>
             </div>
-            <div class="col text-right">
-              No. Meja : {{ order.no_meja }}
+            <div style="display: flex; justify-content: space-between">
+              <div class="text-right" style="padding-right:5px ;">No. Meja: </div>
+              <div class="col text-right" style="font-weight: 700;"> {{ order.no_meja }}</div>
             </div>
           </div>
-
         </q-card-section>
 
         <q-separator />
 
         <q-card-section>
-          <q-table :rows="order.rows" :columns="columns" row-key="pesanan" />
+          <q-table
+            :rows="order.rows"
+            hide-bottom
+            :columns="columns"
+            row-key="pesanan"
+          />
         </q-card-section>
 
         <q-card-section>
-          <div class="text-right text-subtitle2">
-            Total yang harus dibayar: Rp {{ calculateTotal(order.rows) }}
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: end;
+              width: 100%;
+            "
+          >
+            <div class="text-subtitle1" style="font-weight: 600">
+              Total pembayaran
+            </div>
+            <div class="text-subtitle1" style="color: red; font-weight: 600">
+              Rp{{ calculateTotal(order.rows) }}
+            </div>
           </div>
         </q-card-section>
 
@@ -33,28 +61,40 @@
 
         <q-card-actions align="right">
           <q-btn
+            class="button-status"
             v-if="
               order.localStatus !== 'Pesanan di Proses' &&
               order.localStatus !== 'Pesanan Selesai'
             "
+            style="padding: 7px 23px"
             color="negative"
-            label="Tolak Pesanan"
+            rounded
             :disabled="order.localStatus === 'Pesanan Ditolak'"
             @click="rejectOrder(order.id_order)"
-          />
+          >
+            Tolak Pesanan
+          </q-btn>
           <q-btn
+            class="button-status"
             v-if="order.localStatus === 'Menunggu Konfirmasi'"
             color="positive"
+            rounded
+            style="padding: 7px 22px"
             label="Terima Pesanan"
             @click="acceptOrder(order.id_order)"
-          />
+          >
+          </q-btn>
           <q-btn
+            class="button-status"
             v-if="order.localStatus === 'Pesanan di Proses'"
             color="positive"
+            rounded
+            style="padding: 7px 23px"
             label="Pesanan Selesai"
             :disabled="order.localStatus === 'Pesanan Selesai'"
             @click="completeOrder(order.id_order)"
-          />
+          >
+          </q-btn>
         </q-card-actions>
       </q-card>
     </div>
@@ -65,7 +105,10 @@
 import HeaderCreate from "components/HeaderCreate.vue";
 import { ref } from "vue";
 import axios from "axios";
-import { showLoading, hideLoading } from "src/composables/useLoadingComposables";
+import {
+  showLoading,
+  hideLoading,
+} from "src/composables/useLoadingComposables";
 
 export default {
   components: {
@@ -75,21 +118,10 @@ export default {
   formdata: {
     id_penjual: "",
   },
-  // showdaftarpesanan: {
-  //   id_menu: "7",
-  //   id_order: "#M3105240001",
-  //   formatted_tanggal_pemesanan: "31/05/2024 09:56",
-  //   nomor_meja: "18",
-  //   status_pesanan: "CHECK",
-  //   catatan_pemesan: "",
-  //   created_at: "2024-05-31T14:34:56.000000Z",
-  //   updated_at: "2024-05-31T14:34:56.000000Z",
-  //   Jumlah_pesan: "x2",
-  //   id_penjual: "1",
-  //   harga_menu: "40000",
-  // },
+
   mounted() {
     this.getData();
+    this.statusPesanan();
   },
 
   data() {
@@ -125,67 +157,10 @@ export default {
           format: (val) => `Rp${val}`,
         },
       ],
-      // rows: [
-      //   {
-      //     pesanan: this.nama_menu1,
-      //     // jumlah: this.order.Jumlah_pesan,
-      //     // harga: this.order.harga_menu,
-      //     // total: this.order.Jumlah_pesan * order.harga_menu,
-      //   },
-      // ],
     };
   },
 
-  // computed: {
-  //   ordersByOrderId() {
-  //     const ordersByOrderId = {};
-  //     this.orders.forEach((order) => {
-  //       if (!ordersByOrderId[order.id_order]) {
-  //         ordersByOrderId[order.id_order] = {
-  //           id_order: order.id_order,
-  //           status_pesanan: order.status_pesanan,
-  //           rows: [],
-  //         };
-  //       }
-  //       ordersByOrderId[order.id_order].rows.push({
-  //         nama_menu: order.nama_menu,
-  //         jumlah_pesan: order.Jumlah_pesan,
-  //         harga_menu: order.harga_menu,
-  //       });
-  //     });
-  //     return Object.values(ordersByOrderId);
-  //   },
-  // },
-
   methods: {
-    // getDataRiwayat() {
-    //   console.log("getdatamenu");
-    //   console.log(this.id_penjual);
-    //   axios
-    //     .post("http://127.0.0.1:8000/api/viewtransaksi", {
-    //       id_penjual: this.id_penjual,
-    //     })
-    //     .then((response) => {
-    //       console.log("response", response.data.data);
-    //       this.id_menu = response.data.data[0].id_menu;
-    //       this.id_order = response.data.data[0].id_order;
-    //       this.formatted_tanggal_pemesanan =
-    //         response.data.data[0].formatted_tanggal_pemesanan;
-    //       this.nomor_meja = response.data.data[0].nomor_meja;
-    //       this.status_pesanan = response.data.data[0].status_pesanan;
-    //       this.catatan_pemesan = response.data.data[0].catatan_pemesan;
-    //       this.created_at = response.data.data[0].created_at;
-    //       this.updated_at = response.data.data[0].updated_at;
-    //       this.Jumlah_pesan = response.data.data[0].Jumlah_pesan;
-    //       this.id_penjual = response.data.data[0].id_penjual;
-    //       this.harga_menu = response.data.data[0].harga_menu;
-    //     })
-    //     .catch((err) => {
-    //       // Handle errors here
-    //       this.error = err;
-    //       console.error(err);
-    //     });
-    // },
     getData() {
       const email = ref(localStorage.getItem("userEmail")).value;
       showLoading();
@@ -196,86 +171,132 @@ export default {
         .then((response) => {
           console.log(response.data);
           this.id_penjual = response.data.data.id_penjual;
-          // this.id_penjual = 1;
-          console.log(this.id_penjual);
-          console.log("response11", response.data.data);
-          this.getDataRiwayat();
+          this.viewTransaksi();
           hideLoading();
         })
-        .catch((err) => {
-          // Handle errors here
-          this.error = err;
-          console.error(err);
+        .catch((error) => {
+          console.error(error);
           hideLoading();
         });
     },
 
-    getDataRiwayat() {
+    viewTransaksi() {
       axios
         .post("http://127.0.0.1:8000/api/viewtransaksi", {
-          // id_penjual: 1,
           id_penjual: this.id_penjual,
         })
         .then((response) => {
-          console.log("response", response.data.data);
-          response.data.data.forEach((item) => {
-            // console.log("id_order:", item.id_order);
-          });
-          this.orders = response.data.data.map((order) => {
-            // const nama_menu = this.getMenu(order.id_menu);
-            // const id_order = this.acceptOrder(order.id_order);
-            const id_order = order.id_order;
-            return {
-              id_order: id_order,
-              no_meja: order.nomor_meja,
-              localStatus: "Menunggu Konfirmasi",
-              // status_pesanan: order.status_pesanan,
-              rows: [
-                {
-                  pesanan: order.nama_menu,
-                  jumlah: order.Jumlah_pesan,
-                  harga: order.harga_menu,
-                  total: order.Jumlah_pesan * order.harga_menu,
-                },
-              ],
-            };
-          });
-          console.log("Order", this.orders);
+          // kelompokin data dr id_order yang unik
+          const groupedOrders = response.data.data.reduce((acc, order) => {
+            if (!acc[order.id_order]) {
+              acc[order.id_order] = {
+                id_order: order.id_order,
+                no_meja: order.nomor_meja,
+                localStatus: "Menunggu Konfirmasi",
+                rows: [],
+              };
+            }
+
+            acc[order.id_order].rows.push({
+              pesanan: order.nama_menu,
+              jumlah: order.Jumlah_pesan,
+              harga: order.harga_menu,
+              total: order.Jumlah_pesan * order.harga_menu,
+            });
+
+            return acc;
+          }, {});
+
+          // ubah objek hasil pengelompokan jd array
+          this.orders = Object.values(groupedOrders);
+
+          console.log("Grouped Orders", this.orders);
         })
         .catch((err) => {
           console.error(err);
         });
+    },
+
+    // statusPesanan() {
+    //   axios
+    //     .post("http://127.0.0.1:8000/api/status_pesanan", {
+    //       // id_order: id_order,
+    //       // status: "Pesanan Selesai",
+    //       // guest_id: guestId,
+    //       id_order: "#M3105240002",
+    //       status: "",
+    //       guest_id: "guest-7",
+    //     })
+    //     .then((response) => {
+    //       console.log(response);
+    //       console.log("aaa", response.data.message[1].status_pesanan);
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //     });
+    // },
+
+    async statusPesanan(id_order) {
+      return axios
+        .post("http://127.0.0.1:8000/api/status_pesanan", {
+          id_order: "#M3105240002",
+          status: "PROSESS",
+          guest_id: "guest-7",
+        })
+        .then((response) => {
+          console.log(response);
+          const pesananSelesai = response.data.message.find(
+            (message) => message.status_pesanan === "SELESAI"
+          );
+          return pesananSelesai ? "SELESAI" : null;
+        })
+        .catch((error) => {
+          console.error(error);
+          throw error;
+        });
+    },
+
+    completeOrder(id_order) {
+      this.statusPesanan(id_order)
+        .then((status_pesanan) => {
+          if (status_pesanan === "SELESAI") {
+            this.updateLocalStatus(id_order, "Pesanan Selesai");
+          }
+        })
+        .catch((error) => {
+          console.error("Error completing order:", error);
+        });
+    },
+
+    updateLocalStatus(id_order, status) {
+      const order = this.orders.find((order) => order.id_order === id_order);
+      if (order) {
+        order.localStatus = status;
+      }
     },
 
     rejectOrder(id_order) {
       this.updateLocalStatus(id_order, "Pesanan Ditolak");
       console.log("Rejected order id:", id_order);
     },
+
     acceptOrder(id_order) {
       this.updateLocalStatus(id_order, "Pesanan di Proses");
       console.log("Accepted order id:", id_order);
     },
-    completeOrder(id_order) {
-      axios
-        .post("http://127.0.0.1:8000/api/status_pesanan", {
-          id_order: id_order,
-          status: "Pesanan Selesai",
-          guestId: "",
-        })
-        .then((response) => {
-          this.updateLocalStatus(id_order, "Pesanan Selesai");
-          console.log(response);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-    updateLocalStatus(id_order, status) {
-      const order = this.orders.find((o) => o.id_order === id_order);
-      if (order) {
-        order.localStatus = status;
-      }
-    },
+
+    // completeOrder(id_order) {
+    //   this.statusPesanan();
+    //   this.updateLocalStatus(id_order, "Pesanan Selesai");
+    // },
+
+    // updateLocalStatus(id_order, status) {
+    //   const order = this.orders.find((o) => o.id_order === id_order);
+    //   if (order) {
+    //     order.localStatus = status;
+    //   }
+    // },
+
     calculateTotal(rows) {
       return rows.reduce((total, row) => total + row.total, 0);
     },
@@ -295,9 +316,62 @@ export default {
         "Pesanan di Proses": "blue-7",
         "Pesanan Ditolak": "red-7",
         "Pesanan Selesai": "green-7",
-      }
+      };
       return localStatus[status];
     },
+
+    // viewTransaksi() {
+    //   axios
+    //     .post("http://127.0.0.1:8000/api/viewtransaksi", {
+    //       // id_penjual: 1,
+    //       id_penjual: this.id_penjual,
+    //     })
+    //     .then((response) => {
+    //       console.log("response", response.data.data);
+    //       console.log("response kak", response.data.data[0].id_order);
+    //       response.data.data.forEach((item) => {
+    //         console.log("id_order:", item.id_order);
+    //         console.log("id penjual:", this.id_penjual);
+    //       });
+    //       this.orders = response.data.data.map((order) => {
+    //         // const nama_menu = this.getMenu(order.id_menu);
+    //         // const id_order = this.acceptOrder(order.id_order);
+
+    //         // const id_order = order.id_order;
+    //         // console.log("id Order", this.id_order);
+
+    //         return {
+    //           id_order: id_order,
+    //           no_meja: order.nomor_meja,
+    //           localStatus: "Menunggu Konfirmasi",
+    //           // status_pesanan: order.status_pesanan,
+    //           rows: [
+    //             {
+    //               pesanan: order.nama_menu,
+    //               jumlah: order.Jumlah_pesan,
+    //               harga: order.harga_menu,
+    //               total: order.Jumlah_pesan * order.harga_menu,
+    //             },
+    //           ],
+    //         };
+    //       });
+    //       console.log("Order", this.orders);
+    //       console.log("id   Order", this.orders.id_order);
+    //     })
+    //     .catch((err) => {
+    //       console.error(err);
+    //     });
+    // },
   },
 };
 </script>
+
+<style>
+.button-status {
+  margin: 10px;
+}
+
+.q-card {
+  border-radius: 10px;
+}
+</style>
