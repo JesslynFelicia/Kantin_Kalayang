@@ -48,15 +48,6 @@
         </q-input>
       </div>
 
-      <!-- <div class="form-group">
-        <label class="text-subtitle1">Jenis</label>
-        <q-input outlined v-model="form.jenis">
-          <template v-slot:prepend>
-            <q-icon name="las la-tag" />
-          </template>
-        </q-input>
-      </div> -->
-
       <div class="form-group">
         <label class="text-subtitle1">Jenis</label>
         <q-select outlined v-model="form.jenis" :options="jenisOptions">
@@ -66,14 +57,14 @@
         </q-select>
       </div>
 
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label class="text-subtitle1">Ekstra</label>
         <q-input outlined v-model="form.ekstra">
           <template v-slot:prepend>
             <q-icon name="las la-info-circle" />
           </template>
         </q-input>
-      </div>
+      </div> -->
 
       <div class="form-group" style="padding-bottom: 20px">
         <q-toggle
@@ -183,7 +174,7 @@ const form = ref({
   desc_menu: "",
   harga_menu: "",
   jenis: "",
-  ekstra: "",
+  // ekstra: "",
   menu_tersedia: true,
 });
 
@@ -225,7 +216,7 @@ const getData = async () => {
       harga_menu: response.data.harga_menu,
       menu_tersedia: response.data.status_menu == "READY" ? true : false,
       jenis: response.data.jenis,
-      ekstra: response.data.ekstra,
+      // ekstra: response.data.ekstra,
     };
   } catch (error) {
     console.log(error);
