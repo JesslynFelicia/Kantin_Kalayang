@@ -374,7 +374,7 @@ export default {
   // },
 
   setup() {
-    const { getNamaToko } = useToko()
+    const { getNamaToko } = useToko();
     const text = ref("");
 
     const autoplay1 = ref(true);
@@ -391,7 +391,7 @@ export default {
       dialogTambah,
       position,
       dialogSwitch: ref(false),
-      getNamaToko
+      getNamaToko,
 
       // openDialogTambah(bottom) {
       //   position.value = bottom;
@@ -433,21 +433,21 @@ export default {
       }
     },
 
-    async cekPesanan() {
-      const guestId = sessionStorage.getItem("guestId");
-      await axios
-        .post("http://127.0.0.1:8000/api/cekpesanan", {
-          guest_id: guestId,
-          id_menu: this.id_menu,
-        })
-        .then((response) => {
-          console.log(response);
-          this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
+    // async cekPesanan() {
+    //   const guestId = sessionStorage.getItem("guestId");
+    //   await axios
+    //     .post("http://127.0.0.1:8000/api/cekpesanan", {
+    //       guest_id: guestId,
+    //       id_menu: this.id_menu,
+    //     })
+    //     .then((response) => {
+    //       console.log(response);
+    //       this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //     });
+    // },
 
     confirmAddMenu() {
       if (this.selectedMenu) {
