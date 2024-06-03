@@ -1,10 +1,10 @@
 <template>
-  <HeaderCreate
+  <!-- <HeaderCreate
     title=""
     backAction="/login"
     :hideLogout="true"
     :hideProfile="true"
-  />
+  /> -->
   <q-page class="q-pa-xl">
     <div class="text-center q-mb-xl">
       <span class="text-h4 text-weight-bold">Edit Profil</span>
@@ -12,7 +12,7 @@
     <q-form @submit="onSubmit">
       <div class="q-mb-lg">
         <label class="text-subtitle1">Nama Toko</label>
-        <q-input outlined v-model="form.nama_toko">
+        <q-input outlined v-model="nama_toko">
           <template v-slot:prepend>
             <q-icon name="las la-store" />
           </template>
@@ -33,17 +33,15 @@
         <q-input outlined type="email" lazy-rules disable v-model="userEmail">
           <template v-slot:prepend>
             <q-icon name="las la-envelope" />
-            <!-- <span>{{ userEmail }}</span> -->
-            <!-- Display email here -->
           </template>
         </q-input>
       </div>
 
       <div class="q-mb-lg">
-        <label class="text-subtitle1">Kata Sandi</label>
+        <label class="text-subtitle1">Your Password</label>
         <q-input
           outlined
-          v-model="password"
+          v-model="form.password"
           :type="seePassword ? 'password' : 'text'"
           lazy-rules
           :rules="formRules.password"
@@ -82,20 +80,6 @@
           </template>
         </q-input>
       </div>
-
-      <!-- <q-uploader
-          v-model="form.gambar_profile"
-          url=""
-          label="Unggah Foto Profil"
-          color="primary"
-          square
-          flat
-          bordered
-          accept=".png, .jpg, .jpeg"
-          style="max-width: 300px"
-          @change="handleProfile"
-        /> -->
-
       <div class="q-mb-lg">
         <label class="text-subtitle1">Foto Profil</label>
         <q-uploader
@@ -142,11 +126,10 @@
 
 <script setup>
 import HeaderLogin from "components/HeaderLogin.vue";
-import HeaderCreate from "components/HeaderCreate.vue";
+// import HeaderCreate from "components/HeaderCreate.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import useNotify from "src/composables/UseNotify";
 
 defineOptions({
   name: "EditProfilePage",
@@ -154,39 +137,13 @@ defineOptions({
 
 const router = useRouter();
 const store = useStore();
-const userEmail = ref(localStorage.getItem("userEmail") || "");
-const { notifyError, notifySuccess } = useNotify();
 
-const form = ref({
-  nama_toko: '',
-  email: "",
-  nomor_toko: "",
-  password: "",
-  new_password: "",
-  gambar_profile: null,
-  qris: null,
-});
-
-const formRules = ref({
-  nomor_toko: [
-    (val) => (val && val.length > 0) || "Nomor toko harus diisi",
-    (val) => /^\d+$/.test(val) || "Nomor toko harus berupa angka",
-  ],
-  password: [(val) => (val && val.length > 0) || "Password harus diisi"],
-  new_password: [
-    (val) => (val && val.length > 0) || "New password harus diisi",
-    (val) =>
-      val !== form.value.password || "New password harus berbeda dari password",
-  ],
-  qris: [(val) => val !== null || "QRIS harus diunggah"],
-});
-
-
-// ASU
 // const updateProfile = async () => {
 //   try {
 //     const payload = {
+//       nama_toko: form.value.nama_toko,
 //       email: userEmail.value,
+//       password: form.value.password,
 //       kata_sandi: form.value.new_password,
 //       gambar_profile: form.value.gambar_profile,
 //       qris: form.value.qris,
@@ -194,10 +151,10 @@ const formRules = ref({
 
 //     const formData = new FormData();
 //     Object.keys(payload).forEach((key) => {
-//       formData.append(key, payload[key]);
+//       if (payload[key] !== null && payload[key] !== undefined) {
+//         formData.append(key, payload[key]);
+//       }
 //     });
-
-
 
 //     const response = await axios.post(
 //       "http://127.0.0.1:8000/api/updatedatapenjual",
@@ -209,7 +166,7 @@ const formRules = ref({
 //       }
 //     );
 
-//     if (response.status === 200) {
+//     if (response.data.status === true) {
 //       console.log(response.data.message);
 //       notifySuccess("Akun berhasil diedit!");
 //       router.push({ path: "/beranda-penjual" });
@@ -237,80 +194,43 @@ const formRules = ref({
 //     console.log("gambar qris masuk", form.value.qris);
 //   }
 // };
-
-const updateProfile = async () => {
-  try {
-    if (!form.value.qris) {
-      notifyError("QRIS tidak boleh kosong");
-      return;
-    }
-
-    const payload = {
-      nama_toko :form.value.nama_toko,
-      email: userEmail.value,
-      kata_sandi: form.value.new_password,
-      gambar_profile: form.value.gambar_profile,
-      qris: form.value.qris,
-    };
-
-    const formData = new FormData();
-    Object.keys(payload).forEach((key) => {
-      if (payload[key] !== null && payload[key] !== undefined) {
-        formData.append(key, payload[key]);
-      }
-    });
-
-    const response = await axios.post(
-      "http://127.0.0.1:8000/api/updatedatapenjual",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
-    if (response.status === 200) {
-      console.log(response.data.message);
-      notifySuccess("Akun berhasil diedit!");Z
-      router.push({ path: "/beranda-penjual" });
-    } else {
-      console.error("Update failed:", response.data.error);
-    }
-
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    notifyError("Gagal mengedit akun");
-  }
-};
-
-const handleProfile = (event) => {
-  const file = event.target.files[0];
-  form.value.gambar_profile = file;
-  if (form.value.gambar_profile !== null) {
-    console.log("gambar profile masuk", form.value.gambar_profile);
-  }
-};
-
-const handleQris = (event) => {
-  const file = event.target.files[0];
-  form.value.qris = file;
-  if (form.value.qris !== null) {
-    console.log("gambar qris masuk", form.value.qris);
-  }
-};
-
 </script>
 
 <script>
 import axios from "axios";
+import useNotify from "src/composables/UseNotify";
 
 const seePassword = ref(true);
 const seeNewPassword = ref(true);
+const userEmail = ref(localStorage.getItem("userEmail") || "");
+
+const form = ref({
+  nama_toko: "",
+  email: "",
+  nomor_toko: "",
+  password: "",
+  new_password: "",
+  gambar_profile: null,
+  qris: null,
+});
+
+const formRules = ref({
+  nomor_toko: [
+    (val) => (val && val.length > 0) || "Nomor toko harus diisi",
+    (val) => /^\d+$/.test(val) || "Nomor toko harus berupa angka",
+  ],
+  password: [(val) => (val && val.length > 0) || "Password harus diisi"],
+  new_password: [
+    (val) => (val && val.length > 0) || "New password harus diisi",
+    (val) =>
+      val !== form.value.password || "New password harus berbeda dari password",
+  ],
+  qris: [(val) => val !== null || "QRIS harus diunggah"],
+});
 
 export default {
   components: {
-    HeaderCreate,
+    // HeaderCreate,
   },
 
   data() {
@@ -349,13 +269,12 @@ export default {
             "http://127.0.0.1:8000/api/viewonepenjual",
             { email: loggedInUserEmail }
           );
-          // const penjualData = response.data.data;
-          this.nama_toko = response.data.data.nama_toko;
+          const penjualData = response.data.data;
+          this.nama_toko = penjualData.nama_toko;
+          this.nomorToko = penjualData.nomor_toko;
+          this.password = penjualData.kata_sandi;
+          this.orderStatus = penjualData.status_acc;
           console.log(this.nama_toko);
-          this.nomorToko = response.data.data.nomor_toko;
-          this.password = response.data.data.kata_sandi;
-          this.orderStatus = response.data.status;
-          console.log("Status Pesanan:", this.orderStatus);
         } catch (error) {
           console.error("Error fetching penjual data:", error);
         }
@@ -364,16 +283,74 @@ export default {
       }
     },
 
+    async updateProfile() {
+      const { notifyError, notifySuccess } = useNotify();
+
+      try {
+        const payload = {
+          nama_toko: this.nama_toko,
+          email: userEmail.value,
+          password: form.value.password,
+          kata_sandi: form.value.new_password,
+          gambar_profile: form.value.gambar_profile,
+          qris: form.value.qris,
+        };
+
+        const formData = new FormData();
+        Object.keys(payload).forEach((key) => {
+          if (payload[key] !== null && payload[key] !== undefined) {
+            formData.append(key, payload[key]);
+          }
+        });
+
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/updatedatapenjual",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (response.data.status === true) {
+          console.log(response.data.message);
+          notifySuccess("Akun berhasil diedit!");
+          router.push({ path: "/beranda-penjual" });
+        } else {
+          console.error("Update failed:", response.data.error);
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        notifyError("Gagal mengedit akun");
+      }
+    },
+
+    handleProfile(event) {
+      const file = event.target.files[0];
+      form.value.gambar_profile = file;
+      if (form.value.gambar_profile !== null) {
+        console.log("gambar profile masuk", form.value.gambar_profile);
+      }
+    },
+
+    handleQris(event) {
+      const file = event.target.files[0];
+      form.value.qris = file;
+      if (form.value.qris !== null) {
+        console.log("gambar qris masuk", form.value.qris);
+      }
+    },
+
     fetchSellerInfo(email) {
       // Panggil API untuk mendapatkan informasi penjual berdasarkan email
-      // eslint-disable-next-line
       fetch(`/viewpenjual?email=${email}`)
         .then((response) => response.json())
         .then((data) => {
           const sellerId = data.id_penjual;
           // Panggil API kedua untuk mendapatkan informasi detail penjual berdasarkan ID penjual
           return fetch(`/viewpenjual?id=${sellerId}`);
-        },)
+        })
         .then((response) => response.json())
         .then((data) => {
           // Simpan informasi penjual ke objek

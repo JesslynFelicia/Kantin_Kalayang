@@ -49,17 +49,18 @@
         <div class="row full-width justify-center items-center text-center">
           <div class="col">
             <p class="text-subtitle1 text-bold q-mb-xs">Yakin ingin logout?</p>
-            <!-- <p class="text-caption q-mt-xs" style="color: #68737c">
-                Dokumen akan dihapus secara permanen.
-              </p> -->
+            <p class="text-subtitle3" style="color: #68737c">
+              Anda akan keluar dari akun ini.
+            </p>
           </div>
         </div>
       </q-card-section>
       <q-card-actions align="center">
         <q-btn
           class="delete-btn"
-          flat
-          filled
+          outline
+          rounded
+          color="negative"
           label="Batal"
           style="text-transform: none; padding-left: 17px; padding-right: 17px"
           v-close-popup
@@ -69,7 +70,7 @@
           unelevated
           label="Ya"
           style="text-transform: none"
-          color="red"
+          color="negative"
           v-close-popup
           @click="logout()"
         />
@@ -81,8 +82,7 @@
 <script>
 import router from "src/router";
 import { defineComponent, ref } from "vue";
-import { useRouter } from "vue-router"
-import { useCookies } from "vue3-cookies";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "HeaderCreate",
@@ -105,12 +105,10 @@ export default defineComponent({
   setup() {
     const dialogLogout = ref(false);
     const router = useRouter();
-    const { cookies } = useCookies()
 
     return {
       dialogLogout,
       router,
-      cookies
     };
   },
 
@@ -119,13 +117,25 @@ export default defineComponent({
       this.dialogLogout = true;
     },
 
+    deleteAllCookies() {
+      // Get all cookies
+      const cookies = document.cookie.split(";");
+
+      // Iterate through all cookies and delete them
+      cookies.forEach((cookie) => {
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        // Set the expiry date to the past to delete the cookie
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+      });
+    },
+
     logout() {
       // sessionStorage.removeItem("guestId");
-      this.dialogLogout = false;
+      // sessionStorage.removeItem("role");
+      this.deleteAllCookies();
 
-      localStorage.clear()
-      sessionStorage.clear()
-      this.cookies.remove('data')
+      this.dialogLogout = false;
 
       this.$router.replace("/login");
     },

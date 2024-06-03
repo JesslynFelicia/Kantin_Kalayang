@@ -153,18 +153,36 @@ export default {
     };
   },
   mounted() {
-    this.getdatamenu();
+    this.getIdPenjual();
   },
   formdata: {
     id_penjual: "",
   },
   showdatamenu: {},
   methods: {
+    async getIdPenjual() {
+      this.loading = true;
+      await axios
+        .post("http://127.0.0.1:8000/api/viewonepenjual", {
+          email: localStorage.getItem("userEmail"),
+        })
+        .then((response) => {
+          this.id_penjual = response.data.data.id_penjual;
+          this.getdatamenu();
+        })
+        .catch((err) => {
+          // Handle errors here
+          this.error = err;
+          console.error(err);
+        });
+      this.loading = false;
+    },
+
     async getdatamenu() {
       this.loading = true;
       await axios
         .post("http://127.0.0.1:8000/api/viewmenupenjual", {
-          id_penjual: sessionStorage.getItem("id_penjual"),
+          id_penjual: this.id_penjual,
         })
         .then((response) => {
           this.menus = response.data.data;

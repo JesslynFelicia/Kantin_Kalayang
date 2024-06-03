@@ -133,7 +133,7 @@ const onSubmit = async () => {
       nomor_toko: "",
     };
     notifySuccess("Akun berhasil dibuat!");
-    router.push({ path: "/beranda-admin" });
+    router.push({ path: "/" });
   } catch (error) {
     notifyError("Mohon isi semua form!");
   }

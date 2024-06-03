@@ -73,20 +73,16 @@
       </div>
     </q-form>
   </q-page>
-  <!-- <FooterApp title="Belum Punya Akun ?" button-link="Daftar sekarang" @link="() => $router.push({ path: '/register' })" /> -->
 </template>
 
 <script setup>
-import HeaderLogin from "components/HeaderLogin.vue";
 import HeaderCreate from "components/HeaderCreate.vue";
-import FooterApp from "components/FooterApp.vue";
-import { onBeforeMount, ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import useNotify from "src/composables/UseNotify";
-import { computed } from "vue";
 import { useStore } from "vuex";
 import axios from "axios";
-import { useCookies } from "vue3-cookies";
+import { Cookies } from "quasar";
 
 defineOptions({
   name: "LoginPage",
@@ -94,8 +90,6 @@ defineOptions({
 
 const router = useRouter();
 const store = useStore();
-const { cookies } = useCookies();
-// const userEmail = computed(() => store.getters.getUserEmail);
 const { notifyError, notifySuccess, notifyWarning } = useNotify();
 
 const seePassword = ref(true);
@@ -108,6 +102,20 @@ const form = ref({
 const formRules = ref({
   email: [(val) => (val && val.length > 0) || "Email harus diisi"],
   password: [(val) => (val && val.length > 0) || "Kata sandi harus diisi"],
+});
+
+// Check cookie on mounted
+onMounted(async () => {
+  const rememberedEmail = Cookies.get("rememberMeEmail");
+  const rememberedPassword = Cookies.get("rememberMePassword");
+  if (rememberedEmail && rememberedPassword) {
+    form.value.email = rememberedEmail;
+    form.value.password = rememberedPassword;
+    form.value.remember = true;
+
+    // Attempt auto login if "remember me" cookie exists
+    await onSubmit();
+  }
 });
 
 const onSubmit = async () => {
@@ -125,28 +133,31 @@ const onSubmit = async () => {
     );
 
     if (response.data.status) {
-
-      const { data: response } = await axios.post(
-        "http://127.0.0.1:8000/api/viewonepenjual",
-        {
-          email: form.value.email
-        }
-      );
-
-      if(form.value.remember) {
-        cookies.set('data', {
-          email: form.value.email,
-          password: form.value.password
-        })
+      if (form.value.remember) {
+        Cookies.set("rememberMeEmail", form.value.email, { expires: 7 }); // Cookie will be stored for 7 days
+        Cookies.set("rememberMePassword", form.value.password, { expires: 7 }); // Cookie will be stored for 7 days
+      } else {
+        Cookies.remove("rememberMeEmail");
+        Cookies.remove("rememberMePassword");
       }
 
       if (form.value.email.includes("admin")) {
         sessionStorage.setItem("role", "admin");
-        router.push({ path: "/beranda-admin" });
-      } else {
+        router.push({ path: "/register" });
+      } else if (response.data.status_akun == "False") {
         sessionStorage.setItem("role", "penjual");
-        sessionStorage.setItem("id_penjual", response.data.id_penjual)
-        router.push({ path: "/profile" });
+        router.push({
+          path: "/profile",
+          params: { email: ref(localStorage.getItem("userEmail") || "") },
+        });
+        notifySuccess("Login berhasil!");
+        notifyWarning("Mohon ganti password Anda!");
+      } else if (response.data.status_akun == "True") {
+        sessionStorage.setItem("role", "penjual");
+        router.push({
+          path: "/beranda-penjual",
+          params: { email: ref(localStorage.getItem("userEmail") || "") },
+        });
         notifySuccess("Login berhasil!");
         notifyWarning("Mohon ganti password Anda!");
       }
@@ -157,25 +168,21 @@ const onSubmit = async () => {
     notifyError("Terjadi kesalahan saat melakukan login.");
     console.error("Error:", error);
   }
-}
-
+};
 </script>
 
 <script>
 export default {
   methods: {
-    // Method untuk membuka aplikasi email dengan email tujuan
     contactAdmin() {
       const email = "admin@puprkalayang";
       const subject = "Pertanyaan/Pesan untuk Admin";
       const body = "Tulis pesan Anda di sini.";
 
-      // Membangun URL untuk membuka aplikasi email
       const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(
         subject
       )}&body=${encodeURIComponent(body)}`;
 
-      // Membuka aplikasi email
       window.location.href = mailtoLink;
     },
   },
