@@ -194,10 +194,9 @@ export default {
           email: email,
         })
         .then((response) => {
-          // Handle the response here
           console.log(response.data);
-          // this.id_penjual = response.data.id_penjual;
-          this.id_penjual = 1;
+          this.id_penjual = response.data.id_penjual;
+          // this.id_penjual = 1;
           console.log(this.id_penjual);
           this.getqris();
         })
@@ -215,8 +214,7 @@ export default {
         .post(
           "http://127.0.0.1:8000/api/showqris",
           {
-            // id_penjual: this.id_penjual,
-            id_penjual: 23,
+            id_penjual: this.id_penjual,
             qris: "qris",
           },
           { responseType: "blob" }
