@@ -4,9 +4,17 @@
     <div v-for="order in orders" :key="order.id_order" class="q-mb-md">
       <q-card>
         <q-card-section>
-          <div :class="statusClass(order.localStatus)">
-            {{ order.localStatus }}
+          <div class="row">
+            <div :class="statusClass(order.localStatus)" class="col">
+              <q-badge :color="colorClass(order.localStatus)">
+                {{ order.localStatus }}
+              </q-badge>
+            </div>
+            <div class="col text-right">
+              No. Meja : {{ order.no_meja }}
+            </div>
           </div>
+
         </q-card-section>
 
         <q-separator />
@@ -16,7 +24,7 @@
         </q-card-section>
 
         <q-card-section>
-          <div class="text-right text-subtitle1">
+          <div class="text-right text-subtitle2">
             Total yang harus dibayar: Rp {{ calculateTotal(order.rows) }}
           </div>
         </q-card-section>
@@ -57,6 +65,8 @@
 import HeaderCreate from "components/HeaderCreate.vue";
 import { ref } from "vue";
 import axios from "axios";
+import { showLoading, hideLoading } from "src/composables/useLoadingComposables";
+
 export default {
   components: {
     HeaderCreate,
@@ -84,7 +94,6 @@ export default {
 
   data() {
     return {
-      status_pesanan: "",
       id_order: "",
       orderAccepted: false,
       orderCompleted: false,
@@ -179,7 +188,7 @@ export default {
     // },
     getData() {
       const email = ref(localStorage.getItem("userEmail")).value;
-
+      showLoading();
       axios
         .post("http://127.0.0.1:8000/api/viewonepenjual", {
           email: email,
@@ -191,11 +200,13 @@ export default {
           console.log(this.id_penjual);
           console.log("response11", response.data.data);
           this.getDataRiwayat();
+          hideLoading();
         })
         .catch((err) => {
           // Handle errors here
           this.error = err;
           console.error(err);
+          hideLoading();
         });
     },
 
@@ -216,6 +227,7 @@ export default {
             const id_order = order.id_order;
             return {
               id_order: id_order,
+              no_meja: order.nomor_meja,
               localStatus: "Menunggu Konfirmasi",
               // status_pesanan: order.status_pesanan,
               rows: [
@@ -228,6 +240,7 @@ export default {
               ],
             };
           });
+          console.log("Order", this.orders);
         })
         .catch((err) => {
           console.error(err);
@@ -274,6 +287,16 @@ export default {
         "status-rejected": status === "Pesanan Ditolak",
         "status-completed": status === "Pesanan Selesai",
       };
+    },
+
+    colorClass(status) {
+      const localStatus = {
+        "Menunggu Konfirmasi": "amber-7",
+        "Pesanan di Proses": "blue-7",
+        "Pesanan Ditolak": "red-7",
+        "Pesanan Selesai": "green-7",
+      }
+      return localStatus[status];
     },
   },
 };

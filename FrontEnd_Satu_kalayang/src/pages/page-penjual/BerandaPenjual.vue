@@ -3,7 +3,7 @@ import { route } from 'quasar/wrappers';
   <div style="display: flex; justify-content: center">
     <q-page style="display: flex; flex-direction: column">
       <div style="display: flex; flex-direction: column; align-items: center">
-        <HeaderCreate title="Nama Toko" backAction="/" />
+        <HeaderCreate :title="nama_toko" backAction="/" />
         <q-input
           outlined
           class="search-bar"
@@ -127,6 +127,7 @@ export default {
   data() {
     return {
       id_penjual: "", // Pastikan ini diisi dengan nilai yang benar
+      nama_toko: "",
       menus: [],
     };
   },
@@ -168,6 +169,7 @@ export default {
         })
         .then((response) => {
           this.id_penjual = response.data.data.id_penjual;
+          this.nama_toko = response.data.data.nama_toko;
           this.getdatamenu();
         })
         .catch((err) => {

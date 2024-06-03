@@ -97,6 +97,7 @@ import axios from "axios";
 import useNotify from "src/composables/UseNotify";
 import { useRouter } from "vue-router";
 import HeaderLogin from "components/HeaderLogin.vue";
+import { showLoading, hideLoading } from "src/composables/useLoadingComposables";
 
 const { notifyError, notifySuccess } = useNotify();
 
@@ -124,6 +125,7 @@ const formRules = ref({
 
 const onSubmit = async () => {
   try {
+    showLoading();
     await axios.post("http://127.0.0.1:8000/api/savedatanew", formData.value);
     formData.value = {
       email: "",
@@ -136,6 +138,8 @@ const onSubmit = async () => {
     router.push({ path: "/" });
   } catch (error) {
     notifyError("Mohon isi semua form!");
+  } finally {
+    hideLoading();
   }
 };
 
