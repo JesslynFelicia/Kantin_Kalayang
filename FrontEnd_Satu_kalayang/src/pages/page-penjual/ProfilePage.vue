@@ -199,6 +199,7 @@ const store = useStore();
 <script>
 import axios from "axios";
 import useNotify from "src/composables/UseNotify";
+import { useRoute } from "vue-router";
 
 const seePassword = ref(true);
 const seeNewPassword = ref(true);
@@ -284,14 +285,14 @@ export default {
     },
 
     async updateProfile() {
-      const { notifyError, notifySuccess } = useNotify();
+      // const { notifyError, notifySuccess } = useNotify();
 
       try {
         const payload = {
           nama_toko: this.nama_toko,
           email: userEmail.value,
-          password: form.value.password,
-          kata_sandi: form.value.new_password,
+          kata_sandi_lama: form.value.password,
+          kata_sandi_baru: form.value.new_password,
           gambar_profile: form.value.gambar_profile,
           qris: form.value.qris,
         };
@@ -315,14 +316,14 @@ export default {
 
         if (response.data.status === true) {
           console.log(response.data.message);
-          notifySuccess("Akun berhasil diedit!");
-          router.push({ path: "/beranda-penjual" });
+          // notifySuccess("Akun berhasil diedit!");
+          this.$router.replace("/beranda-penjual");
         } else {
           console.error("Update failed:", response.data.error);
         }
       } catch (error) {
         console.error("Error updating profile:", error);
-        notifyError("Gagal mengedit akun");
+        // notifyError("Gagal mengedit akun");
       }
     },
 

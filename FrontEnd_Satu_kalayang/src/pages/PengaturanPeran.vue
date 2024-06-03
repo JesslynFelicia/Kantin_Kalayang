@@ -75,7 +75,14 @@ import { route } from 'quasar/wrappers';
       </q-card>
 
       <div class="peran-container" style="margin-top: 20px">
-        <h6 style="font-weight: 550; margin-bottom: 10px; margin-top: 0px">
+        <h6
+          style="
+            font-weight: 550;
+            margin-bottom: 10px;
+            margin-top: 0px;
+            text-align: center;
+          "
+        >
           Lanjutkan sebagai:
         </h6>
         <div class="peran-button-button">
@@ -88,76 +95,28 @@ import { route } from 'quasar/wrappers';
               padding: 50px;
               font-size: 16px;
             "
-            label="Admin"
-            @click="$router.replace('/login')"
-          />
-          <q-btn
-            class="peran-button"
-            outline
-            style="
-              color: black;
-              margin-right: 10px;
-              padding: 50px;
-              font-size: 16px;
-            "
-            label="Penjual"
+            label="PENJUAL"
             @click="$router.replace('/login')"
           />
           <q-btn
             class="peran-button"
             outline
             style="color: black; padding: 50px; font-size: 16px"
-            label="Pembeli"
+            label="PEMBELI"
             @click="generateGuestId"
           />
         </div>
-        <!-- <q-btn
-          outline
-          style="
-            color: black;
-            margin-right: 10px;
-            padding: 50px;
-            font-size: 16px;
-          "
-          label="Penjual"
-          @click="$router.push('/login')"
-        />
-        <q-btn
-          outline
-          style="color: black; padding: 50px; font-size: 16px"
-          label="Pembeli"
-          @click="$router.push('/beranda-pembeli')"
-        /> -->
-        <!-- <q-btn
-          outline
-          style="color: black; padding: 50px; font-size: 16px"
-          label="regis"
-          @click="$router.replace('/register')"
-        /> -->
       </div>
     </div>
   </q-page>
 </template>
 
 <script>
-import axios from "axios";
-import { useCookies } from "vue3-cookies";
-import { useRouter } from "vue-router";
-
 export default {
   data() {
     return {
       guestId: "guest",
     };
-  },
-
-  setup() {
-    const { cookies } = useCookies()
-    const router = useRouter()
-    return {
-      cookies,
-      router
-    }
   },
   methods: {
     generateGuecstId() {
@@ -181,38 +140,6 @@ export default {
       this.guestId = sessionStorage.getItem("guestId");
       this.$router.replace("/beranda-pembeli");
     },
-
-    async onRemember () {
-      const payload = {
-        email: this.cookies.get('data').email,
-        kata_sandi: this.cookies.get('data').password,
-      }
-
-      const { data } = await axios.post(
-        "http://127.0.0.1:8000/api/newlogin",
-        payload
-      );
-
-      if(!data.status) {
-        notifyError(data.message);
-      }
-
-      const { data: response } = await axios.post(
-        "http://127.0.0.1:8000/api/viewonepenjual",
-        {
-          email: payload.email
-        }
-      );
-
-      if (this.cookies.get('data').email.includes("admin")) {
-        sessionStorage.setItem("role", "admin");
-        this.router.push({ path: "/beranda-admin" });
-      } else {
-        sessionStorage.setItem("role", "penjual");
-        sessionStorage.setItem("id_penjual", response.data.id_penjual)
-        this.router.push({ path: "/profile" });
-      }
-    }
   },
 
   mounted() {
@@ -220,12 +147,6 @@ export default {
       this.guestId = sessionStorage.getItem("guestId");
     }
   },
-
-  beforeMount() {
-    if(this.cookies.get('data')) {
-      this.onRemember()
-    }
-  }
 };
 </script>
 
@@ -237,6 +158,7 @@ export default {
     margin: 10px;
     justify-content: center;
   }
+
   .peran-button-button {
     display: flex;
     flex-direction: column;
