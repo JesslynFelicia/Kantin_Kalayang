@@ -77,8 +77,24 @@ import { route } from 'quasar/wrappers';
                   style="width: 100%; height: auto; border-radius: 8px"
                 />
               </div>
+              <div class="row items-center">
+                <div class="col-8">
+                  <span class="text-subtitle2 text-weight-bold">
+                    {{ menu.nama_menu || "Loading..." }}
+                  </span>
+                </div>
+                <div class="col">
+                  <q-btn
+                    flat
+                    icon="edit"
+                    color="primary"
+                    @click="editMenu(menu.id_menu)"
+                    style="margin-left: 8px"
+                  />
+                </div>
+              </div>
 
-              <div style="flex: 1; margin-top: 8px; text-align: center">
+              <!-- <div style="flex: 1; margin-top: 8px; text-align: center">
                 <div
                   style="
                     display: flex;
@@ -97,7 +113,7 @@ import { route } from 'quasar/wrappers';
                     style="margin-left: 8px"
                   />
                 </div>
-              </div>
+              </div> -->
               <div
                 style="
                   display: flex;
