@@ -28,16 +28,23 @@ import { route } from 'quasar/wrappers';
         <!-- <h6 style="font-weight: 800; margin: 2% 3.5%">Menu</h6> -->
         <q-page>
           <div class="menu-header">
-            <p class="menu-title">Menu yang tersedia</p>
+            <p
+              style="font-size: 20px; font-weight: 600; padding: 0px 15px"
+              v-if="menus.some((menu) => menu.status_menu === 'READY')"
+              class="menu-title"
+            >
+              Menu yang tersedia
+            </p>
+            <h7 v-else style="padding-left: 20px; font-weight: 600"
+              >Tidak ada menu yang tersedia, silahkan</h7
+            >
 
-            <q-btn
-              flat
-              icon="add"
-              size="20px"
+            <a
+              style="font-size: 14px; font-weight: 700; padding: 0px 15px"
               @click="$router.replace('/buat-pesanan')"
-              class="add-button"
-              rounded
-            />
+              class="menu-title clickable text-primary"
+              >Tambah menu</a
+            >
           </div>
 
           <div v-if="loading">
@@ -50,7 +57,101 @@ import { route } from 'quasar/wrappers';
           </div>
 
           <div v-else class="menu-grid">
-            <div v-for="(menu, index) in menus" :key="index" class="menu-item">
+            <div
+              v-for="(menu, index) in menus.filter(
+                (menu) => menu.status_menu === 'READY'
+              )"
+              :key="index"
+              class="menu-item"
+            >
+              <div style="position: relative; width: 100%">
+                <img
+                  v-if="menu.nama_menu"
+                  src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+                  alt="Deskripsi Foto"
+                  style="width: 100%; height: auto; border-radius: 8px"
+                />
+                <q-skeleton
+                  v-else
+                  type="rect"
+                  style="width: 100%; height: auto; border-radius: 8px"
+                />
+              </div>
+
+              <div style="flex: 1; margin-top: 8px; text-align: center">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <p style="font-weight: bold; margin: 0; font-size: 18px">
+                    {{ menu.nama_menu || "Loading..." }}
+                  </p>
+                  <q-btn
+                    flat
+                    icon="edit"
+                    color="primary"
+                    @click="editMenu(menu.id_menu)"
+                    style="margin-left: 8px"
+                  />
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  margin-top: 4px;
+                "
+              >
+                <q-icon name="paid" size="30px" color="secondary" />
+                <p
+                  style="
+                    margin: 0%;
+                    padding-left: 5px;
+                    font-size: 16px;
+                    color: #555;
+                  "
+                >
+                  {{ menu.harga_menu || "Loading..." }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="menu-header" style="margin-top: 10px;"
+            v-if="menus2.some((menu) => menu.status_menu === 'NONE')"
+          >
+          <p
+              style="font-size: 20px; font-weight: 600; padding: 0px 15px"
+              v-if="menus.some((menu) => menu.status_menu === 'READY')"
+              class="menu-title"
+            >
+              Menu yang tidak tersedia
+            </p>
+          </div>
+
+
+          <div v-if="loading">
+            <q-skeleton
+              v-for="(_, index) in 5"
+              :key="index"
+              type="rect"
+              style="margin-bottom: 16px"
+            />
+          </div>
+
+          <div v-else class="menu-grid">
+            <div
+              v-for="(menu, index) in menus2.filter(
+                (menu) => menu.status_menu === 'NONE'
+              )"
+              :key="index"
+              class="menu-item"
+            >
               <div style="position: relative; width: 100%">
                 <img
                   v-if="menu.nama_menu"
@@ -129,6 +230,7 @@ export default {
       id_penjual: "", // Pastikan ini diisi dengan nilai yang benar
       nama_toko: "",
       menus: [],
+      menus2: [],
     };
   },
 
@@ -187,7 +289,13 @@ export default {
           id_penjual: this.id_penjual,
         })
         .then((response) => {
-          this.menus = response.data.data;
+          // this.menus = response.data.data;
+          this.menus = response.data.data.filter(
+            (menu) => menu.status_menu === "READY"
+          );
+          this.menus2 = response.data.data.filter(
+            (menu) => menu.status_menu === "NONE"
+          );
         })
         .catch((err) => {
           // Handle errors here
@@ -277,5 +385,9 @@ export default {
 
 .add-button {
   margin-right: 10px; /* Adjust margin as needed */
+}
+
+.q-btn {
+  text-transform: none;
 }
 </style>
