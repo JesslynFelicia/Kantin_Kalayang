@@ -79,7 +79,7 @@ import { route } from 'quasar/wrappers';
               </div>
               <div class="row items-center">
                 <div class="col-8">
-                  <span class="text-subtitle2 text-weight-bold">
+                  <span class="text-subtitle1 text-weight-bold">
                     {{ menu.nama_menu || "Loading..." }}
                   </span>
                 </div>
@@ -138,10 +138,11 @@ import { route } from 'quasar/wrappers';
           </div>
 
           <div
-            class="menu-header" style="margin-top: 10px;"
+            class="menu-header"
+            style="margin-top: 10px"
             v-if="menus2.some((menu) => menu.status_menu === 'NONE')"
           >
-          <p
+            <p
               style="font-size: 20px; font-weight: 600; padding: 0px 15px"
               v-if="menus.some((menu) => menu.status_menu === 'READY')"
               class="menu-title"
@@ -149,7 +150,6 @@ import { route } from 'quasar/wrappers';
               Menu yang tidak tersedia
             </p>
           </div>
-
 
           <div v-if="loading">
             <q-skeleton
@@ -190,9 +190,9 @@ import { route } from 'quasar/wrappers';
                     align-items: center;
                   "
                 >
-                  <p style="font-weight: bold; margin: 0; font-size: 18px">
+                  <span class="text-subtitle1 text-weight-bold">
                     {{ menu.nama_menu || "Loading..." }}
-                  </p>
+                  </span>
                   <q-btn
                     flat
                     icon="edit"

@@ -151,7 +151,7 @@ const onSubmit = async () => {
           params: { email: ref(localStorage.getItem("userEmail") || "") },
         });
         notifySuccess("Login berhasil!");
-        notifyWarning("Mohon ganti password Anda!");
+        // notifyWarning("Mohon ganti password Anda!");
       } else if (response.data.status_akun == "True") {
         sessionStorage.setItem("role", "penjual");
         router.push({
@@ -159,7 +159,7 @@ const onSubmit = async () => {
           params: { email: ref(localStorage.getItem("userEmail") || "") },
         });
         notifySuccess("Login berhasil!");
-        notifyWarning("Mohon ganti password Anda!");
+        // notifyWarning("Mohon ganti password Anda!");
       }
     } else {
       notifyError(response.data.message);

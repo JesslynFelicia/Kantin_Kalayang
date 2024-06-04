@@ -79,7 +79,7 @@ import { route } from 'quasar/wrappers';
           />
         </div>
 
-        <div v-else>
+        <div>
           <div
             v-for="(toko, index) in daftarToko"
             :key="index"
@@ -89,10 +89,12 @@ import { route } from 'quasar/wrappers';
               padding: 16px;
               padding-bottom: 0px;
             "
-            @click="() => {
-              setNamaToko(toko.nama_toko)
-              $router.replace(`/halaman-toko/${toko.id_penjual}`)
-            }"
+            @click="
+              () => {
+                setNamaToko(toko.nama_toko);
+                $router.replace(`/halaman-toko/${toko.id_penjual}`);
+              }
+            "
           >
             <div style="flex: 0 0 110px; margin-right: 16px">
               <img
@@ -101,16 +103,16 @@ import { route } from 'quasar/wrappers';
                 alt="Deskripsi Foto"
                 style="width: 100%; height: auto; border-radius: 8px"
               />
-              <q-skeleton
+              <!-- <q-skeleton
                 v-else
                 type="rect"
                 style="width: 100%; height: auto; border-radius: 8px"
-              />
+              /> -->
             </div>
 
             <div style="flex: 1">
               <p style="font-weight: bold; margin: 0; font-size: 18px">
-                {{ toko.nama_toko || "Loading..." }}
+                {{ toko.nama_toko }}
               </p>
 
               <!-- <div style="display: flex; align-items: center">
@@ -289,7 +291,7 @@ export default {
 
   setup() {
     const text = ref("");
-    const { setNamaToko } = useToko()
+    const { setNamaToko } = useToko();
 
     const autoplay1 = ref(true);
     const autoplay2 = ref(true);
@@ -300,7 +302,7 @@ export default {
       slide2: ref("first"),
       autoplay1,
       autoplay2,
-      setNamaToko
+      setNamaToko,
     };
   },
 };

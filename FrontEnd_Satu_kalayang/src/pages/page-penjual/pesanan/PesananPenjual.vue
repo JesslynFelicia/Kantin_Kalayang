@@ -16,14 +16,16 @@
               <q-badge
                 rounded
                 style="padding: 8px 15px"
-                :color="colorClass(order.localStatus)"
+                :color="getStatusInfo(order.localStatus).color"
               >
-                {{ order.localStatus }}
+                {{ getStatusText(order.localStatus) }}
               </q-badge>
             </div>
-            <div style="display: flex; justify-content: space-between">
-              <div class="text-right" style="padding-right:5px ;">No. Meja: </div>
-              <div class="col text-right" style="font-weight: 700;"> {{ order.no_meja }}</div>
+            <div class="col" style="display: flex; justify-content: flex-end">
+              <div style="padding-right: 5px" class="text-right">No. Meja:</div>
+              <div style="font-weight: 700" class="text-right">
+                {{ order.no_meja }}
+              </div>
             </div>
           </div>
         </q-card-section>
@@ -58,25 +60,22 @@
         </q-card-section>
 
         <q-separator />
-
         <q-card-actions align="right">
           <q-btn
+            v-if="order.localStatus !== 'PROSESS'"
             class="button-status"
-            v-if="
-              order.localStatus !== 'Pesanan di Proses' &&
-              order.localStatus !== 'Pesanan Selesai'
-            "
             style="padding: 7px 23px"
             color="negative"
             rounded
-            :disabled="order.localStatus === 'Pesanan Ditolak'"
+            :disabled="order.localStatus === 'TOLAK'"
             @click="rejectOrder(order.id_order)"
           >
             Tolak Pesanan
           </q-btn>
+
           <q-btn
+            v-if="order.localStatus === 'CHECK'"
             class="button-status"
-            v-if="order.localStatus === 'Menunggu Konfirmasi'"
             color="positive"
             rounded
             style="padding: 7px 22px"
@@ -84,14 +83,15 @@
             @click="acceptOrder(order.id_order)"
           >
           </q-btn>
+
           <q-btn
+            v-if="order.localStatus === 'PROSESS'"
             class="button-status"
-            v-if="order.localStatus === 'Pesanan di Proses'"
             color="positive"
             rounded
             style="padding: 7px 23px"
             label="Pesanan Selesai"
-            :disabled="order.localStatus === 'Pesanan Selesai'"
+            :disabled="order.localStatus === 'Pesanan selesai'"
             @click="completeOrder(order.id_order)"
           >
           </q-btn>
@@ -121,8 +121,14 @@ export default {
 
   mounted() {
     this.getData();
-    this.statusPesanan();
   },
+
+  // created() {
+  //   this.getData();
+  //   setInterval(() => {
+  //     this.getData();
+  //   }, 10000); // 10 seconds
+  // },
 
   data() {
     return {
@@ -192,7 +198,7 @@ export default {
               acc[order.id_order] = {
                 id_order: order.id_order,
                 no_meja: order.nomor_meja,
-                localStatus: "Menunggu Konfirmasi",
+                localStatus: order.status_pesanan, // Ubah status lokal berdasarkan status pesanan dari response
                 rows: [],
               };
             }
@@ -217,38 +223,15 @@ export default {
         });
     },
 
-    // statusPesanan() {
-    //   axios
-    //     .post("http://127.0.0.1:8000/api/status_pesanan", {
-    //       // id_order: id_order,
-    //       // status: "Pesanan Selesai",
-    //       // guest_id: guestId,
-    //       id_order: "#M3105240002",
-    //       status: "",
-    //       guest_id: "guest-7",
-    //     })
-    //     .then((response) => {
-    //       console.log(response);
-    //       console.log("aaa", response.data.message[1].status_pesanan);
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //     });
-    // },
-
-    async statusPesanan(id_order) {
+    async acceptOrder(id_order) {
       return axios
         .post("http://127.0.0.1:8000/api/status_pesanan", {
-          id_order: "#M3105240002",
+          guest_id: "",
           status: "PROSESS",
-          guest_id: "guest-7",
+          id_order: id_order, // gunakan id_order dari parameter
         })
-        .then((response) => {
-          console.log(response);
-          const pesananSelesai = response.data.message.find(
-            (message) => message.status_pesanan === "SELESAI"
-          );
-          return pesananSelesai ? "SELESAI" : null;
+        .then(() => {
+          this.viewTransaksi();
         })
         .catch((error) => {
           console.error(error);
@@ -256,112 +239,71 @@ export default {
         });
     },
 
-    completeOrder(id_order) {
-      this.statusPesanan(id_order)
-        .then((status_pesanan) => {
-          if (status_pesanan === "SELESAI") {
-            this.updateLocalStatus(id_order, "Pesanan Selesai");
-          }
+    async completeOrder(id_order) {
+      return axios
+        .post("http://127.0.0.1:8000/api/status_pesanan", {
+          guest_id: "",
+          status: "SELESAI",
+          id_order: id_order,
+        })
+        .then(() => {
+          this.viewTransaksi();
         })
         .catch((error) => {
-          console.error("Error completing order:", error);
+          console.error(error);
+          throw error;
         });
     },
 
-    updateLocalStatus(id_order, status) {
-      const order = this.orders.find((order) => order.id_order === id_order);
-      if (order) {
-        order.localStatus = status;
-      }
+    async rejectOrder(id_order) {
+      return axios
+        .post("http://127.0.0.1:8000/api/status_pesanan", {
+          guest_id: "",
+          status: "TOLAK",
+          id_order: id_order,
+        })
+        .then(() => {
+          this.viewTransaksi();
+        })
+        .catch((error) => {
+          console.error(error);
+          throw error;
+        });
     },
 
-    rejectOrder(id_order) {
-      this.updateLocalStatus(id_order, "Pesanan Ditolak");
-      console.log("Rejected order id:", id_order);
+    statusClass(status) {
+      return {
+        "status-circle": true,
+        "status-waiting": status === "CHECK",
+        "status-processing": status === "PROSESS",
+        "status-rejected": status === "TOLAK",
+        "status-completed": status === "SELESAI",
+      };
     },
 
-    acceptOrder(id_order) {
-      this.updateLocalStatus(id_order, "Pesanan di Proses");
-      console.log("Accepted order id:", id_order);
+    getStatusText(status) {
+      const statusText = {
+        CHECK: "Menunggu Konfirmasi",
+        PROSESS: "Pesanan di Proses",
+        SELESAI: "Pesanan Selesai",
+        TOLAK: "Pesanan ditolak",
+      };
+      return statusText[status] || "Unknown Status";
     },
 
-    // completeOrder(id_order) {
-    //   this.statusPesanan();
-    //   this.updateLocalStatus(id_order, "Pesanan Selesai");
-    // },
-
-    // updateLocalStatus(id_order, status) {
-    //   const order = this.orders.find((o) => o.id_order === id_order);
-    //   if (order) {
-    //     order.localStatus = status;
-    //   }
-    // },
+    getStatusInfo(status) {
+      const statusInfo = {
+        CHECK: { text: "Menunggu Konfirmasi", color: "secondary" },
+        PROSESS: { text: "Pesanan di Proses", color: "blue-7" },
+        SELESAI: { text: "Pesanan Selesai", color: "green-7" },
+        TOLAK: { text: "Pesanan ditolak", color: "negative" },
+      };
+      return statusInfo[status] || { text: "Unknown Status", color: "grey" };
+    },
 
     calculateTotal(rows) {
       return rows.reduce((total, row) => total + row.total, 0);
     },
-    statusClass(status) {
-      return {
-        "status-circle": true,
-        "status-waiting": status === "Menunggu Konfirmasi",
-        "status-processing": status === "Pesanan di Proses",
-        "status-rejected": status === "Pesanan Ditolak",
-        "status-completed": status === "Pesanan Selesai",
-      };
-    },
-
-    colorClass(status) {
-      const localStatus = {
-        "Menunggu Konfirmasi": "amber-7",
-        "Pesanan di Proses": "blue-7",
-        "Pesanan Ditolak": "red-7",
-        "Pesanan Selesai": "green-7",
-      };
-      return localStatus[status];
-    },
-
-    // viewTransaksi() {
-    //   axios
-    //     .post("http://127.0.0.1:8000/api/viewtransaksi", {
-    //       // id_penjual: 1,
-    //       id_penjual: this.id_penjual,
-    //     })
-    //     .then((response) => {
-    //       console.log("response", response.data.data);
-    //       console.log("response kak", response.data.data[0].id_order);
-    //       response.data.data.forEach((item) => {
-    //         console.log("id_order:", item.id_order);
-    //         console.log("id penjual:", this.id_penjual);
-    //       });
-    //       this.orders = response.data.data.map((order) => {
-    //         // const nama_menu = this.getMenu(order.id_menu);
-    //         // const id_order = this.acceptOrder(order.id_order);
-
-    //         // const id_order = order.id_order;
-    //         // console.log("id Order", this.id_order);
-
-    //         return {
-    //           id_order: id_order,
-    //           no_meja: order.nomor_meja,
-    //           localStatus: "Menunggu Konfirmasi",
-    //           // status_pesanan: order.status_pesanan,
-    //           rows: [
-    //             {
-    //               pesanan: order.nama_menu,
-    //               jumlah: order.Jumlah_pesan,
-    //               harga: order.harga_menu,
-    //               total: order.Jumlah_pesan * order.harga_menu,
-    //             },
-    //           ],
-    //         };
-    //       });
-    //       console.log("Order", this.orders);
-    //       console.log("id   Order", this.orders.id_order);
-    //     })
-    //     .catch((err) => {
-    //       console.error(err);
-    //     });
-    // },
   },
 };
 </script>

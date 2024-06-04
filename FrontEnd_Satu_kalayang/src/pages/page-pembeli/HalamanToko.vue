@@ -12,97 +12,72 @@ import { route } from 'quasar/wrappers';
   <!-- eslint-disable-next-line -->
   <div style="display: flex; justify-content: center; height: 100vh">
     <q-page style="display: flex; flex-direction: column; height: 100vh">
+      <!-- <div
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+        "
+      > -->
+      <!-- <div
+        style="display: flex; align-items: center; width: 100%; padding: 10px"
+      > -->
       <div style="display: flex; flex-direction: column; align-items: center">
-        <!-- <h6 style="font-weight: 800; margin: 0%">SATU KALAYANG</h6> -->
+        <!-- Dropdown Button -->
+        <!-- <q-btn-dropdown
+            color="primary"
+            label="Kategori"
+            no-caps
+            style="margin-right: 10px; border-radius: 25px"
+          >
+            <q-list>
+              <q-item clickable v-ripple>
+                <q-item-section>
+                  <q-item-label>Menu</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-ripple>
+                <q-item-section>
+                  <q-item-label>Makanan Berat</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-ripple>
+                <q-item-section>
+                  <q-item-label>Makanan Ringan</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-ripple>
+                <q-item-section>
+                  <q-item-label>Minuman</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown> -->
 
+        <!-- Search Bar -->
         <q-input
           outlined
-          class="search-bar"
+          rounded
           v-model="text"
           placeholder="Cari makanan / toko"
           color="black"
+          class="custom-input"
           style="padding-top: 10px; width: 93%"
         >
-          <!-- <q-icon name="event" color="orange" /> -->
-          <q-btn
-            unelevated
-            size="13px"
-            no-caps
-            class="text-weight-medium"
-            icon="search"
-            style="padding: 0%"
-          />
-        </q-input>
-      </div>
-
-      <!-- <div style="flex-direction: column; margin-top: 10px">
-        <div
-          style="display: flex"
-          v-for="(menu, index) in menus"
-          :key="index"
-          @click="$router.replace('/detail-pesanan')"
-        >
-          <div style="text-align: center">
-            <img
-              src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
-              alt="Deskripsi Foto"
-              class="category"
-            />
-            <div style="display: flex; margin-left: 10%">
-              <div style="text-align: left">
-                <p style="margin: 0; font-weight: 700; font-size: 15px">
-                  {{ menu.nama_menu }}
-                </p>
-                <p style="margin: 0">Rp{{ menu.harga_menu }}</p>
-              </div>
-              <q-btn
-                unelevated
-                size="14px"
-                no-caps
-                rounded
-                class="text-weight-medium"
-                icon="add_circle_outline"
-                @click="$router.replace('/detail-pesanan')"
-                style="margin-left: auto; margin-bottom: auto; margin-right: 5%"
-              />
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-      <!--
-      <div class="menu-container">
-        <div
-          style="width: 40%; margin: 10px 5px"
-          v-for="(menu, index) in menus"
-          :key="index"
-          @click="$router.replace('/detail-pesanan')"
-        >
-          <img
-            style="margin: 10px"
-            src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
-            alt="Deskripsi Foto"
-            class="category"
-          />
-          <div style="display: flex; margin-left: 10%">
-            <div style="text-align: left">
-              <p style="margin: 0; font-weight: 700; font-size: 15px">
-                {{ menu.nama_menu }}
-              </p>
-              <p style="margin: 0">Rp{{ menu.harga_menu }}</p>
-            </div>
+          <!-- style="border-radius: 25px; size: 10px" -->
+          <template v-slot:append>
             <q-btn
               unelevated
-              size="14px"
               no-caps
-              rounded
-              style="margin-left: auto; margin-bottom: auto; margin-right: 5%"
-              icon="add_circle_outline"
-              @click="$router.replace('/detail-pesanan')"
+              class="text-weight-medium"
+              icon="search"
+              style="padding: 0%"
             />
-          </div>
-        </div>
-      </div> -->
+          </template>
+        </q-input>
+      </div>
+      <!-- </div> -->
 
       <div class="menu-container">
         <div
@@ -510,12 +485,6 @@ export default {
           );
           const statusMenus = this.menus.map((menu) => menu.status_menu);
           console.log("ahahaha", statusMenus);
-          // this.menus = response.data.data;
-          // this.status = response.data.data.filter(
-          //   (menu) => menu.status_menu === "READY"
-          // );
-          // console.log("ID:", this.id);
-          // console.log("Menu:", this.status);
         })
         .catch((error) => {
           console.error(error);

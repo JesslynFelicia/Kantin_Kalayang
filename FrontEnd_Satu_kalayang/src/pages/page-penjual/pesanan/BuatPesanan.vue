@@ -1,7 +1,7 @@
 <template>
   <div>
     <HeaderCreate
-      title="Buat Menu"
+      title=""
       backAction="/beranda-penjual"
       :hideLogout="true"
       :hideProfile="true"
