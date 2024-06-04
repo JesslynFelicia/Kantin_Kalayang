@@ -90,7 +90,6 @@ class ControllerKalayang extends Controller
         $jenis = $request->post('jenis');
         $nama_menu = $request->post('nama_menu');
         $harga_menu = $request->post('harga_menu');
-        $ekstra = $request->post('ekstra');
         $status_menu = $request->post('status_menu');
         $desc_menu = $request->post('desc_menu');
 
@@ -99,7 +98,6 @@ class ControllerKalayang extends Controller
             $savemenu->jenis = $jenis;
             $savemenu->nama_menu = $nama_menu;
             $savemenu->harga_menu = $harga_menu;
-            $savemenu->ekstra = $ekstra;
             $savemenu->status_menu = $status_menu;
             $savemenu->desc_menu = $desc_menu;
             $savemenu->save();
@@ -411,8 +409,8 @@ class ControllerKalayang extends Controller
     public function updatedatapenjual(Request $request)
     {
         $email = $request->post('email');
-        $kata_sandi_lama = $request->post('kata_sandi_lama');
-        $kata_sandi_baru = $request->post('kata_sandi_baru');
+        $kata_sandi_lama = $request->post('password');
+        $kata_sandi_baru = $request->post('kata_sandi');
         $nama_toko = $request->post('nama_toko');
 
         $penjual = ModelKalayangPenjual::where('email', $email)->first();
@@ -426,12 +424,12 @@ class ControllerKalayang extends Controller
 
         $rules = [
             'email' => 'required|email',
-            'qris' => 'image|mimes:jpeg,png,jpg,gif',
             'gambar_profile' => 'image|mimes:jpeg,png,jpg,gif'
         ];
 
         if ($status_akun !== 'True') {
-            $rules['kata_sandi_baru'] = 'required|min:6';
+            $rules['kata_sandi'] = 'min:6';
+            $rules['qris'] ='required|image|mimes:jpeg,png,jpg,gif';
         }
 
         $validator = Validator::make($request->all(), $rules);
@@ -613,22 +611,28 @@ class ControllerKalayang extends Controller
 
     public function status_pesanan(Request $request)
     {
-        $guestId = $request->post('guest_id');
+        $guestId = $request->post('guestId');
+        $tombol_pesanan = strtoupper($request->post('status'));
+        $id_order = $request->post('id_order');
 
-        // Pastikan nilai $guestId dan $nomor_transaksi tidak null
-        if (is_null($guestId)) {
-            return response()->json(['message' => 'Parameter tidak lengkap'], 400);
+        // Pastikan nilai $guestId dan $nomor_transaksi tidak nul
+        if($guestId && empty($id_order) && empty($tombol_pesanan)) {
+            $transaksi = ModelKalayangTransaksi::where('guest_id', $guestId)->get();
+            if ($transaksi->isEmpty()) {
+                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+            }
+            return response()->json(['message' => $transaksi], 200);
         }
+        if(empty($guestId) && $id_order && $tombol_pesanan) {
 
-        $transaksi = ModelKalayangTransaksi::where('guest_id', $guestId)
-            ->get();
+        $transaksi1 = ModelKalayangTransaksi::where('id_order', $id_order)->get();
 
-
-        if ($transaksi->isEmpty()) {
-            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        foreach ($transaksi1 as $item) {
+            $item->status_pesanan = $tombol_pesanan;
+            $item->save();
         }
-
-        return response()->json(['message' => $transaksi], 200);
+        return response()->json(['message' => 'Transaksi berhasil diupdate'], 200);
+    }
     }
 
     public function forgot_password(Request $request)
