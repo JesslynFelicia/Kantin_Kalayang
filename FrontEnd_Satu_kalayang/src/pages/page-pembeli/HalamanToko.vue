@@ -106,7 +106,9 @@ import { route } from 'quasar/wrappers';
 
       <div class="menu-container">
         <div
-          v-for="(menu, index) in menus"
+          v-for="(menu, index) in menus.filter(
+            (menu) => menu.status_menu === 'READY'
+          )"
           :key="menu.id"
           class="menu-item"
           @click="openDialogTambah(index, 'bottom')"
@@ -494,7 +496,6 @@ export default {
       }
     },
 
-    // coba
     getMenu() {
       this.id = this.$route.params.id;
       axios
@@ -503,9 +504,18 @@ export default {
           // id_menu: this.id_menu,
         })
         .then((response) => {
-          this.menus = response.data.data;
-          console.log("ID:", this.id);
-          console.log("Data Menu:", this.menus);
+          // this.menus = response.data.data;
+          this.menus = response.data.data.filter(
+            (menu) => menu.status_menu === "READY"
+          );
+          const statusMenus = this.menus.map((menu) => menu.status_menu);
+          console.log("ahahaha", statusMenus);
+          // this.menus = response.data.data;
+          // this.status = response.data.data.filter(
+          //   (menu) => menu.status_menu === "READY"
+          // );
+          // console.log("ID:", this.id);
+          // console.log("Menu:", this.status);
         })
         .catch((error) => {
           console.error(error);
