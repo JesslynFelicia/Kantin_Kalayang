@@ -301,17 +301,6 @@ const routes = [{
         }]
     },
     {
-        path: '/halaman-pembayaran',
-        component: () =>
-            import ('layouts/MainLayout.vue'),
-        children: [{
-            path: '',
-            component: () =>
-                //showqris - done
-                import ("pages/page-pembeli/HalamanPembayaran.vue")
-        }]
-    },
-    {
         path: '/status-pesanan',
         component: () =>
             import ('layouts/MainLayout.vue'),

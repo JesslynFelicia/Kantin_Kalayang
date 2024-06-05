@@ -1,5 +1,5 @@
 <template>
-  <HeaderCreate title="" backAction="/" :hideLogout="true" :hideProfile="true">
+  <HeaderCreate title="" backAction="/beranda-admin" :hideLogout="true" :hideProfile="true">
   </HeaderCreate>
 
   <q-page class="q-pa-xl" style="padding-top: 0%">

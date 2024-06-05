@@ -143,7 +143,7 @@ const onSubmit = async () => {
 
       if (form.value.email.includes("admin")) {
         sessionStorage.setItem("role", "admin");
-        router.push({ path: "/register" });
+        router.push({ path: "/beranda-admin" });
       } else if (response.data.status_akun == "False") {
         sessionStorage.setItem("role", "penjual");
         router.push({
