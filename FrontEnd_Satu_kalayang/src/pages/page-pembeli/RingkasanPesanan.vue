@@ -60,7 +60,13 @@
         <div class="text-h6">Ringkasan Pesanan</div>
       </div>
       <div class="col text-right">
-        <div class="text-caption text" @click="() => {}">Tambah Pesanan</div>
+        <div
+          class="text-subtitle2 text-primary"
+          style="font-weight: 700"
+          @click="$router.push(`halaman-toko/${idPenjual}`)"
+        >
+          Tambah Pesanan
+        </div>
       </div>
     </div>
 
@@ -70,7 +76,7 @@
           <!-- <q-item-section>
             <q-item-label>{{ menu.count }}x </q-item-label>
           </q-item-section> -->
-          <q-item-section avatar>
+          <q-item-section>
             <q-item-label>{{ menu.count }}x </q-item-label>
           </q-item-section>
 
@@ -79,6 +85,16 @@
             <!-- <q-item-label caption>
               <span class="text" @click="() => {}">Edit</span>
             </q-item-label> -->
+          </q-item-section>
+
+          <q-item-section>
+            <q-btn
+              flat
+              color="negative"
+              icon="delete"
+              rounded
+              @click="openDialogDelete(menu.id_menu)"
+            />
           </q-item-section>
 
           <q-item-section side>
@@ -130,6 +146,52 @@
       </div>
     </q-footer>
   </q-page>
+
+  <q-dialog v-model="dialogDelete">
+    <q-card
+      class="my-card"
+      style="width: 569px; border-radius: 30px; padding: 10px"
+    >
+      <q-card-section class="row items-center q-pb-none">
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <div class="row full-width justify-center items-center text-center">
+          <div class="col">
+            <p class="text-subtitle1 text-bold q-mb-xs">
+              Yakin ingin hapus menu ini?
+            </p>
+            <p class="text-subtitle3" style="color: #68737c">
+              Menu akan dihapus dari pesanan Anda.
+            </p>
+          </div>
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="center">
+        <q-btn
+          class="delete-btn"
+          rounded
+          outline
+          label="Batal"
+          style="text-transform: none; padding-left: 17px; padding-right: 17px"
+          color="negative"
+          v-close-popup
+        />
+        <q-btn
+          rounded
+          unelevated
+          label="Ya"
+          @click="handleDelete()"
+          style="text-transform: none"
+          color="negative"
+          v-close-popup
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>
@@ -160,6 +222,7 @@ export default {
       subSelected: null,
 
       ringkasanPesanan: [],
+      dialogDelete: ref(false),
     };
   },
 
@@ -169,7 +232,7 @@ export default {
 
   setup() {
     const router = useRouter();
-    const { getNamaToko } = useToko()
+    const { getNamaToko } = useToko();
     const { notifyError, notifySuccess, notifyWarning } = useNotify();
     const idPenjual = ref("");
 
@@ -179,7 +242,7 @@ export default {
       notifySuccess,
       notifyWarning,
       getNamaToko,
-      idPenjual
+      idPenjual,
     };
   },
 
@@ -196,6 +259,7 @@ export default {
         );
 
         this.ringkasanPesanan = response.data.data;
+
         // this.id_menu = response.data.data[0].id_menu;
         console.log("ringkasan: ", this.ringkasanPesanan);
 
@@ -245,6 +309,30 @@ export default {
         console.log("Transaksi berhasil disimpan:", response.data);
       } catch (error) {
         console.error("Terjadi kesalahan saat menyimpan transaksi:", error);
+      }
+    },
+
+    openDialogDelete(id_menu) {
+      this.dialogDelete = true;
+      this.idMenu = id_menu;
+      console.log("babami", id_menu);
+    },
+
+    async handleDelete() {
+      const guestId = sessionStorage.getItem("guestId");
+      try {
+        await axios.post("http://127.0.0.1:8000/api/deletepesanan", {
+          guest_id: guestId,
+          id_menu: this.idMenu,
+        });
+
+        this.ringkasanPesanan = this.ringkasanPesanan.filter(
+          (menu) => menu.id_menu !== this.idMenu
+        );
+        this.addRingkasan();
+        this.dialogDelete = false;
+      } catch (error) {
+        console.error("Gagal menghapus pesanan", error);
       }
     },
   },
