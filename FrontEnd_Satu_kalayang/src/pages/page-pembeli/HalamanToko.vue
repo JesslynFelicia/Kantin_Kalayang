@@ -10,8 +10,8 @@ import { route } from 'quasar/wrappers';
   </HeaderCreate>
 
   <!-- eslint-disable-next-line -->
-  <div style="display: flex; justify-content: center; height: 100vh">
-    <q-page style="display: flex; flex-direction: column; height: 100vh">
+  <!-- <div style="display: flex; justify-content: center; height: 100vh"> -->
+    <q-page >
       <!-- <div
         style="
           display: flex;
@@ -89,7 +89,7 @@ import { route } from 'quasar/wrappers';
           @click="openDialogTambah(index, 'bottom')"
         >
           <img
-            src="/src/assets/food.jpg"
+            src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
             alt="Deskripsi Foto"
             class="category"
             style="margin: 10px; border-radius: 20px"
@@ -116,8 +116,13 @@ import { route } from 'quasar/wrappers';
           </q-card-section>
         </div>
       </div>
+      <!-- <div v-else>
+        <p></p>
+      </div> -->
+    </q-page>
 
-      <div v-if="totalPrice !== 0" class="floating-bar" style="padding: 15px">
+    <q-footer class="bg-white" >
+        <div v-if="totalPrice !== 0" class="" style="padding: 15px;">
         <q-btn
           color="primary"
           class="full-width"
@@ -169,12 +174,8 @@ import { route } from 'quasar/wrappers';
           <q-icon name="las la-shopping-bag" size="35px" />
         </q-btn>
       </div>
-
-      <!-- <div v-else>
-        <p></p>
-      </div> -->
-    </q-page>
-  </div>
+      </q-footer>
+  <!-- </div> -->
 
   <q-dialog v-model="dialogSwitch">
     <q-card
@@ -404,7 +405,7 @@ export default {
 
         this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
 
-        // this.cekPesanan();
+        this.cekPesanan();
       } catch (error) {
         console.error(error);
       }
@@ -529,18 +530,6 @@ export default {
   align-items: center;
 }
 
-.menu-container {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.menu-item {
-  width: 50%;
-  padding: 5px;
-  align-items: center;
-}
-
 .category {
   max-width: 85%;
   height: auto;
@@ -590,7 +579,7 @@ export default {
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: white;
+  background-color: red;
   display: flex;
   flex-direction: column;
   padding: 5% 7%;

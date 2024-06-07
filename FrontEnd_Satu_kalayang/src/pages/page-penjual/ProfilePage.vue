@@ -90,9 +90,20 @@
           flat
           bordered
           accept=".png, .jpg, .jpeg"
-          style="max-width: 300px"
+          style="width: 100%"
           @input="handleProfile"
         />
+        <!-- <q-uploader
+          v-model="form.gambar_profile"
+          label="Unggah Foto Profil"
+          color="primary"
+          square
+          flat
+          bordered
+          accept=".png, .jpg, .jpeg"
+          style="max-width: 300px"
+          @input="handleProfile"
+        /> -->
       </div>
 
       <div class="q-mb-lg">
@@ -105,9 +116,20 @@
           flat
           bordered
           accept=".png, .jpg, .jpeg"
-          style="max-width: 300px"
+          style="width: 100%"
           @input="handleQris"
         />
+        <!-- <q-uploader
+          v-model="form.qris"
+          label="Unggah QRIS"
+          color="primary"
+          square
+          flat
+          bordered
+          accept=".png, .jpg, .jpeg"
+          style="max-width: 300px"
+          @input="handleQris"
+        /> -->
       </div>
 
       <div class="q-mb-lg">

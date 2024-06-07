@@ -76,7 +76,7 @@
           <!-- <q-item-section>
             <q-item-label>{{ menu.count }}x </q-item-label>
           </q-item-section> -->
-          <q-item-section>
+          <q-item-section avatar>
             <q-item-label>{{ menu.count }}x </q-item-label>
           </q-item-section>
 

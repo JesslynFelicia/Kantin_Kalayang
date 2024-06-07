@@ -79,13 +79,13 @@ import { route } from 'quasar/wrappers';
                   style="width: 100%; height: auto; border-radius: 8px"
                 />
               </div>
-              <div class="row items-center">
-                <div class="col-8">
+              <div class="row items-center justify-between" style="width: 100%;">
+                <div class="col">
                   <span class="text-subtitle1 text-weight-bold">
                     {{ menu.nama_menu || "Loading..." }}
                   </span>
                 </div>
-                <div class="col">
+                <div class="col text-right">
                   <q-btn
                     flat
                     icon="edit"
