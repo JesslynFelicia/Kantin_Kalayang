@@ -1,5 +1,10 @@
 <template>
-  <HeaderCreate title="" backAction="/beranda-admin" :hideLogout="true" :hideProfile="true">
+  <HeaderCreate
+    title=""
+    backAction="/beranda-admin"
+    :hideLogout="true"
+    :hideProfile="true"
+  >
   </HeaderCreate>
 
   <q-page class="q-pa-xl" style="padding-top: 0%">
@@ -97,7 +102,10 @@ import axios from "axios";
 import useNotify from "src/composables/UseNotify";
 import { useRouter } from "vue-router";
 import HeaderLogin from "components/HeaderLogin.vue";
-import { showLoading, hideLoading } from "src/composables/useLoadingComposables";
+import {
+  showLoading,
+  hideLoading,
+} from "src/composables/useLoadingComposables";
 
 const { notifyError, notifySuccess } = useNotify();
 
@@ -135,7 +143,7 @@ const onSubmit = async () => {
       nomor_toko: "",
     };
     notifySuccess("Akun berhasil dibuat!");
-    router.push({ path: "/" });
+    router.push({ path: "/beranda-admin" });
   } catch (error) {
     notifyError("Mohon isi semua form!");
   } finally {

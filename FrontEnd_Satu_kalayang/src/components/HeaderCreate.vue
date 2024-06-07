@@ -9,7 +9,7 @@
         icon="arrow_back"
       ></q-btn>
 
-      <q-toolbar-title style="width: 10px; padding: 0%; font-weight: bold">
+      <q-toolbar-title style="font-size: 18px; width: 10px; padding: 0%; font-weight: bold">
         {{ title }}
       </q-toolbar-title>
       <div style="display: flex; align-items: center">

@@ -13,6 +13,7 @@ import { route } from 'quasar/wrappers';
     <q-page style="display: flex; flex-direction: column; height: 100vh">
       <div style="display: flex; flex-direction: column; align-items: center">
         <q-input
+          rounded
           outlined
           class="search-bar"
           v-model="text"
@@ -261,6 +262,7 @@ export default {
   },
   mounted() {
     this.getdata();
+    this.search();
   },
   methods: {
     // navigateToHalamanToko(namaToko, idToko) {
@@ -286,6 +288,16 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+
+    async search() {
+      try {
+        const response = await axios.post("http://127.0.0.1:8000/api/search", {
+          query: "es",
+        });
+      } catch (error) {
+        console.error("error nih", error);
+      }
     },
   },
 

@@ -13,14 +13,16 @@
       >
     </div>
 
-    <div class="text-left">
+    <!-- <div class="text-left">
       <span class="text-subtitle1 text-weight-bold">QRIS</span>
-    </div>
+    </div> -->
 
     <q-card-section class="flex flex-center">
       <div class="column">
         <div class="text-center">
-          <span class="text-subtitle1 text-weight-bold">Toko 1</span>
+          <span class="text-subtitle1 text-weight-bold">{{
+            this.nama_tokos
+          }}</span>
         </div>
         <img
           v-if="imageBlobUrl"
@@ -34,6 +36,7 @@
 
     <div class="q-mb-xl">
       <q-btn
+        rounded
         color="primary"
         class="full-width"
         label="Cek Status Pesanan"
@@ -42,7 +45,7 @@
       />
     </div>
 
-    <div class="text-left q-mb-md">
+    <!-- <div class="text-left q-mb-md">
       <span class="text-subtitle1 text-weight-bold"
         >Cara membayar dengan QRIS</span
       >
@@ -61,7 +64,7 @@
         <q-img class="rounded-borders" src="https://fakeimg.pl/100x100/" />
         <span class="text-caption">Step 3</span>
       </div>
-    </div>
+    </div> -->
   </q-page>
 </template>
 
@@ -84,27 +87,6 @@ const disableButton = ref(false);
 // // const statusPesanan = computed(() => {
 //   return pesananStore.statusPesanan
 // })
-
-const dataPesanan = ref([
-  {
-    id: 1,
-    img: "https://cdn.quasar.dev/img/boy-avatar.png",
-    pesanan: "Menu 1",
-    quantity: 1,
-    price: 10000,
-  },
-  {
-    id: 2,
-    img: "https://cdn.quasar.dev/img/boy-avatar.png",
-    pesanan: "Menu 2",
-    quantity: 1,
-    price: 15000,
-  },
-]);
-
-const total = computed(() =>
-  dataPesanan.value.reduce((a, b) => a + b.price, 0)
-);
 
 // const onSubmit = () => {
 //   router.push({ path: "/status-pesanan" });
@@ -130,26 +112,6 @@ const onSubmit = async () => {
     console.error("Terjadi kesalahan saat menyimpan transaksi:", error);
   }
 };
-
-const getData = async () => {
-  try {
-    /*
-     * cek status pesanan dari be.
-     * ini hanya contoh.
-     */
-    // if(statusPesanan.value == 'CHECK') {
-    //   disableButton.value = true
-    // } else {
-    //   disableButton.value = false
-    // }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-onMounted(() => {
-  getData();
-});
 </script>
 
 <style>
@@ -174,7 +136,7 @@ export default {
   },
   mounted() {
     this.addRingkasan();
-    this.getdata();
+    // this.getdata();
   },
 
   data() {
@@ -186,25 +148,52 @@ export default {
   },
 
   methods: {
-    getdata() {
-      const email = ref(localStorage.getItem("userEmail")).value;
+    // getdata() {
+    // ngaco
+    //   const email = ref(localStorage.getItem("userEmail")).value;
+
+    //   axios
+    //     .post("http://127.0.0.1:8000/api/viewonepenjual", {
+    //       email: email,
+    //     })
+    //     .then((response) => {
+    //       console.log(response.data);
+    //       this.id_penjual = response.data.data.id_penjual;
+    //       // this.id_penjual = 1;
+    //       console.log("anjg",this.id_penjual);
+    //       this.getqris();
+    //     })
+    //     .catch((err) => {
+    //       // Handle errors here
+    //       this.error = err;
+    //       console.error(err);
+    //     });
+    // },
+    addRingkasan() {
+      this.guestId = sessionStorage.getItem("guestId");
 
       axios
-        .post("http://127.0.0.1:8000/api/viewonepenjual", {
-          email: email,
+        .post("http://127.0.0.1:8000/api/ringkasanpesanan", {
+          guestId: this.guestId,
         })
         .then((response) => {
-          console.log(response.data);
-          this.id_penjual = response.data.id_penjual;
-          // this.id_penjual = 1;
-          console.log(this.id_penjual);
+          console.log("a", response);
+          this.totalPriceSum = response.data.total_price_sum;
+          this.id_penjual = response.data.data[0].id_penjual;
+          this.nama_tokos = response.data.nama_tokos;
           this.getqris();
+
+          console.log("totprice", this.totalPriceSum);
         })
-        .catch((err) => {
-          // Handle errors here
-          this.error = err;
-          console.error(err);
+        .catch((error) => {
+          console.error(error);
         });
+
+      // this.ringkasanPesanan = response.data.data;
+      // this.id_penjual = response.data.data.id_penjual;
+
+      // this.id_menu = response.data.data[0].id_menu;
+      // this.status_pesanan = response.data.data[0].status_pesanan;
     },
 
     getqris() {
@@ -231,30 +220,6 @@ export default {
           console.error(err);
         });
     },
-
-    addRingkasan() {
-      this.guestId = sessionStorage.getItem("guestId");
-
-      axios
-        .post("http://127.0.0.1:8000/api/ringkasanpesanan", {
-          guestId: this.guestId,
-        })
-        .then((response) => {
-          console.log("a", response);
-          this.totalPriceSum = response.data.total_price_sum;
-
-          console.log("totprice", this.totalPriceSum);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-
-      // this.ringkasanPesanan = response.data.data;
-      // this.id_penjual = response.data.data.id_penjual;
-
-      // this.id_menu = response.data.data[0].id_menu;
-      // this.status_pesanan = response.data.data[0].status_pesanan;
-    },
   },
 };
 </script>
@@ -264,5 +229,9 @@ export default {
   width: 350px; /* Set the width */
   height: 350px; /* Set the height to the same value to make it a square */
   object-fit: cover; /* Ensures the image covers the container while maintaining aspect ratio */
+}
+
+.q-btn {
+  text-transform: none;
 }
 </style>

@@ -38,6 +38,7 @@ Route::post('/ringkasanpesanan', [ControllerKalayang::class, 'ringkasanpesanan']
 Route::post('/keranjang', [ControllerKalayang::class, 'keranjang']);
 Route::post('/forgot_password', [ControllerKalayang::class, 'forgot_password']);
 
+Route::post('/search', [ControllerKalayang::class, 'SearchFunction']);
 
 //Mail
 // Route::post('/user/mail/send', [ControllerKalayang::class, 'sendemail']);

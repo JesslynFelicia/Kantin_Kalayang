@@ -89,7 +89,7 @@ import { route } from 'quasar/wrappers';
           @click="openDialogTambah(index, 'bottom')"
         >
           <img
-            src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+            src="/src/assets/food.jpg"
             alt="Deskripsi Foto"
             class="category"
             style="margin: 10px; border-radius: 20px"
@@ -404,7 +404,7 @@ export default {
 
         this.$router.replace(`/detail-pesanan/${menu.id_menu}`);
 
-        this.cekPesanan();
+        // this.cekPesanan();
       } catch (error) {
         console.error(error);
       }

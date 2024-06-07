@@ -250,9 +250,7 @@ export default {
         guest_id: guestId,
         id_menu: this.idMenu,
       });
-      console.log(
-        "ini hit endpoint /deletepesanan dengan body guestid sama idmenu"
-      );
+
       this.$router.replace(`/halaman-toko/${this.menus.id_penjual}`);
     },
 

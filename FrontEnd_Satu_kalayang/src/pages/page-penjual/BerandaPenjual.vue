@@ -11,6 +11,7 @@ import { route } from 'quasar/wrappers';
           placeholder="Cari makanan / toko"
           color="black"
           style="padding-top: 5px; width: 93%"
+          @input="text"
         >
           <!-- <q-icon name="event" color="orange" /> -->
           <q-btn
@@ -20,16 +21,17 @@ import { route } from 'quasar/wrappers';
             class="text-weight-medium"
             icon="search"
             style="padding: 0%"
+            @click="search()"
           />
         </q-input>
       </div>
 
-      <div style="flex-direction: column; margin-top: 10px">
+      <div class="all-menus" style="flex-direction: column; margin-top: 10px">
         <!-- <h6 style="font-weight: 800; margin: 2% 3.5%">Menu</h6> -->
         <q-page>
-          <div class="menu-header">
+          <div class="menu-header" style="margin-top: 10px">
             <p
-              style="font-size: 20px; font-weight: 600; padding: 0px 15px"
+              style="font-size: 18px; font-weight: 600; padding: 0px 15px"
               v-if="menus.some((menu) => menu.status_menu === 'READY')"
               class="menu-title"
             >
@@ -67,9 +69,9 @@ import { route } from 'quasar/wrappers';
               <div style="position: relative; width: 100%">
                 <img
                   v-if="menu.nama_menu"
-                  src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+                  src="/src/assets/food.jpg"
                   alt="Deskripsi Foto"
-                  style="width: 100%; height: auto; border-radius: 8px"
+                  style="width: 100%; height: auto; border-radius: 20px"
                 />
                 <q-skeleton
                   v-else
@@ -226,6 +228,203 @@ import { route } from 'quasar/wrappers';
           </div>
         </q-page>
       </div>
+
+      <div
+        class="search-menus"
+        style="flex-direction: column; margin-top: 10px"
+      >
+        <!-- <h6 style="font-weight: 800; margin: 2% 3.5%">Menu</h6> -->
+        <q-page>
+          <div class="menu-header">
+            <p
+              style="font-size: 20px; font-weight: 600; padding: 0px 15px"
+              v-if="menus.some((menu) => menu.status_menu === 'READY')"
+              class="menu-title"
+            >
+              Menu yang tersedia
+            </p>
+            <h7 v-else style="padding-left: 20px; font-weight: 600"
+              >Tidak ada menu yang tersedia, silahkan</h7
+            >
+
+            <a
+              style="font-size: 14px; font-weight: 700; padding: 0px 15px"
+              @click="$router.replace('/buat-pesanan')"
+              class="menu-title clickable text-primary"
+              >Tambah menu</a
+            >
+          </div>
+
+          <div v-if="loading">
+            <q-skeleton
+              v-for="(_, index) in 5"
+              :key="index"
+              type="rect"
+              style="margin-bottom: 16px"
+            />
+          </div>
+
+          <div v-else class="menu-grid">
+            <div v-for="food in foods" :key="food.id_menu" class="food-item">
+              <div v-if="food.status_menu === 'READY'">
+                <div style="position: relative; width: 100%">
+                  <img
+                    v-if="food.nama_menu"
+                    src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+                    alt="Deskripsi Foto"
+                    style="width: 100%; height: auto; border-radius: 20px"
+                  />
+                  <q-skeleton
+                    v-else
+                    type="rect"
+                    style="width: 100%; height: auto; border-radius: 8px"
+                  />
+                </div>
+                <div class="row items-center">
+                  <div class="col-8">
+                    <span class="text-subtitle1 text-weight-bold">
+                      {{ food.nama_menu || "Loading..." }}
+                    </span>
+                  </div>
+                  <div class="col">
+                    <q-btn
+                      flat
+                      icon="edit"
+                      color="primary"
+                      @click="editMenu(food.id_menu)"
+                      style="margin-left: 8px"
+                    />
+                  </div>
+                </div>
+
+                <!-- <div style="flex: 1; margin-top: 8px; text-align: center">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <p style="font-weight: bold; margin: 0; font-size: 18px">
+                    {{ menu.nama_menu || "Loading..." }}
+                  </p>
+                  <q-btn
+                    flat
+                    icon="edit"
+                    color="primary"
+                    @click="editMenu(menu.id_menu)"
+                    style="margin-left: 8px"
+                  />
+                </div>
+              </div> -->
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 4px;
+                  "
+                >
+                  <q-icon name="paid" size="30px" color="secondary" />
+                  <p
+                    style="
+                      margin: 0%;
+                      padding-left: 5px;
+                      font-size: 16px;
+                      color: #555;
+                    "
+                  >
+                    {{ food.harga_menu || "Loading..." }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="menu-header"
+            style="margin-top: 10px"
+            v-if="menus2.some((food) => food.status_menu === 'NONE')"
+          >
+            <p
+              style="font-size: 20px; font-weight: 600; padding: 0px 15px"
+              v-if="menus.some((food) => food.status_menu === 'READY')"
+              class="menu-title"
+            >
+              Menu yang tidak tersedia
+            </p>
+          </div>
+
+          <div v-if="loading">
+            <q-skeleton
+              v-for="(_, index) in 5"
+              :key="index"
+              type="rect"
+              style="margin-bottom: 16px"
+            />
+          </div>
+
+          <div v-else class="menu-grid">
+            <div v-for="food in foods" :key="food.id_menu" class="food-item">
+              <div v-if="food.status_menu === 'NONE'">
+                <div style="position: relative; width: 100%">
+                  <img
+                    v-if="menu.nama_menu"
+                    src="/src/assets/WhatsApp Image 2024-04-30 at 13.17.28_a0a48e8c.jpg"
+                    alt="Deskripsi Foto"
+                    style="width: 100%; height: auto; border-radius: 8px"
+                  />
+                  <q-skeleton
+                    v-else
+                    type="rect"
+                    style="width: 100%; height: auto; border-radius: 8px"
+                  />
+                </div>
+
+                <div style="flex: 1; margin-top: 8px; text-align: center">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
+                    <span class="text-subtitle1 text-weight-bold">
+                      {{ food.nama_menu || "Loading..." }}
+                    </span>
+                    <q-btn
+                      flat
+                      icon="edit"
+                      color="primary"
+                      @click="editMenu(food.id_menu)"
+                      style="margin-left: 8px"
+                    />
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 4px;
+                  "
+                >
+                  <q-icon name="paid" size="30px" color="secondary" />
+                  <p
+                    style="
+                      margin: 0%;
+                      padding-left: 5px;
+                      font-size: 16px;
+                      color: #555;
+                    "
+                  >
+                    {{ food.harga_menu || "Loading..." }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </q-page>
+      </div>
     </q-page>
   </div>
 </template>
@@ -247,6 +446,8 @@ export default {
       nama_toko: "",
       menus: [],
       menus2: [],
+      text: "",
+      foods: [],
     };
   },
 
@@ -262,7 +463,6 @@ export default {
     const loading = ref(false);
 
     return {
-      text,
       slide1,
       slide2,
       autoplay1,
@@ -323,6 +523,29 @@ export default {
 
     editMenu(id) {
       this.router.push(`/edit-pesanan/${id}`);
+    },
+
+    // async search() {
+    //   try {
+    //     const response = await axios.post("http://127.0.0.1:8000/api/search", {
+    //       query: text,
+    //     });
+    //   } catch (error) {
+    //     console.error("error nih", error);
+    //   }
+    // },
+
+    async search() {
+      await axios
+        .post("http://127.0.0.1:8000/api/search", {
+          query: this.text,
+        })
+        .then((response) => {
+          this.foods = response.data.foods;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };

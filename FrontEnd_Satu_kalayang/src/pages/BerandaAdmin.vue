@@ -1,25 +1,27 @@
 <template>
   <q-page>
-    <HeaderCreate
-      title="Admin"
-      backAction="/"
-      :hideProfile="true"
-    />
+    <HeaderCreate title="Admin" backAction="/" :hideProfile="true" />
 
-    <div class="content-container">
-      <h6>Mau ngapain?</h6>
-      <div class="btn-container">
+    <div class="admin-container">
+      <div class="admin-btn">
         <q-btn
-          color="secondary"
-          text-color="black"
-          label="Daftarkan Akun"
+          class="admin-btn-2"
+          outline
+          style="
+            color: black;
+            margin-right: 10px;
+            padding: 50px;
+            font-size: 16px;
+          "
+          label="Daftar akun"
           @click="$router.replace('/register')"
         />
         <q-btn
-          color="secondary"
-          text-color="black"
-          label="Daftar Akun Penjual"
-          @click="$router.replace('/daftar-akun')"
+          class="admin-btn-2"
+          outline
+          style="color: black; padding: 50px; font-size: 16px"
+          label="Reset kata sandi"
+          @click="$router.replace('/forgot-password')"
         />
       </div>
     </div>
@@ -37,23 +39,29 @@ export default {
 </script>
 
 <style scoped>
-.content-container {
+.admin-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  height: calc(100vh - 64px); /* Adjusted for the header height */
-}
-
-.btn-container {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
   align-items: center;
+  height: calc(100vh - 60px); /* Adjust this value based on the height of your header */
 }
 
 .q-btn {
-  margin: 5px;
-  min-width: 200px; /* Adjust button width as needed */
+  text-transform: none;
+}
+
+@media screen and (max-width: 600px) {
+  .admin-btn-2 {
+    height: 50px;
+    padding: 20px;
+    margin: 10px;
+    justify-content: center;
+  }
+
+  .admin-btn {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+  }
 }
 </style>

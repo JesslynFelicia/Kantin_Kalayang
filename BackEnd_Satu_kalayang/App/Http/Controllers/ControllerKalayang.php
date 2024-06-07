@@ -26,7 +26,7 @@ class ControllerKalayang extends Controller
         $jenis = $request->post('jenis');
         $nama_menu = $request->post('nama_menu');
         $harga_menu = $request->post('harga_menu');
-        $ekstra = $request->post('ekstra');
+        // $ekstra = $request->post('ekstra');
         $status_menu = $request->post('status_menu');
         $desc_menu = $request->post('desc_menu');
 
@@ -38,31 +38,36 @@ class ControllerKalayang extends Controller
                     $savemenu->jenis = $jenis;
                     $savemenu->nama_menu = $nama_menu;
                     $savemenu->harga_menu = $harga_menu;
-                    $savemenu->ekstra = $ekstra;
+                    // $savemenu->ekstra = $ekstra;
                     $savemenu->status_menu = $status_menu;
                     $savemenu->desc_menu = $desc_menu;
                     $savemenu->save();
                     if ($savemenu) {
                         $msg = "Data berhasil di simpan";
                         $sts = true;
+                        $code = 200;
                     } else {
                         $msg = "Data gagal di simpan";
                         $sts = false;
+                        $code = 404;
                     }
                 } else {
                     $msg = "Jenis menu tidak boleh kosong!";
                     $sts = false;
+                    $code = 404;
                 }
             } else {
                 $msg = "Harga menu tidak boleh kosong!";
                 $sts = false;
+                $code = 404;
             }
         } else {
             $msg = "Nama menu tidak boleh kosong!";
             $sts = false;
+            $code = 404;
         }
 
-        return response()->json(['message' => $msg, 'status' => $sts], 200);
+        return response()->json(['message' => $msg, 'status' => $sts], $code);
     }
 
     public function viewmenu(Request $request)
@@ -310,9 +315,6 @@ class ControllerKalayang extends Controller
 
         return response()->json(['message' => 'bilal asu', 'data' => $alltransaksi], 200);
     }
-
-
-
 
     public function savetransaksi(Request $request)
     {
@@ -596,36 +598,6 @@ class ControllerKalayang extends Controller
         $allpenjual = ModelKalayangPenjual::where('email', $email)->get();
         return response()->json(['message' => 'success', 'data' => $allpenjual], 200);
     }
-
-    // public function riwayatpenjual(Request $request)
-    // {
-    //     $perPage = $request->input('perPage', 10);
-    //     $id_penjual = $request->input('id_penjual');
-    //     $penjual = ModelKalayangTransaksi::select(
-    //         'tb_transaksi.id_menu',
-    //         DB::raw('MAX(tb_transaksi.id_order) AS id_order'),
-    //         DB::raw("DATE_FORMAT(MAX(tb_transaksi.tanggal_pemesanan), '%d/%m/%Y %h:%s') AS formatted_tanggal_pemesanan"),
-    //         DB::raw('MAX(tb_transaksi.nomor_meja) AS nomor_meja'),
-    //         DB::raw('MAX(tb_transaksi.status_pesanan) AS status_pesanan'),
-    //         DB::raw('MAX(tb_transaksi.catatan_pemesan) AS catatan_pemesan'),
-    //         // DB::raw('MAX(tb_transaksi.ekstra_menu) AS ekstra_menu'),
-    //         DB::raw('MAX(tb_transaksi.created_at) AS created_at'),
-    //         DB::raw('MAX(tb_transaksi.updated_at) AS updated_at'),
-    //         DB::raw("CONCAT('x', COUNT(tb_transaksi.id_menu)) AS Jumlah_pesan"),
-    //         'tb_transaksi.id_penjual',
-    //         DB::raw('SUM(tb_menu.harga_menu) AS harga_menu'),
-    //         'tb_menu.nama_menu'
-    //     )
-    //         ->join('tb_menu', 'tb_menu.id_menu', '=', 'tb_transaksi.id_menu')
-    //         ->where('tb_transaksi.id_penjual', $id_penjual)
-
-    //         // ->where('tb_transaksi.status_pesanan', ['SELESAI'])
-    //         ->groupBy('tb_transaksi.id_menu', 'tb_transaksi.id_penjual', 'tb_transaksi.id_order', 'tb_menu.nama_menu')
-    //         ->paginate($perPage);
-    //     // $penjual = ModelKalayangTransaksi::where('id_penjual', $id_penjual)->paginate($perPage);
-
-    //     return response()->json($penjual);
-    // }
 
     public function showqris(Request $request)
     {
@@ -1038,6 +1010,20 @@ class ControllerKalayang extends Controller
         }
     }
 
+    public function SearchFunction(Request $request)
+    {
+        $query = $request->input('query');
+
+
+        $stores = ModelKalayangPenjual::where('nama_toko', 'like', "%{$query}%")->get();
+        $foods = ModelKalayangMenu::where('nama_menu', 'like', "%{$query}%")->get();
+
+        return response()->json([
+            'stores' => $stores,
+            'foods' => $foods
+        ]);
+    }
+
     //Controller Private Function
     private function generateUniqueNumber()
     {
@@ -1078,6 +1064,37 @@ class ControllerKalayang extends Controller
     //         return response()->json(['message' => "Data tidak ditemukan", 'status' => false, 'data' => $penjual], 404);
     //     }
     // }
+
+     // public function riwayatpenjual(Request $request)
+    // {
+    //     $perPage = $request->input('perPage', 10);
+    //     $id_penjual = $request->input('id_penjual');
+    //     $penjual = ModelKalayangTransaksi::select(
+    //         'tb_transaksi.id_menu',
+    //         DB::raw('MAX(tb_transaksi.id_order) AS id_order'),
+    //         DB::raw("DATE_FORMAT(MAX(tb_transaksi.tanggal_pemesanan), '%d/%m/%Y %h:%s') AS formatted_tanggal_pemesanan"),
+    //         DB::raw('MAX(tb_transaksi.nomor_meja) AS nomor_meja'),
+    //         DB::raw('MAX(tb_transaksi.status_pesanan) AS status_pesanan'),
+    //         DB::raw('MAX(tb_transaksi.catatan_pemesan) AS catatan_pemesan'),
+    //         // DB::raw('MAX(tb_transaksi.ekstra_menu) AS ekstra_menu'),
+    //         DB::raw('MAX(tb_transaksi.created_at) AS created_at'),
+    //         DB::raw('MAX(tb_transaksi.updated_at) AS updated_at'),
+    //         DB::raw("CONCAT('x', COUNT(tb_transaksi.id_menu)) AS Jumlah_pesan"),
+    //         'tb_transaksi.id_penjual',
+    //         DB::raw('SUM(tb_menu.harga_menu) AS harga_menu'),
+    //         'tb_menu.nama_menu'
+    //     )
+    //         ->join('tb_menu', 'tb_menu.id_menu', '=', 'tb_transaksi.id_menu')
+    //         ->where('tb_transaksi.id_penjual', $id_penjual)
+
+    //         // ->where('tb_transaksi.status_pesanan', ['SELESAI'])
+    //         ->groupBy('tb_transaksi.id_menu', 'tb_transaksi.id_penjual', 'tb_transaksi.id_order', 'tb_menu.nama_menu')
+    //         ->paginate($perPage);
+    //     // $penjual = ModelKalayangTransaksi::where('id_penjual', $id_penjual)->paginate($perPage);
+
+    //     return response()->json($penjual);
+    // }
+
 
 
 }

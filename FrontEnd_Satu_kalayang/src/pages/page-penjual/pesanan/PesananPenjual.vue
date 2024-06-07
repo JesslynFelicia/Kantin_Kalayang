@@ -22,7 +22,13 @@
               </q-badge>
             </div>
             <div class="col" style="display: flex; justify-content: flex-end">
-              <div style="padding-right: 5px" class="text-right">No. Meja:</div>
+              <div
+                v-if="order.no_meja"
+                style="padding-right: 5px"
+                class="text-right"
+              >
+                No. Meja:
+              </div>
               <div style="font-weight: 700" class="text-right">
                 {{ order.no_meja }}
               </div>
@@ -127,7 +133,7 @@ export default {
   //   this.getData();
   //   setInterval(() => {
   //     this.getData();
-  //   }, 10000); // 10 seconds
+  //   }, 10000);
   // },
 
   data() {
@@ -146,6 +152,12 @@ export default {
           label: "Pesanan",
           align: "left",
           field: (row) => row.pesanan,
+        },
+        {
+          name: "note",
+          label: "Note",
+          align: "left",
+          field: (row) => row.note,
         },
         { name: "jumlah", label: "Jumlah", align: "right", field: "jumlah" },
         {
@@ -197,6 +209,7 @@ export default {
             if (!acc[order.id_order]) {
               acc[order.id_order] = {
                 id_order: order.id_order,
+                catatan_pemesan: order.catatan_pemesan,
                 no_meja: order.nomor_meja,
                 localStatus: order.status_pesanan, // Ubah status lokal berdasarkan status pesanan dari response
                 rows: [],
@@ -205,6 +218,7 @@ export default {
 
             acc[order.id_order].rows.push({
               pesanan: order.nama_menu,
+              note: order.catatan_pemesan,
               jumlah: order.Jumlah_pesan,
               harga: order.harga_menu,
               total: order.Jumlah_pesan * order.harga_menu,
